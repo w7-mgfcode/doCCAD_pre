@@ -1,0 +1,68 @@
+{
+  "platform": "mintlify",
+  "backend_note": "Core platform (build pipeline, hosting, dashboard, search, AI services) is proprietary SaaS — N/A for repo health. Health below covers the public repos actually inspected. GitHub API access was unavailable from this environment (session-scoped); stars/forks/issues were read from GitHub web pages via fetch on 2026-08-12, commit/contributor data from shallow+deepened git clones.",
+  "repos": {
+    "mintlify/docs": {
+      "role": "Official documentation content (source of mintlify.com/docs); primary evidence base",
+      "stars": 433,
+      "forks": 239,
+      "open_issues": 86,
+      "open_prs": 15,
+      "license": "MIT",
+      "latest_release": null,
+      "release_date": null,
+      "release_note": "Content repo — no tagged releases; deployed continuously on merge",
+      "recent_commit_activity": "277 commits in the 30 days ending 2026-08-12; last commit 2026-08-11",
+      "contributors_signal": "Last 300 commits: 235 by mintlify[bot] (vendor's own agent/automations incl. es/fr/zh translations), 37 by lead docs engineer, ~10 other humans; external contributions accepted per CONTRIBUTING.md",
+      "issue_activity": "86 open issues / 15 open PRs observed; triage cadence not measured",
+      "maintenance_assessment": "Very actively maintained; heavy human+bot cadence; serves as vendor's dogfooding surface for agent workflows"
+    },
+    "mintlify/starter": {
+      "role": "Official starter template (docs.json + example MDX + AGENTS.md)",
+      "stars": "~1900 (displayed as 1.9k)",
+      "forks": 524,
+      "open_issues": null,
+      "license": "MIT (copyright 2026)",
+      "latest_release": null,
+      "release_date": null,
+      "recent_commit_activity": "164 total commits on main; recency not itemized",
+      "contributors_signal": "Vendor-maintained template",
+      "issue_activity": null,
+      "maintenance_assessment": "Maintained; small by design"
+    },
+    "mintlify/components": {
+      "role": "Open-source React/Tailwind component library used by the platform's MDX components",
+      "stars": 114,
+      "forks": 15,
+      "open_issues": 2,
+      "license": "MIT",
+      "latest_release": "v1.0.18 (CHANGELOG.md)",
+      "release_date": "2026-07-01",
+      "recent_commit_activity": "Last commit 2026-07-01 (from clone); 283 total commits",
+      "contributors_signal": "Vendor-maintained; Storybook + pnpm monorepo; CONTRIBUTING/DEVELOPMENT docs present",
+      "issue_activity": "2 open issues",
+      "maintenance_assessment": "Maintained at a slower cadence than the platform; useful as an exit asset (reusable components under MIT)"
+    },
+    "mintlify/mint (CLI source)": {
+      "role": "Repository referenced by the mint/mintlify npm packages",
+      "stars": null,
+      "latest_release": "npm mint 4.2.797",
+      "release_date": "2026-08-12 (published same day as collection — near-daily release cadence observed on npm)",
+      "recent_commit_activity": null,
+      "contributors_signal": null,
+      "issue_activity": null,
+      "maintenance_assessment": "NOT PUBLICLY INSPECTABLE — GitHub repo returns 404 (private); CLI distributed via npm under Elastic License 2.0",
+      "license": "Elastic-2.0 (npm metadata)"
+    }
+  },
+  "not_inspectable_layers": [
+    "Build pipeline and workers",
+    "Hosting/CDN and rendering service",
+    "Search/indexing engine (technology undisclosed)",
+    "AI services (assistant, agent, automations, MCP hosting)",
+    "Dashboard backend, auth, billing",
+    "CLI source code (repo private; npm artifacts only)"
+  ],
+  "collected_at": "2026-08-12",
+  "notes": "Star/fork/issue counts read from github.com pages via web fetch (rendered values); commit statistics computed from local clones (docs repo history deepened by 300 commits). GitHub REST API was blocked in the analysis environment, so figures are page-displayed values, not API values."
+}

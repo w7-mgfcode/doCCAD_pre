@@ -1,0 +1,15 @@
+%% DIAG-120 extracted from outputs/01_products/hyperbook/SAD_hyperbook.md
+graph TB
+  IN[Markdown plus frontmatter] --> P1[remarkParse plus gray-matter]
+  P1 --> P2[remark-directive plus 40 directive plugins<br/>tabs protect mermaid pyide etc]
+  P2 --> P3[remarkGfm remarkMath remarkImage remarkLink]
+  P3 --> P4[remarkCollectHeadings<br/>remarkCollectSearchDocuments]
+  P4 --> R1[remark-rehype]
+  R1 --> R2[rehypePrettyCode shiki<br/>rehypeKatex rehypeEmoji]
+  R2 --> R3[rehypeTableOfContents rehypeQrCode<br/>rehypeShareDialog rehypeShell]
+  R3 --> R4[rehypeHtmlStructure<br/>full HTML document head meta nav]
+  R4 --> OUT2[HTML string plus data<br/>searchDocuments directives emojis deps]
+
+  CTX[HyperbookContext<br/>config navigation makeUrl] --> P2
+  CTX --> R4
+  I18N[i18n en de locales] --> P2

@@ -1,0 +1,19 @@
+%% DIAG-109 extracted from outputs/01_products/zensical/SAD_zensical.md
+graph TB
+  subgraph CLI[zensical Python package]
+    PY[Python front end - click CLI, config parsing, Markdown rendering]
+    RS[Rust core - pyo3 extension module]
+  end
+  subgraph RustCore[Rust core internals]
+    WF[zrx workflow engine - differential streams]
+    TPL[MiniJinja template renderer]
+    SRV[zensical-serve - HTTP plus websocket reload]
+    WTC[zensical-watch - file watcher]
+  end
+  CFG[zensical.toml or mkdocs.yml] --> PY
+  DOCS[docs dir - Markdown plus assets] --> WF
+  THEME[Bundled UI theme - built from zensical slash ui repo] --> TPL
+  PY <-->|pyo3 calls both ways| RS
+  RS --> WF --> TPL --> OUT[site dir - static HTML, search index, sitemap]
+  WTC --> WF
+  SRV --> OUT

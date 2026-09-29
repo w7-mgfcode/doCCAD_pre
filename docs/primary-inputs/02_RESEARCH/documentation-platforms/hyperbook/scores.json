@@ -1,0 +1,93 @@
+{
+  "platform": "hyperbook",
+  "criteria": {
+    "github_docs_as_code_fit": {
+      "weight": 15,
+      "score": 4,
+      "rationale": "Plain Markdown + YAML frontmatter in Git, single-CLI static build, first-class GitHub Pages path, no SaaS layer. Docked one point: Hyperbook-specific ::: directive syntax degrades canonical-file preview on GitHub, and per-page edit-on-GitHub links are only partially modeled.",
+      "evidence": "packages/fs (gray-matter), packages/types/src/index.ts frontmatter schema, website/en/book/hosting/ghpages.md, remark-directive pipeline in packages/markdown/src/process.ts",
+      "confidence": "HIGH"
+    },
+    "ai_integration_extensibility": {
+      "weight": 15,
+      "score": 3,
+      "rationale": "No AI features and no plugin API, but exceptionally good at receiving AI output: .md.yml/.md.json data files rendered by human-owned .md.hbs Handlebars templates, built-in llms.txt generation, hide/virtual frontmatter for derived views. Custom rich components hit a ceiling (scripts/CSS/snippets or fork).",
+      "evidence": "packages/fs/src/vfile.ts:840-900 (templates), packages/hyperbook/build.ts:283-412 (llms.txt), no plugin registration API in packages/markdown/src/process.ts",
+      "confidence": "HIGH"
+    },
+    "architecture_simplicity": {
+      "weight": 12,
+      "score": 4,
+      "rationale": "One CLI (new/dev/build), no server runtime, no database, Node>=18 only; genuinely one-engineer operable. Docked for pre-1.0 churn (0.104.0, 11 releases in 4 weeks) forcing pinning discipline, and dev-only incrementality (CI always full-builds).",
+      "evidence": "packages/hyperbook/index.ts CLI surface; packages/hyperbook/incremental.ts used only by dev.ts; npm registry release timestamps Jul-Aug 2026",
+      "confidence": "HIGH"
+    },
+    "structured_content_ia": {
+      "weight": 10,
+      "score": 4,
+      "rationale": "Rich typed frontmatter (index, hide, toc, permaid, next/prev, layout), folder-based sections, glossary with auto term linking, pagelist, multi-book libraries with basePath. No taxonomy/tags system and no doc-versioning concept.",
+      "evidence": "packages/types/src/index.ts:60-110; packages/fs/src/vfile.ts folders; website/hyperlibrary.json",
+      "confidence": "HIGH"
+    },
+    "security_governance": {
+      "weight": 10,
+      "score": 3,
+      "rationale": "Static output = minimal attack surface; allowDangerousHtml off by default; Renovate + lockfile + CI releases. Docked: protect element is fake security (base64 password + hidden div in served HTML), no SECURITY.md, no CSP/SRI tooling, single-maintainer publication risk; all governance must come from GitHub.",
+      "evidence": "packages/markdown/src/remarkDirectiveProtect.ts:37; packages/markdown/src/process.ts:139; renovate.json; repo root lacks SECURITY.md",
+      "confidence": "HIGH"
+    },
+    "mermaid_diagrams_as_code": {
+      "weight": 8,
+      "score": 5,
+      "rationale": "Native dual syntax: fenced ```mermaid blocks (GitHub-renderable canonical files) and :::mermaid directives; bundled mermaid.min.js shipped only when used; PlantUML and Excalidraw as bonuses. Client-side render only (no build-time SVG), acceptable for static-first.",
+      "evidence": "packages/markdown/src/remarkDirectiveMermaid.ts:18-22 (handles code lang mermaid); packages/markdown/assets/directive-mermaid",
+      "confidence": "HIGH"
+    },
+    "localization_bilingual": {
+      "weight": 8,
+      "score": 3,
+      "rationale": "Structural bilingualism is clean and proven (hyperlibrary multi-book, upstream's own EN/DE docs, drift-diff script), but Hungarian is not a supported UI locale: Language union is de|en|fr|es|it|pt|nl and only en/de string bundles exist; HU falls back to English chrome and English search stemming. Workable with documented workarounds.",
+      "evidence": "packages/types/src/index.ts:44; packages/markdown/src/i18n.ts:1-12; website/hyperlibrary.json; scripts/diffFolders.mjs; build.ts:48-65 lunr fallback",
+      "confidence": "HIGH"
+    },
+    "deployment_self_hosting": {
+      "weight": 7,
+      "score": 5,
+      "rationale": "Pure static output deployable anywhere; documented GitHub Pages/GitLab Pages/Vercel/custom guides; basePath subpath support; hyperbook-anywhere starter; zero runtime dependencies; no vendor coupling of any kind.",
+      "evidence": "packages/hyperbook/build.ts output to .hyperbook/out; website/en/book/hosting/*; github.com/openpatch/hyperbook-anywhere",
+      "confidence": "HIGH"
+    },
+    "dev_author_ux": {
+      "weight": 7,
+      "score": 4,
+      "rationale": "Fast dev server with dependency-aware incremental rebuild and WS live reload, VS Code extension using the production renderer with schema validation and snippets, create-hyperbook scaffold, typed config. Docked: niche directive syntax, thin docs/community, build warnings instead of hard errors on template mistakes.",
+      "evidence": "packages/hyperbook/incremental.ts; dev.ts:267-353; platforms/vscode/package.json; packages/fs/src/vfile.ts warning-only template handling",
+      "confidence": "HIGH"
+    },
+    "search_seo": {
+      "weight": 5,
+      "score": 3,
+      "rationale": "Search is solid for the scale: build-time lunr with language stemmers, position metadata, zero infra. SEO is verifiably weak: no sitemap/robots/canonical/og:image, invalid og:title attribute, keywords joined without separator, html lang fallback 'es'. Post-build script fixes it; scored as workable-with-workarounds.",
+      "evidence": "packages/hyperbook/build.ts:36-97; packages/markdown/src/rehypeHtmlStructure.ts:200-280; open issue #350 OpenGraph images since 2022",
+      "confidence": "HIGH"
+    },
+    "cost_efficiency": {
+      "weight": 3,
+      "score": 5,
+      "rationale": "MIT, free, static hosting on free tiers, negligible CI minutes; only labor costs (styling, hardening script, upgrade discipline).",
+      "evidence": "LICENSE.md; static-only architecture",
+      "confidence": "HIGH"
+    }
+  },
+  "weighted_score": 76.0,
+  "critical_constraints": [
+    "Bus factor 1: ~90%+ of human commits by a single maintainer; external contributors total 2 commits ever",
+    "Pre-1.0 (0.104.0) with very fast release cadence; pinning and quarterly upgrade discipline mandatory",
+    "No plugin API: custom components limited to templates/snippets/custom scripts or a fork",
+    "Hungarian UI locale unsupported (only en/de bundles); needs upstream PR or post-build patching",
+    "SEO output defective out of the box (no sitemap/canonical/og:image, invalid og:title); requires post-build hardening",
+    "protect element is presentation-only gating: repository and site must be treated as public-equivalent",
+    "No PDF export and no doc-versioning concept"
+  ],
+  "verdict_one_liner": "Architecturally aligned static-first SSG whose data-file+Handlebars template pipeline is the best native fit in the field for AI-derived pages, but a 74-star single-maintainer education tool with SEO defects and no HU locale — credible second choice with pinning/fork mitigations, not the default."
+}

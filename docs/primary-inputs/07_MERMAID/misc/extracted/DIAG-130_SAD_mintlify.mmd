@@ -1,0 +1,34 @@
+%% DIAG-130 extracted from outputs/01_products/mintlify/SAD_mintlify.md
+flowchart TB
+  subgraph Repo[Docs repository - VERIFIED-REPO]
+    DJ[docs.json - theme colors navigation seo integrations redirects contextual]
+    PAGES[MDX pages with frontmatter]
+    SNIP[snippets dir - reusable MDX JSX]
+    OAS[OpenAPI and AsyncAPI specs]
+    MI[.mintignore]
+    VALE[.vale.ini optional]
+    LANG[Language dirs - en hu etc]
+  end
+  subgraph CLIcomp[CLI - OBSERVED via npm]
+    DEV[mint dev - local preview]
+    VALID[mint validate]
+    LINKS[mint broken-links]
+    EXPORT[mint export - Enterprise]
+    AUTO[mint automations]
+    IDX[mint index setup]
+  end
+  subgraph APIs[REST API surface - VERIFIED-OFFICIAL]
+    UPD[Update trigger and status]
+    PREV[Preview trigger]
+    AGJOB[Agent jobs v2]
+    ASST[Assistant messages search page content]
+    ANA[Analytics export]
+    SX[Static export API - Enterprise]
+  end
+  DJ --> DEV
+  PAGES --> DEV
+  SNIP --> PAGES
+  OAS --> DJ
+  MI --> DEV
+  DEV --> VALID
+  UPD --> AGJOB

@@ -1,0 +1,14 @@
+%% DIAG-107 extracted from outputs/01_products/gitbook/SAD_gitbook.md
+sequenceDiagram
+  participant R as Reader
+  participant Site as Published site
+  participant IX as GitBook search backend
+  participant AI as AI search service
+  R->>Site: Open search - Quick Find
+  Site->>IX: Keyword query over site content
+  IX-->>Site: Ranked page and heading results
+  R->>Site: Ask a question
+  Site->>AI: Query with site scope
+  AI->>IX: Retrieve relevant passages
+  AI-->>Site: Summarized answer with source citations
+  Note over Site: Local flexsearch assists client side in OSS renderer

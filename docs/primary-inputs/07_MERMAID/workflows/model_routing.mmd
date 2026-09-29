@@ -1,0 +1,50 @@
+%% Model routing - contract policy to provider adapter
+flowchart TB
+
+  task["Generation Task<br>named contract reference"]
+  policy["Contract Policy<br>ai config yaml<br>task type to route table"]
+
+  task --> policy
+  policy --> router
+
+  subgraph router["Model Router"]
+    direction TB
+    privacy{"Private content"}
+    cost{"Cost sensitive"}
+    ctxsize{"Large context needed"}
+    structured{"Structured output required"}
+    avail{"Primary provider available"}
+  end
+
+  privacy -->|"yes - never leaves machine"| localad
+  privacy -->|"no"| cost
+  cost -->|"yes"| cheaptier["Cheap tier model<br>from config"]
+  cost -->|"no"| ctxsize
+  ctxsize -->|"yes"| longctx["Long context model<br>from config"]
+  ctxsize -->|"no"| structured
+  structured -->|"yes"| schematier["Schema-capable model<br>from config"]
+  structured -->|"no"| avail
+  avail -->|"yes"| primary["Primary model<br>from config"]
+  avail -->|"no - fallback chain"| fallback["Next provider in chain<br>then local as last resort"]
+
+  cheaptier --> adapters
+  longctx --> adapters
+  schematier --> adapters
+  primary --> adapters
+  fallback --> adapters
+
+  subgraph adapters["Provider Adapters - one interface"]
+    direction LR
+    anthad["Anthropic Adapter"]
+    gemad["Gemini Adapter"]
+    oaiad["OpenAI Adapter"]
+    localad["Local Adapter<br>OpenAI-compatible endpoint"]
+  end
+
+  anthad --> claude["Claude models"]
+  gemad --> gemini["Gemini models"]
+  oaiad --> openai["OpenAI models"]
+  localad --> localmodel["Local model<br>private content stays local"]
+
+  note["Rule - model names live only in config<br>no agent framework - no autonomous loops"]
+  adapters -.-> note

@@ -1,0 +1,33 @@
+%% Flow - git change to published docs
+sequenceDiagram
+  autonumber
+  participant Dev as Engineer Author
+  participant GH as GitHub Repo
+  participant CI as Actions Generate Pipeline
+  participant Det as Change Detector
+  participant Gen as Generation CLI
+  participant AI as AI Provider
+  participant Val as Deterministic Validators
+  participant Rev as Reviewer
+  participant Build as Build and Deploy
+  participant Site as Published Site
+
+  Dev->>GH: push commit or open PR
+  GH->>CI: workflow trigger on change
+  CI->>Det: run change detection
+  Det->>Det: classify changed files by content plane
+  Det->>Det: recompute source hashes and compare stored hashes
+  Det-->>CI: stale set of affected generated pages
+  CI->>Gen: targeted regeneration for stale set only
+  Gen->>AI: contract-scoped completion calls
+  AI-->>Gen: draft content
+  Gen->>Val: parse output and run gates
+  Val->>Val: lint - frontmatter schema - links - mermaid compile
+  Val-->>Gen: validation report
+  Gen->>GH: commit to docs-gen branch and open PR
+  GH->>Rev: request review with validation report
+  Rev->>GH: approve and merge
+  GH->>Build: merge to main triggers build
+  Build->>Build: docusaurus build with search index
+  Build->>Site: deploy static artifact
+  Site-->>Dev: updated docs live

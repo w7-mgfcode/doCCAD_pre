@@ -1,0 +1,43 @@
+%% DIAG-125 extracted from outputs/01_products/mkdocs/SAD_mkdocs.md
+graph TB
+  subgraph Commands[mkdocs commands]
+    B[build py]
+    S[serve py]
+    G[gh deploy py]
+    N[new py]
+  end
+  subgraph Config[mkdocs config]
+    CB[base py loader]
+    CO[config options py typed options]
+    CD[defaults py schema hooks validation]
+  end
+  subgraph Structure[mkdocs structure]
+    F[files py collection]
+    NAV[nav py navigation model]
+    P[pages py page render Python-Markdown]
+    T[toc py table of contents]
+  end
+  subgraph Ext[Extension surface]
+    PL[plugins py 19 events priorities]
+    TH[theme py Jinja2 env inheritance]
+    LOC[localization py babel theme locale]
+    SRCH[contrib search lunr index]
+    LR[livereload watchdog server]
+    META[utils meta py frontmatter]
+  end
+
+  B --> CB
+  CB --> CO
+  CB --> CD
+  B --> F
+  F --> NAV
+  NAV --> P
+  P --> META
+  P --> T
+  B --> PL
+  P --> PL
+  B --> TH
+  TH --> LOC
+  B --> SRCH
+  S --> LR
+  S --> B

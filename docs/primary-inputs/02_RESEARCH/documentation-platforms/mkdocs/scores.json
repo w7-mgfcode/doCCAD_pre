@@ -1,0 +1,91 @@
+{
+  "platform": "mkdocs",
+  "criteria": {
+    "github_docs_as_code_fit": {
+      "weight": 15,
+      "score": 5,
+      "rationale": "Entire system is Git-tracked text: mkdocs.yml + docs/ tree, native gh-deploy via ghp-import, edit_uri, Actions-based Pages deploys, mike stores site versions on gh-pages. Markdown + YAML frontmatter parsed natively; Mermaid fences render both on GitHub and on site from the same source.",
+      "evidence": "mkdocs/commands/gh_deploy.py; pyproject.toml dep ghp-import>=1.0; mkdocs/utils/meta.py get_data; Material docs/reference/diagrams.md",
+      "confidence": "HIGH"
+    },
+    "ai_integration_extensibility": {
+      "weight": 15,
+      "score": 4,
+      "rationale": "No native AI features, but the ideal substrate for an external AI layer: derived Markdown is just files; 19-event plugin API plus single-file hooks enable frontmatter contracts, validation gates and programmatic assembly in plain Python; strict builds gate AI PRs; published site never needs AI (static + client-side search). Minor gap: no built-in provenance/llms.txt tooling.",
+      "evidence": "mkdocs/plugins.py events + event_priority; mkdocs/config/defaults.py:162 hooks; exclude_docs/draft_docs/not_in_nav defaults.py:51-57; mkdocs-gen-files 0.6.1 on PyPI 2026-03-16",
+      "confidence": "HIGH"
+    },
+    "architecture_simplicity": {
+      "weight": 12,
+      "score": 5,
+      "rationale": "Close to minimal viable architecture: one Python process, one YAML config, ~15 core modules, no database, no JS toolchain required (Material ships compiled assets), static output. Single-file hooks avoid plugin packaging. Textbook one-engineer stack and the anti-overengineering benchmark of this comparison.",
+      "evidence": "mkdocs/ package layout (commands, config, structure, themes, contrib/search, livereload); pyproject.toml minimal dependency list",
+      "confidence": "HIGH"
+    },
+    "structured_content_ia": {
+      "weight": 10,
+      "score": 4,
+      "rationale": "Explicit nav model with typed validation, per-file exposure controls (exclude_docs, draft_docs, not_in_nav), frontmatter available everywhere, literate-nav and gen-files for programmatic IA, Material tags/meta plugins. Gap: no built-in frontmatter schema/taxonomy enforcement (hook-built) and no content-type system.",
+      "evidence": "mkdocs/structure/nav.py, files.py; config/defaults.py:51-57,169-199; material/plugins/tags, meta; mkdocs-literate-nav 0.6.3",
+      "confidence": "HIGH"
+    },
+    "security_governance": {
+      "weight": 10,
+      "score": 3,
+      "rationale": "Static output and SafeLoader frontmatter give a small runtime attack surface, and Git/PR flow provides governance. Heavy discount: core has had no release since 2024-08 (unbounded CVE response latency), Material public security support ends 2026-11-05, hooks and !!python/name config tags are code-execution surfaces requiring process controls.",
+      "evidence": "mkdocs/utils/meta.py SafeLoader; git log (last release 1.6.1 2024-08-30); mkdocs-material SECURITY.md EOL 2026-11-05; Material mkdocs.yml:167 python/name tag",
+      "confidence": "HIGH"
+    },
+    "mermaid_diagrams_as_code": {
+      "weight": 8,
+      "score": 4,
+      "rationale": "De-facto standard path is solid: pymdownx.superfences mermaid fence + Material client-side runtime with theme-aware rendering; identical fenced source renders on GitHub. Not core-native, requires theme+extension assembly, defaults to unpkg CDN (self-hostable), and no build-time SVG without extra tooling.",
+      "evidence": "mkdocs-material mkdocs.yml:163-167; src/templates/assets/javascripts/components/content/mermaid/index.ts (mermaid@11 via unpkg); docs/reference/diagrams.md",
+      "confidence": "HIGH"
+    },
+    "localization_bilingual": {
+      "weight": 8,
+      "score": 3,
+      "rationale": "Core has no multilingual site model (theme-chrome locale only). EN/HU is achievable and proven by assembling mkdocs-static-i18n (active, 1.3.1 2026-02) + Material hu UI translations (69 languages) + bundled lunr.hu.js Hungarian stemming — three parts, hand-configured, third-party-plugin dependent.",
+      "evidence": "mkdocs/localization.py; material/templates/partials/languages/hu.html; mkdocs/contrib/search/lunr-language/lunr.hu.js; mkdocs-static-i18n PyPI 1.3.1 2026-02-20",
+      "confidence": "HIGH"
+    },
+    "deployment_self_hosting": {
+      "weight": 7,
+      "score": 5,
+      "rationale": "Pure static directory output deployable to GitHub Pages (built-in command), any static host, or own server; zero runtime services; offline-capable search; Mermaid self-hostable. No vendor coupling anywhere in delivery.",
+      "evidence": "mkdocs/commands/build.py output model; gh_deploy.py; contrib/search client-side worker.js; material/plugins/privacy for asset self-hosting",
+      "confidence": "HIGH"
+    },
+    "dev_author_ux": {
+      "weight": 7,
+      "score": 4,
+      "rationale": "Plain Markdown authoring, one config file, livereload preview, excellent Material reading UX and authoring affordances. Deductions: full rebuild per change slows large-corpus preview (dirty mode is an approximation), ecosystem assembly knowledge is folk lore now frozen with Material, no non-technical editor.",
+      "evidence": "mkdocs/livereload/__init__.py polling observer; commands/build.py:147-199 dirty handling; Material plugins and docs",
+      "confidence": "HIGH"
+    },
+    "search_seo": {
+      "weight": 5,
+      "score": 4,
+      "rationale": "Build-time static index + client-side lunr (worker, offline, Hungarian stemmer available) with Material's improved UX; sitemap.xml in core templates; Material adds canonical URLs, social cards, optimize plugin. Limits: lunr-grade relevance and index-size scaling; structured data is DIY.",
+      "evidence": "mkdocs/contrib/search/search_index.py, templates/search/worker.js, lunr-language/; mkdocs/templates/sitemap.xml; material/plugins/social, optimize",
+      "confidence": "HIGH"
+    },
+    "cost_efficiency": {
+      "weight": 3,
+      "score": 5,
+      "rationale": "Free OSS (BSD-2 + MIT), free static hosting at personal scale, negligible CI minutes. Only material future cost is the 2026-11 migration/fork decision or optional paid extended support.",
+      "evidence": "LICENSE files both repos; GitHub Pages free tier; SECURITY.md extended-support offer",
+      "confidence": "HIGH"
+    }
+  },
+  "weighted_score": 83.8,
+  "critical_constraints": [
+    "Material for MkDocs public security support ends 2026-11-05 (SECURITY.md in repo); team focus moved to Zensical — adoption requires a pre-dated exit or extended-support plan",
+    "MkDocs core is dormant: last release 1.6.1 on 2024-08-30, last master commits 2025-10-20 are doc fixes; assume zero upstream CVE/bug-fix capacity",
+    "No multilingual model in core: EN/HU depends on third-party mkdocs-static-i18n plus Material language packs",
+    "Mermaid and modern UX are theme/extension-supplied, not core: the viable product is the MkDocs+Material composite, and its risk profile is the composite's",
+    "Full-site rebuild model: no incremental production builds; incrementality must live in the AI/CI layer"
+  ],
+  "verdict_one_liner": "Mechanically the best-fitting, simplest docs-as-code foundation for a one-engineer GitHub-native AI-augmented ecosystem — but in Aug 2026 it is a pinned, exit-ready choice at best, with its flagship theme three months from security EOL and a dormant core."
+}

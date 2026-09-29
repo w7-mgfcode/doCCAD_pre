@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "governance.schema.json",
+  "title": "DOCCAD Governance & Workflow Schemas",
+  "type": "object",
+  "$defs": {
+    "QuestionRequest": {
+      "type": "object",
+      "required": ["question", "audience", "privacy_class"],
+      "properties": {
+        "question": {
+          "type": "string",
+          "minLength": 5,
+          "description": "User question treated strictly as data"
+        },
+        "audience": {
+          "enum": ["developer", "architect", "operator", "user", "recruiter", "interviewer", "reviewer"]
+        },
+        "privacy_class": {
+          "enum": ["public", "private"],
+          "description": "private hard-pins to local/fixture provider"
+        },
+        "target_id": {
+          "type": "string",
+          "description": "Optional canonical target id to ground the answer"
+        }
+      }
+    },
+    "ReviewRecord": {
+      "type": "object",
+      "required": ["artifact_id", "path", "approval_state", "reviewed_at", "is_simulated"],
+      "properties": {
+        "artifact_id": {"type": "string"},
+        "path": {"type": "string"},
+        "approval_state": {
+          "enum": ["draft", "in-review", "approved-for-demo", "rejected"]
+        },
+        "reviewed_by": {"type": "string"},
+        "reviewed_at": {"type": "string"},
+        "notes": {"type": "string"},
+        "is_simulated": {
+          "type": "boolean",
+          "description": "True if approved via local demo simulator; false if verified PR"
+        },
+        "eligible_for_production": {
+          "type": "boolean",
+          "description": "Must be false if is_simulated is true"
+        }
+      }
+    },
+    "ValidationResult": {
+      "type": "object",
+      "required": ["artifact_id", "valid", "errors", "checked_at"],
+      "properties": {
+        "artifact_id": {"type": "string"},
+        "path": {"type": "string"},
+        "valid": {"type": "boolean"},
+        "errors": {"type": "array", "items": {"type": "string"}},
+        "warnings": {"type": "array", "items": {"type": "string"}},
+        "checked_at": {"type": "string"}
+      }
+    },
+    "GenerationRun": {
+      "type": "object",
+      "required": ["run_id", "contract", "provider", "model", "mode", "started_at", "status"],
+      "properties": {
+        "run_id": {"type": "string"},
+        "contract": {"type": "string"},
+        "contract_version": {"type": "integer"},
+        "prompt_version": {"type": "string"},
+        "provider": {"type": "string"},
+        "model": {"type": "string"},
+        "mode": {"enum": ["production", "demo"]},
+        "target_id": {"type": "string"},
+        "evidence_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "content_hash"],
+            "properties": {
+              "id": {"type": "string"},
+              "path": {"type": "string"},
+              "content_hash": {"type": "string"}
+            }
+          }
+        },
+        "rejected_files": {"type": "array", "items": {"type": "string"}},
+        "started_at": {"type": "string"},
+        "completed_at": {"type": "string"},
+        "status": {"enum": ["success", "insufficient_evidence", "failed"]},
+        "candidate_path": {"type": "string"}
+      }
+    }
+  }
+}

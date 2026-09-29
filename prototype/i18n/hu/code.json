@@ -1,0 +1,38 @@
+{
+  "theme.common.skipToMainContent": {
+    "message": "Ugrás a fő tartalomra",
+    "description": "The skip to content label used for accessibility"
+  },
+  "theme.tags.tagsPageTitle": {
+    "message": "Címkék",
+    "description": "The title of the tag list page"
+  },
+  "theme.SearchBar.seeAll": {
+    "message": "Összes találat ({count})",
+    "description": "The label to see all search results"
+  },
+  "theme.SearchModal.searchBox.placeholder": {
+    "message": "Keresés a dokumentációban...",
+    "description": "Search input placeholder"
+  },
+  "theme.SearchModal.searchBox.cancelButtonText": {
+    "message": "Mégse",
+    "description": "Search cancel button"
+  },
+  "theme.SearchModal.searchBox.resetButtonTitle": {
+    "message": "Keresés törlése",
+    "description": "Search reset button"
+  },
+  "theme.SearchModal.footer.selectText": {
+    "message": "Kiválasztás",
+    "description": "Search footer select text"
+  },
+  "theme.SearchModal.footer.navigateText": {
+    "message": "Navigáció",
+    "description": "Search footer navigate text"
+  },
+  "theme.SearchModal.footer.closeText": {
+    "message": "Bezárás",
+    "description": "Search footer close text"
+  }
+}

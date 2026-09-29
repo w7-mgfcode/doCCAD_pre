@@ -1,0 +1,23 @@
+%% DIAG-126 extracted from outputs/01_products/mkdocs/SAD_mkdocs.md
+sequenceDiagram
+  participant A as Author or AI pipeline
+  participant GH as GitHub repo
+  participant CI as GitHub Actions
+  participant MK as mkdocs build
+  participant PG as GitHub Pages
+
+  A->>GH: push branch with Markdown and frontmatter
+  A->>GH: open PR canonical or AI derived
+  GH->>CI: PR triggers workflow
+  CI->>MK: mkdocs build --strict
+  MK->>MK: load config run on_config hooks
+  MK->>MK: collect files run on_files gen-files
+  MK->>MK: build nav literate-nav
+  MK->>MK: per page frontmatter markdown render
+  MK-->>CI: exit code plus warnings as errors
+  CI-->>GH: status check on PR
+  GH->>GH: human review and merge
+  GH->>CI: push to main triggers deploy
+  CI->>MK: mkdocs build then gh-deploy or upload artifact
+  MK->>PG: publish static site directory
+  PG-->>A: live site no AI at serve time

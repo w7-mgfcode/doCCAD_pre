@@ -1,0 +1,153 @@
+{
+  "mode": "full-scan",
+  "changed_paths": [],
+  "affected_canonical": [
+    {
+      "id": "architecture-ai-generation-plane",
+      "path": "docs/source/architecture/ai-generation-plane.md",
+      "matched_changes": []
+    },
+    {
+      "id": "architecture-content-planes",
+      "path": "docs/source/architecture/content-planes.md",
+      "matched_changes": []
+    },
+    {
+      "id": "architecture-platform-research",
+      "path": "docs/source/architecture/platform-research.md",
+      "matched_changes": []
+    },
+    {
+      "id": "architecture-system-overview",
+      "path": "docs/source/architecture/system-overview.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-001-github-source-of-truth",
+      "path": "docs/source/decisions/adr-001-github-source-of-truth.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-002-docusaurus-foundation",
+      "path": "docs/source/decisions/adr-002-docusaurus-foundation.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-003-canonical-generated-separation",
+      "path": "docs/source/decisions/adr-003-canonical-generated-separation.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-004-provider-abstraction",
+      "path": "docs/source/decisions/adr-004-provider-abstraction.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-005-pr-gated-generation",
+      "path": "docs/source/decisions/adr-005-pr-gated-generation.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-006-retrieval-level1",
+      "path": "docs/source/decisions/adr-006-retrieval-level1.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-007-mermaid-as-code",
+      "path": "docs/source/decisions/adr-007-mermaid-as-code.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-008-build-time-ai",
+      "path": "docs/source/decisions/adr-008-build-time-ai.md",
+      "matched_changes": []
+    },
+    {
+      "id": "decisions-adr-009-deployment-github-pages",
+      "path": "docs/source/decisions/adr-009-deployment-github-pages.md",
+      "matched_changes": []
+    },
+    {
+      "id": "development-contracts-and-schemas",
+      "path": "docs/source/development/contracts-and-schemas.md",
+      "matched_changes": []
+    },
+    {
+      "id": "development-setup",
+      "path": "docs/source/development/setup.md",
+      "matched_changes": []
+    },
+    {
+      "id": "generation-contracts",
+      "path": "docs/source/generation/contracts.md",
+      "matched_changes": []
+    },
+    {
+      "id": "generation-pipeline-lifecycle",
+      "path": "docs/source/generation/pipeline-lifecycle.md",
+      "matched_changes": []
+    },
+    {
+      "id": "getting-started-installation",
+      "path": "docs/source/getting-started/installation.md",
+      "matched_changes": []
+    },
+    {
+      "id": "getting-started-quickstart",
+      "path": "docs/source/getting-started/quickstart.md",
+      "matched_changes": []
+    },
+    {
+      "id": "operations-monitoring-and-metrics",
+      "path": "docs/source/operations/monitoring-and-metrics.md",
+      "matched_changes": []
+    },
+    {
+      "id": "operations-runbook-stale-views",
+      "path": "docs/source/operations/runbook-stale-views.md",
+      "matched_changes": []
+    },
+    {
+      "id": "overview-glossary",
+      "path": "docs/source/overview/glossary.md",
+      "matched_changes": []
+    },
+    {
+      "id": "overview-index",
+      "path": "docs/source/overview/index.md",
+      "matched_changes": []
+    },
+    {
+      "id": "overview-vision-and-goals",
+      "path": "docs/source/overview/vision-and-goals.md",
+      "matched_changes": []
+    },
+    {
+      "id": "security-prompt-injection-defense",
+      "path": "docs/source/security/prompt-injection-defense.md",
+      "matched_changes": []
+    },
+    {
+      "id": "security-trust-boundaries",
+      "path": "docs/source/security/trust-boundaries.md",
+      "matched_changes": []
+    },
+    {
+      "id": "troubleshooting-generation-failures",
+      "path": "docs/source/troubleshooting/generation-failures.md",
+      "matched_changes": []
+    },
+    {
+      "id": "validation-drift-detection",
+      "path": "docs/source/validation/drift-detection.md",
+      "matched_changes": []
+    },
+    {
+      "id": "validation-quality-gates",
+      "path": "docs/source/validation/quality-gates.md",
+      "matched_changes": []
+    }
+  ],
+  "stale_generated": [],
+  "regenerate": []
+}

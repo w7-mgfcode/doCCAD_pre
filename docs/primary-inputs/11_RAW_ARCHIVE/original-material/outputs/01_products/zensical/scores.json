@@ -1,0 +1,91 @@
+{
+  "platform": "zensical",
+  "criteria": {
+    "github_docs_as_code_fit": {
+      "weight": 15,
+      "score": 5,
+      "rationale": "Pure Git-in, static-out. Reads mkdocs.yml natively, scaffolds a GitHub Pages Actions workflow with OIDC in every new project, auto-derives edit/view links from repo_url, magiclink for issues/users. No state outside the repo.",
+      "evidence": "[VERIFIED-REPO] python/zensical/main.py config discovery; python/zensical/bootstrap/.github/workflows/docs.yml; config.py repo_url/edit_uri defaults",
+      "confidence": "HIGH"
+    },
+    "ai_integration_extensibility": {
+      "weight": 15,
+      "score": 3,
+      "rationale": "No AI features and no public plugin/build API (module system unreleased), so AI must operate externally at repo level - which fits the target ecosystem's PR-based design. Full-YAML frontmatter, macros/Jinja data injection, and strict link validation make external AI pipelines workable; but no hooks, virtual pages, or programmatic API today.",
+      "evidence": "[VERIFIED-REPO] crates/zensical/src/config/plugins.rs 'only a small subset'; python/zensical/markdown/render.py frontmatter; [VERIFIED-OFFICIAL] roadmap: module system Python API unchecked",
+      "confidence": "MEDIUM"
+    },
+    "architecture_simplicity": {
+      "weight": 12,
+      "score": 4,
+      "rationale": "Operationally minimal: one pip package, one config, no plugin dependency sprawl, disposable cache, static output. Internally a hybrid Rust+Python system with pyo3 round-trips - opaque but not the operator's problem. Docked one point for pre-1.0 churn and transitional internals ('preliminary' cache).",
+      "evidence": "[VERIFIED-REPO] Cargo.toml workspace + pyproject.toml maturin; crates/zensical/src/workflow/cached.rs 'preliminary implementation'",
+      "confidence": "HIGH"
+    },
+    "structured_content_ia": {
+      "weight": 10,
+      "score": 3,
+      "rationale": "Config-driven nav plus Material navigation features (sections, tabs, indexes, prune) and full-YAML frontmatter. But tags, blog, and awesome-nav are unsupported today, so metadata-driven IA (tag indexes, collections) needs external generation.",
+      "evidence": "[VERIFIED-REPO] bootstrap zensical.toml features; structure/nav; [VERIFIED-OFFICIAL] compatibility/plugins/: tags, blog, awesome-nav unchecked",
+      "confidence": "HIGH"
+    },
+    "security_governance": {
+      "weight": 10,
+      "score": 3,
+      "rationale": "Static output, lockfiles, CI artifact attestations, SECURITY.md with response commitments, fast dependency patching observed. Discounts: alpha with latest-only fix policy, minified closed-source Disco search client in the page, default CDN loading of mermaid, build-time code execution via macros/markdown-exec.",
+      "evidence": "[VERIFIED-REPO] SECURITY.md; .github/workflows/build.yml attestation; commit 71c5ed5 pymdownx vuln fix; zensical/ui search/client/README.md minified Disco",
+      "confidence": "HIGH"
+    },
+    "mermaid_diagrams_as_code": {
+      "weight": 8,
+      "score": 5,
+      "rationale": "Zero-config first-class support: default superfences mermaid fence plus theme component that lazy-loads mermaid@11 and themes diagrams for light/dark. Same proven approach as Material. Client-side only (no build-time SVG), a minor trade-off.",
+      "evidence": "[VERIFIED-REPO] python/zensical/config.py default custom_fences; bootstrap zensical.toml; zensical/ui components/content/mermaid/index.ts+css",
+      "confidence": "HIGH"
+    },
+    "localization_bilingual": {
+      "weight": 8,
+      "score": 2,
+      "rationale": "69 theme UI translations including Hungarian and language-aware search, but no multi-language content support: mkdocs-static-i18n explicitly unsupported and native i18n is roadmap-only. Bilingual EN/HU requires a manual dual-build with alternate switcher - a documented but real workaround with duplicated nav and manual parity.",
+      "evidence": "[VERIFIED-REPO] zensical/ui src/partials/languages/ (69 files incl. hu.html); [VERIFIED-OFFICIAL] compatibility/plugins/ i18n unchecked; roadmap Internationalization all unchecked",
+      "confidence": "HIGH"
+    },
+    "deployment_self_hosting": {
+      "weight": 7,
+      "score": 5,
+      "rationale": "Fully static artifact deployable to any web server or Pages; offline plugin for file:// viewing; official Docker build image; prebuilt wheels incl. musl. No SaaS dependency anywhere in build or serve.",
+      "evidence": "[VERIFIED-REPO] bootstrap docs.yml deploys site/; Dockerfile; config.py offline plugin; build.yml wheel matrix",
+      "confidence": "HIGH"
+    },
+    "dev_author_ux": {
+      "weight": 7,
+      "score": 4,
+      "rationale": "Familiar Material authoring dialect, fast differential serve with websocket reload, one-command scaffold incl. CI, readable validation errors. Docked for pre-1.0 churn, thinner docs than Material's corpus, and TOML/YAML duality.",
+      "evidence": "[VERIFIED-REPO] main.py new/serve; crates/zensical-serve websocket middleware; [VERIFIED-OFFICIAL] FAQ/announcement 4-5x faster rebuilds while serving",
+      "confidence": "HIGH"
+    },
+    "search_seo": {
+      "weight": 5,
+      "score": 4,
+      "rationale": "Built-in offline-capable client search with Rust-built index, nav-path and tag-aware items, CJK support, excerpts; sitemap.xml and canonical URLs generated. Docked for missing social cards and redirects plugin, and search engine source not yet published.",
+      "evidence": "[VERIFIED-REPO] structure/search.rs; config.py static_templates sitemap; [VERIFIED-OFFICIAL] plugins page: social, redirects unchecked",
+      "confidence": "HIGH"
+    },
+    "cost_efficiency": {
+      "weight": 3,
+      "score": 5,
+      "rationale": "MIT, no paid features, static hosting is free-tier, prebuilt wheels keep CI minutes trivial. Only cost is engineer time tracking pre-1.0 releases.",
+      "evidence": "[VERIFIED-REPO] LICENSE.md; [VERIFIED-OFFICIAL] FAQ 'no paid features'",
+      "confidence": "HIGH"
+    }
+  },
+  "weighted_score": 76.4,
+  "critical_constraints": [
+    "Pre-1.0 alpha (v0.0.53, 2026-08-04): breaking changes expected; latest-only security-fix policy forces regular upgrades",
+    "No third-party plugin/module API yet; blog, tags, social cards, redirects, minify, i18n plugin all officially unsupported as of 2026-08",
+    "Bilingual EN/HU requires dual-build workaround until native i18n ships (roadmap, no date)",
+    "Core team concentration ~2 developers; Material for MkDocs fallback window (12 months from 2025-11-05) is nearly exhausted and continuation is unconfirmed",
+    "Disco search client ships minified without published source; default mermaid loads from unpkg CDN unless overridden"
+  ],
+  "verdict_one_liner": "The credible, MIT-licensed successor to Material for MkDocs with a verified Rust differential-build core and best-in-class GitHub fit - adoptable today as a pinned, strictly-validated static renderer, provided you accept alpha churn, no plugin API, and a dual-build bilingual workaround."
+}

@@ -1,0 +1,18 @@
+%% DIAG-132 extracted from outputs/01_products/mintlify/SAD_mintlify.md
+sequenceDiagram
+  participant B as Build service
+  participant IX as Search index
+  participant U as Reader
+  participant W as Docs site
+  participant M as Search MCP server
+  participant A as AI client
+  B->>IX: rebuild index on publish
+  Note over IX: engine undisclosed - black box
+  U->>W: search query in search bar
+  W->>IX: query with boost multipliers
+  IX-->>W: ranked chunks respecting searchable flags
+  W-->>U: results
+  A->>M: MCP search tool call
+  M->>IX: query with version language filters
+  IX-->>M: snippets titles links
+  M-->>A: results plus page markdown via filesystem tool

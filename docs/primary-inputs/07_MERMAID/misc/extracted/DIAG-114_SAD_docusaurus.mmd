@@ -1,0 +1,31 @@
+%% DIAG-114 extracted from outputs/01_products/docusaurus/SAD_docusaurus.md
+flowchart TB
+  subgraph buildtime["Build-time - Node 24 process"]
+    core["docusaurus core - lifecycle orchestrator, CLI, SSG"]
+    bundler["docusaurus-bundler - webpack 5 or Rspack via faster"]
+    mdx["docusaurus-mdx-loader - MDX v3 remark rehype pipeline"]
+    plugins["Content plugins - docs, blog, pages, sitemap"]
+    themes["Themes - classic, mermaid, search-algolia, translations"]
+    utils["utils, utils-validation, types"]
+  end
+  subgraph content["Content in Git"]
+    md["docs dir - canonical MDX"]
+    gen["generated dir - AI derived MDX"]
+    i18nDir["i18n dir - hu translations"]
+    cfg["docusaurus.config.ts + sidebars.ts"]
+  end
+  subgraph runtime["Runtime - browser"]
+    html["Static HTML per route"]
+    js["Hydrated React app - code split chunks"]
+  end
+  md --> plugins
+  gen --> plugins
+  i18nDir --> plugins
+  cfg --> core
+  plugins --> core
+  core --> mdx
+  mdx --> bundler
+  themes --> bundler
+  utils --> core
+  bundler --> html
+  bundler --> js

@@ -1,0 +1,38 @@
+---
+id: q-005-private-routing
+slug: /questions/q-005-private-routing
+title: 'Question: Private Routing and Zero Cloud Fallback'
+type: generated
+audience:
+- developer
+- architect
+owners:
+- architecture
+last_validated: '2026-09-21'
+generated: true
+generation:
+  contract: GenerateQuestionPage
+  contract_version: 1
+  prompt_version: question-page.v1
+  source_documents:
+  - id: decisions-adr-004-provider-abstraction
+    path: docs/source/decisions/adr-004-provider-abstraction.md
+    content_hash: sha256:3a9e29b1112bfcca3ec2a75bebaf5c9e09f90eead21821539a60d66ec4e34bab
+  provider: fixture
+  model: deterministic-demo-fixture
+  generation_mode: demo
+  generated_at: '2026-09-21T00:00:00Z'
+  approval_status: approved-for-demo
+---
+
+import EvidenceLink from '@site/src/components/EvidenceLink';
+
+# Question: How does the private routing policy prevent data leakage to cloud model providers?
+
+## Grounded Answer
+
+Tasks marked `privacy: private` are hard-pinned to local execution (`local` provider). If the local provider is unavailable, the router terminates with a fatal `PrivacyRoutingError`, strictly prohibiting silent fallback to cloud APIs.
+
+## Supporting Canonical Evidence
+- <EvidenceLink to="/docs/decisions/adr-004-provider-abstraction">Canonical Reference: decisions-adr-004-provider-abstraction</EvidenceLink>
+

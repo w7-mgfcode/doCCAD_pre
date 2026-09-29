@@ -1,0 +1,31 @@
+%% DIAG-115 extracted from outputs/01_products/docusaurus/SAD_docusaurus.md
+flowchart TB
+  subgraph coreC["docusaurus core - packages/docusaurus/src"]
+    cli["commands/cli.ts - build start swizzle deploy"]
+    server["server/site.ts - config load, plugin init"]
+    i18nc["server/i18n.ts - locale resolution"]
+    routes["server/routes.ts - route tree codegen"]
+    broken["server/brokenLinks.ts - link and anchor checks"]
+    ssg["ssg/ssgExecutor.ts - tinypool worker threads"]
+    wp["webpack + bundler/currentBundler.ts - rspack switch"]
+  end
+  subgraph docsC["plugin-content-docs/src"]
+    load["index.ts loadContent - read files"]
+    fm["frontMatter.ts - Joi schema"]
+    sb["sidebars/generator.ts - autogen sidebar"]
+    ver["versions/ - snapshot versioning"]
+    docscli["cli.ts - docs version command"]
+    gd["globalData.ts - exposed to theme"]
+  end
+  cli --> server
+  server --> i18nc
+  server --> load
+  load --> fm
+  load --> sb
+  load --> ver
+  load --> gd
+  server --> routes
+  routes --> wp
+  wp --> ssg
+  ssg --> broken
+  docscli --> ver

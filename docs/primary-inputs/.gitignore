@@ -1,0 +1,15 @@
+# PRE-DOCCAD archive .gitignore
+node_modules/
+.docusaurus/
+build/
+dist/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+!**/env.example
+.DS_Store
+Thumbs.db
+*.log
+.cache/

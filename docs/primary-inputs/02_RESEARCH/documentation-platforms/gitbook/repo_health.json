@@ -1,0 +1,11 @@
+{
+  "stars": null,
+  "latest_release": null,
+  "release_date": null,
+  "recent_commit_activity": null,
+  "contributors_signal": null,
+  "issue_activity": null,
+  "maintenance_assessment": "N/A — proprietary SaaS",
+  "collected_at": "2026-08-12",
+  "notes": "GitBook's current platform backend is proprietary SaaS: N/A — proprietary SaaS. Separately, one genuinely CURRENT open-source repo exists and was inspected: github.com/GitbookIO/gitbook — the GPL-3.0 published-site renderer (Next.js/OpenNext on Cloudflare, consumes api.gitbook.com; NOT a self-hostable platform or static generator). Its health, collected 2026-08-12: stars 28.9k (caution: star count inherited from the repo's earlier life as the legacy toolchain), forks ~4k, open issues 46, not archived, latest visible package release @gitbook/react-contentkit@0.7.7 (2025-10-15; monorepo publishes many packages via changesets), last commit 2026-08-11, 177 commits in trailing 90 days from 10+ authors (mostly GitBook staff: Zeno Kapitein 47, Nolann B. 34, conico974 25, Greg Berge 21, plus claude[bot]); CI + deploy-production workflows present. Maintenance assessment for that repo: actively maintained, vendor-driven. [HISTORICAL] repos (legacy gitbook toolchain / gitbook-cli) are deprecated — the current repo README itself contains a 'Legacy GitBook (deprecated)' section — and are excluded from health reporting."
+}

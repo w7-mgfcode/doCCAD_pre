@@ -1,0 +1,38 @@
+---
+id: q-003-security-trust-zones
+slug: /questions/q-003-security-trust-zones
+title: 'Question: Security Trust Boundaries and Untrusted Inputs'
+type: generated
+audience:
+- developer
+- architect
+owners:
+- architecture
+last_validated: '2026-09-21'
+generated: true
+generation:
+  contract: GenerateQuestionPage
+  contract_version: 1
+  prompt_version: question-page.v1
+  source_documents:
+  - id: security-trust-boundaries
+    path: docs/source/security/trust-boundaries.md
+    content_hash: sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677
+  provider: fixture
+  model: deterministic-demo-fixture
+  generation_mode: demo
+  generated_at: '2026-09-21T00:00:00Z'
+  approval_status: approved-for-demo
+---
+
+import EvidenceLink from '@site/src/components/EvidenceLink';
+
+# Question: What is DOCCAD's security model for prompt injection and untrusted inputs?
+
+## Grounded Answer
+
+DOCCAD implements a 6-Zone Trust Model. Untrusted inputs and repository content are treated strictly as inert DATA delimited by `<<<EVIDENCE-DATA` tokens. Generated MDX is statically scanned to reject raw script tags and dynamic evaluation constructs before compilation.
+
+## Supporting Canonical Evidence
+- <EvidenceLink to="/docs/security/trust-boundaries">Canonical Reference: security-trust-boundaries</EvidenceLink>
+

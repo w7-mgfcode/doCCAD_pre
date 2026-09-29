@@ -1,0 +1,22 @@
+%% DIAG-116 extracted from outputs/01_products/docusaurus/SAD_docusaurus.md
+sequenceDiagram
+  participant A as Author or AI PR
+  participant G as GitHub Repo
+  participant CI as GitHub Actions
+  participant D as Docusaurus CLI
+  participant H as Static Hosting
+
+  A->>G: push branch, open PR with MDX changes
+  G->>CI: trigger workflow
+  CI->>D: docusaurus build
+  D->>D: load config and init plugins
+  D->>D: loadContent, validate frontmatter
+  D->>D: compile MDX v3, bundle with Rspack
+  D->>D: SSG all routes in worker threads
+  D->>D: check broken links and anchors
+  D-->>CI: build dir or fail with error
+  CI->>G: report status on PR
+  A->>G: merge after review
+  G->>CI: main branch workflow
+  CI->>H: deploy build dir
+  H-->>A: site live, no runtime services

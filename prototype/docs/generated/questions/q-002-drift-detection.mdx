@@ -1,0 +1,38 @@
+---
+id: q-002-drift-detection
+slug: /questions/q-002-drift-detection
+title: 'Question: Hash-Based Drift Detection Workflow'
+type: generated
+audience:
+- developer
+- architect
+owners:
+- architecture
+last_validated: '2026-09-21'
+generated: true
+generation:
+  contract: GenerateQuestionPage
+  contract_version: 1
+  prompt_version: question-page.v1
+  source_documents:
+  - id: validation-drift-detection
+    path: docs/source/validation/drift-detection.md
+    content_hash: sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db
+  provider: fixture
+  model: deterministic-demo-fixture
+  generation_mode: demo
+  generated_at: '2026-09-21T00:00:00Z'
+  approval_status: approved-for-demo
+---
+
+import EvidenceLink from '@site/src/components/EvidenceLink';
+
+# Question: How does DOCCAD detect drift when canonical architecture or code changes?
+
+## Grounded Answer
+
+Every derived artifact records the `sha256` content hash of its source canonical documents in frontmatter. When sources change, CI re-evaluates hashes against disk and flags only affected pages as STALE in `impact.json`, triggering targeted regeneration.
+
+## Supporting Canonical Evidence
+- <EvidenceLink to="/docs/validation/drift-detection">Canonical Reference: validation-drift-detection</EvidenceLink>
+

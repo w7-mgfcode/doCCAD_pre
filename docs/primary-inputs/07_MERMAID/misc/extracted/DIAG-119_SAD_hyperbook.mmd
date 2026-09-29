@@ -1,0 +1,35 @@
+%% DIAG-119 extracted from outputs/01_products/hyperbook/SAD_hyperbook.md
+graph TB
+  subgraph Repo[Git Repository]
+    MD[book folder md md.yml md.json]
+    GL[glossary folder]
+    PUB[public folder assets]
+    SNIP[snippets and templates]
+    CFG[hyperbook.json and hyperlibrary.json]
+  end
+
+  subgraph HBCLI[hyperbook CLI Node 18 plus]
+    NEW[new scaffolder]
+    DEV[dev server ws reload<br/>IncrementalBuilder]
+    BUILD[build full static build]
+    ARCH[archive zipper]
+  end
+
+  subgraph Libs[Workspace Libraries]
+    FS[hyperbook fs<br/>vfile frontmatter handlebars]
+    MDPKG[hyperbook markdown<br/>remark rehype pipeline]
+    TYPES[hyperbook types]
+  end
+
+  OUT[Static Output .hyperbook out<br/>HTML search.js llms.txt directive assets]
+  HOSTS[Static Hosting]
+  STUDIO[VS Code Extension hyperbook-studio]
+  CLOUD[Hyperbook Cloud optional<br/>Express Docker student data]
+
+  Repo --> HBCLI
+  HBCLI --> Libs
+  BUILD --> OUT
+  DEV --> OUT
+  OUT --> HOSTS
+  STUDIO --> MDPKG
+  OUT -.optional user data.-> CLOUD

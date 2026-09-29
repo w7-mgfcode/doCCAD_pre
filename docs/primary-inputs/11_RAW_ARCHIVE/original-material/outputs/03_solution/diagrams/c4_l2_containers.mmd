@@ -1,0 +1,51 @@
+%% C4 Level 2 - Containers
+%% GitHub-Native AI Documentation System
+flowchart TB
+
+  subgraph repo["GitHub Repository - single source of truth"]
+    direction LR
+    content["Content<br>docs source canonical<br>docs generated derived"]
+    config["Config<br>ai config yaml<br>docusaurus config"]
+    prompts["Prompts<br>versioned templates"]
+    contracts["Contracts<br>task contracts yaml<br>output schemas"]
+  end
+
+  subgraph actions["GitHub Actions - automation plane"]
+    direction LR
+    validate["Validate Pipeline<br>lint - frontmatter schema<br>links - mermaid - build"]
+    generate["Generate Pipeline<br>change detection<br>targeted regeneration"]
+    deploy["Build and Deploy<br>docusaurus build<br>publish to Pages"]
+  end
+
+  subgraph cli["Generation CLI - Python"]
+    direction LR
+    scripts["Pipeline Scripts<br>stdlib plus PyYAML"]
+    router["Model Router<br>task type to provider"]
+    adapters["Provider Adapters<br>Anthropic - Gemini<br>OpenAI - local"]
+  end
+
+  build["Docusaurus Build<br>MDX render - i18n locales<br>local search index"]
+
+  subgraph site["Published Static Site"]
+    direction LR
+    docsroute["Docs<br>canonical route"]
+    viewsroute["Views<br>generated route"]
+    searchidx["Local Search Index<br>build-time - no SaaS required"]
+  end
+
+  localdev["Local Dev Environment<br>same CLI - same contracts<br>docusaurus start preview"]
+
+  providers["AI Providers<br>Claude - Gemini - OpenAI - local"]
+
+  repo -->|"triggers on push and PR"| actions
+  generate -->|"invokes"| cli
+  scripts --> router
+  router --> adapters
+  adapters -->|"HTTPS completion calls"| providers
+  cli -->|"writes files to bot branch - opens PR"| repo
+  validate -->|"gates merges deterministically"| repo
+  deploy -->|"runs"| build
+  repo -->|"content and config input"| build
+  build -->|"emits static artifact"| site
+  localdev -->|"clones and commits"| repo
+  localdev -.->|"optional direct model calls"| providers

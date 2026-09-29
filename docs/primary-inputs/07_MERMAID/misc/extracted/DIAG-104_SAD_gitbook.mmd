@@ -1,0 +1,33 @@
+%% DIAG-104 extracted from outputs/01_products/gitbook/SAD_gitbook.md
+graph TB
+  subgraph GitHub side
+    GH[GitHub repo and branches]
+    GHAPP[GitBook GitHub App]
+  end
+  subgraph GitBook platform - proprietary
+    EDITOR[Block editor and change requests]
+    STORE[Content store - internal block model]
+    SYNC[Git Sync service]
+    APIS[REST API api.gitbook.com]
+    MCPW[Write MCP server mcp.gitbook.com]
+    AI[AI services - agent, search, assistant]
+    SEARCHIX[Search indexing]
+  end
+  subgraph Delivery - partly OSS
+    RENDER[Open source renderer - Next.js on Cloudflare]
+    CDN[CDN edge cache]
+    MCPR[Read MCP per site]
+    LLMS[llms.txt and md endpoints]
+  end
+  GH <--> GHAPP
+  GHAPP <--> SYNC
+  SYNC <--> STORE
+  EDITOR <--> STORE
+  APIS <--> STORE
+  MCPW --> APIS
+  AI --> STORE
+  STORE --> SEARCHIX
+  STORE --> RENDER
+  RENDER --> CDN
+  RENDER --> MCPR
+  RENDER --> LLMS

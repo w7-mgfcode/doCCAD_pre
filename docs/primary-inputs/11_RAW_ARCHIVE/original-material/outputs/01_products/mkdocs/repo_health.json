@@ -1,0 +1,29 @@
+{
+  "stars": {
+    "mkdocs/mkdocs": "22.3k [OBSERVED via GitHub topics page 2026-08-12]",
+    "squidfunk/mkdocs-material": "27.2k [OBSERVED via GitHub topics page 2026-08-12]"
+  },
+  "latest_release": {
+    "mkdocs/mkdocs": "1.6.1",
+    "squidfunk/mkdocs-material": "9.7.7"
+  },
+  "release_date": {
+    "mkdocs/mkdocs": "2024-08-30 [VERIFIED-OFFICIAL PyPI]",
+    "squidfunk/mkdocs-material": "2026-07-17 [VERIFIED-OFFICIAL PyPI]"
+  },
+  "recent_commit_activity": {
+    "mkdocs/mkdocs": "Last master commits 2025-10-20 (theme CSS + docs fixes); before that sparse doc-only commits since the 1.6.1 release window (Aug 2024) [VERIFIED-REPO git log]",
+    "squidfunk/mkdocs-material": "Active through 2026-08-09 but limited to dependency bumps, security fixes, docs, and the SECURITY.md EOL notice (2026-07-06); last feature release 9.7.0 (2025-11-11) [VERIFIED-REPO git log; VERIFIED-OFFICIAL]"
+  },
+  "contributors_signal": {
+    "mkdocs/mkdocs": "Historic maintainers stepped away (waylan 2021, oprypin 2024); original author returned 2024 for private redesign work; community PRs sit unreviewed [VERIFIED-OFFICIAL community analyses, corroborated by repo log]",
+    "squidfunk/mkdocs-material": "~367 contributors historically; effectively single-vendor (squidfunk team) now redirected to Zensical [OBSERVED]"
+  },
+  "issue_activity": {
+    "mkdocs/mkdocs": "Issues and PRs accumulating without triage since mid-2024; described as supply-chain risk by the Material team [VERIFIED-OFFICIAL Zensical announcement; OBSERVED]",
+    "squidfunk/mkdocs-material": "Bug reports still evaluated per maintenance-mode policy (issue #8523); features rejected [VERIFIED-OFFICIAL]"
+  },
+  "maintenance_assessment": "mkdocs core: DORMANT — functional and widely deployed but no releases in ~24 months and no visible maintainer capacity; unbounded response time to future CVEs. mkdocs-material: MAINTENANCE MODE with a hard public-security-support EOL of 2026-11-05 (SECURITY.md), successor Zensical announced 2025-11-05. Satellite plugins (gen-files 0.6.1, literate-nav 0.6.3, mike 2.2.0, static-i18n 1.3.1, macros 1.5.0) all released in the last 12 months and remain healthy. Composite verdict: adopt only version-pinned with a dated exit plan.",
+  "collected_at": "2026-08-12",
+  "notes": "GitHub REST API was unavailable in this environment (proxy 403); star counts observed via GitHub topics listing, releases/dates verified via PyPI JSON API and repo git logs from shallow clones (/tmp/mkdocs @ master 2025-10-20, /tmp/mkdocs-material @ master 2026-08-09). Material EOL date verified directly in repo SECURITY.md."
+}

@@ -1,0 +1,30 @@
+%% Flow - recruiter page generation
+sequenceDiagram
+  autonumber
+  participant Trig as Trigger
+  participant CI as Actions Generate Pipeline
+  participant Ev as Evidence Selector
+  participant Ctr as GenerateRecruiterPage Contract
+  participant Rt as Model Router
+  participant AI as AI Provider
+  participant Val as Evidence Grounding Validator
+  participant GH as GitHub
+  participant Rev as Reviewer
+
+  Trig->>CI: manual dispatch or scheduled refresh
+  CI->>Ev: select allowed evidence
+  Ev->>Ev: canonical docs named in contract
+  Ev->>Ev: repo facts - commits - languages - test counts
+  Ev-->>CI: evidence bundle with source hashes
+  CI->>Ctr: load contract inputs schema and gates
+  Ctr-->>CI: prompt template and output schema
+  CI->>Rt: route recruiter task per config policy
+  Rt->>AI: completion call with delimited evidence only
+  AI-->>Rt: draft recruiter page
+  Rt-->>CI: parsed structured output
+  CI->>Val: check every claim maps to evidence
+  Val->>Val: reject claims without source citation
+  Val-->>CI: grounding report
+  CI->>GH: stamp provenance and open PR on docs-gen branch
+  GH->>Rev: request human approval
+  Rev->>GH: approve and merge to publish

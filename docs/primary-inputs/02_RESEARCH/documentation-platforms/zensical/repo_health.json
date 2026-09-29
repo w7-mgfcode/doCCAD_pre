@@ -1,0 +1,11 @@
+{
+  "stars": "~4600 (4.6k displayed)",
+  "latest_release": "v0.0.53 (git tag; latest entry visible on GitHub Releases page during collection was v0.0.46 — Releases page may lag tags)",
+  "release_date": "2026-08-04 (v0.0.53 tag commit date)",
+  "recent_commit_activity": "Very active: 6 releases v0.0.48→v0.0.53 between 2026-07-07 and 2026-08-04; last commit 2026-08-04; features, perf and security fixes landing weekly",
+  "contributors_signal": "Highly concentrated: of last 50 commits, Martin Donath (squidfunk, 39 incl. alias) and Timothée Mazzucotelli (24) dominate; other authors 1 commit each. Full-history contributor count not retrievable this session (GitHub API gated) — [UNKNOWN]",
+  "issue_activity": "9 open issues displayed at collection — very low backlog; PR-referenced fixes (e.g. #805, #815, #838, #840) merge quickly",
+  "maintenance_assessment": "Healthy and fast-moving but young (first release 2025-11) and bus-factor-limited (~2 core devs). MIT monorepo with disciplined CI (multi-platform wheels, attestations, docker, release automation), SECURITY.md, DCO. Alpha status per PyPI classifier; latest-version-only security fixes.",
+  "collected_at": "2026-08-12",
+  "notes": "Data sources: shallow clone of github.com/zensical/zensical at commit 21824d2 (git log/tags/shortlog) and GitHub repo page via web fetch (stars/forks/issues/language split: Rust 61.4%, Python 38.2%). GitHub REST API was blocked in this session, so star/issue figures are page-displayed values, not API-exact. Related repos: zensical/ui (theme, v0.0.24, MIT), zensical/zrx (differential engine, crates.io 0.0.26, public); Disco search engine repo not public."
+}

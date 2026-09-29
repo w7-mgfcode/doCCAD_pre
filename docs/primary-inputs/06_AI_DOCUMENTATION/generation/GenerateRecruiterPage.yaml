@@ -1,0 +1,48 @@
+# Task contract (AD-6): recruiter-facing project overview, evidence-linked.
+contract: GenerateRecruiterPage
+version: 1
+prompt_version: recruiter.v1
+prompt_template: recruiter.md
+
+inputs:
+  - name: target
+    type: doc_id
+    description: Canonical page anchoring the view (plus its sources/related closure).
+  - name: depth
+    type: enum
+    values: [30s, 2min, deep-dive]
+    default: all
+    description: Which depth sections to produce; default produces all three.
+
+# The evidence assembler refuses any file not matching these globs (AD-6/AD-15).
+allowed_evidence:
+  - "docs/source/**/*.md"
+  - "docs/source/**/*.mdx"
+  - "package.json"
+  - "ai.config.yaml"
+
+output:
+  format: mdx
+  dir: recruiter
+  schema: schemas/document.schema.json   # frontmatter contract; body validated by build
+
+quality_gates:
+  - frontmatter_schema_valid
+  - every_claim_has_evidence_link        # named-entity check script, not AI judgment
+  - evidence_links_resolve               # docusaurus build with onBrokenLinks throw
+  - no_external_links_outside_allowlist
+  - source_hashes_current
+  - docusaurus_build_passes
+
+prohibited:
+  - invented metrics, user counts, or performance numbers
+  - technologies not present in the evidence or the deterministic fact list
+  - achievements, adoption claims, or seniority adjectives
+  - security guarantees
+  - any statement without a canonical evidence link
+
+model_requirements:
+  structured_output: false
+  min_context_tokens: 16000
+
+persistence: pr    # bot branch docs-gen/*; human approval required; no auto-merge

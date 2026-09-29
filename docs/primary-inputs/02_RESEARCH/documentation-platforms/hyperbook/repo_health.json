@@ -1,0 +1,11 @@
+{
+  "stars": 74,
+  "latest_release": "hyperbook@0.104.0",
+  "release_date": "2026-08-11",
+  "recent_commit_activity": "220 commits in the last 6 months (158 by maintainer, 60 release-bot, 2 Copilot-assisted); last commit 2026-08-11; 11 npm releases of the hyperbook package between 2026-07-25 and 2026-08-11",
+  "contributors_signal": "Extreme concentration: Mike Barkmin 910+55 commits (two identities) of ~1010 human commits since 2022-03; renovate/actions bots ~950 commits; only 2 external human contributors with 1 commit each; bus factor = 1",
+  "issue_activity": "5 open issues (oldest from Oct 2022, newest Jul 2025); very low inbound volume consistent with a small, education-focused user base; forks 14, watchers 2, ~1924 commits total",
+  "maintenance_assessment": "Actively and rapidly maintained (daily-to-weekly releases, Renovate automation, changesets CI publishing to npm + VS Code Marketplace + OpenVSX + GHCR), 4-year continuous history, but single-maintainer with no institutional redundancy; sustainability is the dominant risk, not activity",
+  "collected_at": "2026-08-12",
+  "notes": "Stars/forks/issues observed via GitHub web page (API access unavailable in session); commit/contributor stats from full git history of local clone; release cadence cross-verified against registry.npmjs.org timestamps. Monorepo also ships hyperbook-studio VS Code extension (0.54.0) and an optional self-hosted 'cloud' student-data backend published as a Docker image."
+}

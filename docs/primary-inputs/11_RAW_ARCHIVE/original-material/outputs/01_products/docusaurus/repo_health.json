@@ -1,0 +1,11 @@
+{
+  "stars": 65100,
+  "latest_release": "v3.10.1 (GitHub release) / 3.10.2 (npm latest for @docusaurus/core)",
+  "release_date": "2026-04-30 (v3.10.1 GitHub) / 2026-07-10 (3.10.2 npm publish)",
+  "recent_commit_activity": "Active: HEAD of main at 2026-08-07 (commit 3f483e80e326, dependency bump); continuous canary releases on npm (3.10.1-canary-66xx through 2026-06); ongoing dependency and feature PRs",
+  "contributors_signal": "Meta Open Source project with a dedicated lead maintainer (slorber); large long-tail contributor base; Open Collective funding; 9.9k forks; 'Used by 12.2k' repositories per GitHub UI",
+  "issue_activity": "293 open issues, 106 open PRs (2026-08-12); active triage; public v4 milestone",
+  "maintenance_assessment": "Healthy and active. Regular minor-release cadence (3.7.0 2025-01, 3.8.0 2025-05, 3.9.0 2025-09, 3.10.0 2026-04, 3.10.2 2026-07). Rigorous CI battery (19 workflows incl. CodeQL, dependency review, supply-chain checks, perf benchmarks, visual regression, Windows, E2E). v4 transition managed via opt-in future flags, indicating disciplined breaking-change management. Main risk: maintainer concentration.",
+  "collected_at": "2026-08-12",
+  "notes": "Stars/forks/issues from GitHub repo page via web fetch (65.1k/9.9k as displayed). Release dates cross-checked against npm registry timestamps for @docusaurus/core; monorepo lerna.json in the 2026-08-07 clone still reads 3.10.1 while npm dist-tag latest is 3.10.2. Direct GitHub REST API was unavailable in this session (egress proxy restriction); figures are UI-displayed values."
+}

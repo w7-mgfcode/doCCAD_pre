@@ -1,0 +1,241 @@
+{
+  "session": "docs-platform-architecture-2026-08-12",
+  "updated_at": "2026-08-13T15:54:05Z",
+  "phases": {
+    "p0_preflight": {
+      "status": "completed",
+      "outputs": [
+        "outputs/00_research/analysis_brief.md"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p1_mintlify": {
+      "status": "completed",
+      "outputs": [
+        "outputs/01_products/mintlify/SAD_mintlify.md",
+        "outputs/01_products/mintlify/ADRs/",
+        "outputs/01_products/mintlify/runbook_mintlify.md",
+        "outputs/01_products/mintlify/roadmap_mintlify.csv",
+        "outputs/01_products/mintlify/scores.json",
+        "outputs/01_products/mintlify/repo_health.json",
+        "outputs/01_products/mintlify/sources.md"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [
+        "Pro plan exact price (third-party only)",
+        "search engine tech UNKNOWN",
+        "backend internals UNKNOWN"
+      ],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p1_gitbook": {
+      "status": "completed",
+      "outputs": [
+        "outputs/01_products/gitbook/SAD_gitbook.md",
+        "outputs/01_products/gitbook/ADRs/",
+        "outputs/01_products/gitbook/runbook_gitbook.md",
+        "outputs/01_products/gitbook/roadmap_gitbook.csv",
+        "outputs/01_products/gitbook/scores.json",
+        "outputs/01_products/gitbook/repo_health.json",
+        "outputs/01_products/gitbook/sources.md"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [
+        "custom frontmatter round-trip fidelity",
+        "API rate limits",
+        "sync-failure webhooks"
+      ],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p1_docusaurus": {
+      "status": "completed",
+      "outputs": [
+        "outputs/01_products/docusaurus/SAD_docusaurus.md",
+        "outputs/01_products/docusaurus/ADRs/",
+        "outputs/01_products/docusaurus/runbook_docusaurus.md",
+        "outputs/01_products/docusaurus/roadmap_docusaurus.csv",
+        "outputs/01_products/docusaurus/scores.json",
+        "outputs/01_products/docusaurus/repo_health.json",
+        "outputs/01_products/docusaurus/sources.md"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [
+        "absolute build times on target corpus unmeasured"
+      ],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p1_mkdocs": {
+      "status": "completed",
+      "outputs": [
+        "outputs/01_products/mkdocs/SAD_mkdocs.md",
+        "outputs/01_products/mkdocs/ADRs/",
+        "outputs/01_products/mkdocs/runbook_mkdocs.md",
+        "outputs/01_products/mkdocs/roadmap_mkdocs.csv",
+        "outputs/01_products/mkdocs/scores.json",
+        "outputs/01_products/mkdocs/repo_health.json",
+        "outputs/01_products/mkdocs/sources.md"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [
+        "satellite plugins verified via PyPI only",
+        "MkDocs 2.0 has no artifacts"
+      ],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p1_zensical": {
+      "status": "completed",
+      "outputs": [
+        "outputs/01_products/zensical/SAD_zensical.md",
+        "outputs/01_products/zensical/ADRs/",
+        "outputs/01_products/zensical/runbook_zensical.md",
+        "outputs/01_products/zensical/roadmap_zensical.csv",
+        "outputs/01_products/zensical/scores.json",
+        "outputs/01_products/zensical/repo_health.json",
+        "outputs/01_products/zensical/sources.md"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [
+        "Spark pricing",
+        "Disco search OSS status",
+        "native i18n timing"
+      ],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p1_hyperbook": {
+      "status": "completed",
+      "outputs": [
+        "outputs/01_products/hyperbook/SAD_hyperbook.md",
+        "outputs/01_products/hyperbook/ADRs/",
+        "outputs/01_products/hyperbook/runbook_hyperbook.md",
+        "outputs/01_products/hyperbook/roadmap_hyperbook.csv",
+        "outputs/01_products/hyperbook/scores.json",
+        "outputs/01_products/hyperbook/repo_health.json",
+        "outputs/01_products/hyperbook/sources.md"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [
+        "HU lunr stemmer in dist UNKNOWN",
+        "GitHub metrics via rendered pages"
+      ],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p2_comparison": {
+      "status": "completed",
+      "outputs": [
+        "outputs/02_comparison/comparison.md",
+        "outputs/02_comparison/decision_matrix.md",
+        "outputs/02_comparison/scorecard.csv"
+      ],
+      "sources": [
+        "see per-product sources.md"
+      ],
+      "timestamp": "2026-08-12T10:51:41Z",
+      "evidence_gaps": [],
+      "validation": "scores.json arithmetic verified; files present"
+    },
+    "p3_target_architecture": {
+      "status": "completed",
+      "outputs": [
+        "outputs/03_solution/ARCHITECTURE-SPINE.md",
+        "outputs/03_solution/solution_architecture.md",
+        "outputs/03_solution/content_architecture.md",
+        "outputs/03_solution/ai_architecture.md",
+        "outputs/03_solution/automation_architecture.md",
+        "outputs/03_solution/security_architecture.md",
+        "outputs/03_solution/ADRs/ (9 ADRs)",
+        "outputs/03_solution/diagrams/ (10 .mmd + VALIDATION.md + architecture_overview.html)",
+        "outputs/03_solution/implementation_roadmap.csv"
+      ],
+      "sources": [
+        "01_products/*",
+        "02_comparison/*"
+      ],
+      "timestamp": "2026-08-12T11:07:31Z",
+      "evidence_gaps": [
+        "bmad-architecture memlog/reviewer-gate tooling absent in environment \u2014 spine method applied manually"
+      ],
+      "validation": "all 10 Mermaid diagrams compile-validated with mmdc 11.16.0"
+    },
+    "p4_poc": {
+      "status": "completed",
+      "outputs": [
+        "outputs/05_poc/ (full runnable Docusaurus 3.10.2 starter)",
+        "outputs/05_poc/VALIDATION_NOTES.md"
+      ],
+      "sources": [
+        "03_solution/*"
+      ],
+      "timestamp": "2026-08-12T11:28:56Z",
+      "evidence_gaps": [],
+      "validation": "VERIFIED BY EXECUTION: npm install+build (en+hu), tsc, validate_docs.py incl. negative hash test, detect_changes.py, dry-run generation (zero keys), privacy hard-fail, mmdc diagram compile, 6-route serve smoke test. actionlint unavailable (YAML parse only)."
+    },
+    "p5_validation": {
+      "status": "completed",
+      "outputs": [
+        "outputs/04_validation/validation_report.md"
+      ],
+      "sources": [
+        "05_poc/VALIDATION_NOTES.md",
+        "03_solution/diagrams/VALIDATION.md"
+      ],
+      "timestamp": "2026-08-12T22:06:55Z",
+      "evidence_gaps": [
+        "actionlint unavailable",
+        "live model calls not exercised (no keys, by design)",
+        "Pages deploy not executed"
+      ],
+      "validation": "Gates A-F all PASS"
+    },
+    "p6_manifest": {
+      "status": "completed",
+      "outputs": [
+        "outputs/manifest.json"
+      ],
+      "sources": [],
+      "timestamp": "2026-08-12T22:06:55Z",
+      "evidence_gaps": [],
+      "validation": "manifest enumerates all artifacts"
+    },
+    "p7_knowledge_base": {
+      "status": "completed",
+      "outputs": [
+        "outputs/06_knowledge_base/ (INDEX.md, llms.txt, 31 pages + glossary)",
+        "outputs/knowledge_base.zip",
+        "outputs/06_knowledge_base/50-platform-architectures/ (full per-platform SADs, ADRs, runbooks, roadmaps, sources)"
+      ],
+      "sources": [
+        "01_products/*",
+        "02_comparison/*",
+        "03_solution/*",
+        "05_poc/*"
+      ],
+      "timestamp": "2026-08-13T15:54:05Z",
+      "evidence_gaps": [],
+      "validation": "frontmatter parsed; 0 unresolved related ids; 0 broken internal links incl. 50-platform-architectures"
+    }
+  },
+  "resume_note": "COMPLETE 2026-08-12. All phases done."
+}

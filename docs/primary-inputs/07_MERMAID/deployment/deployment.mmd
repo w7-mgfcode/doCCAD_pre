@@ -1,0 +1,41 @@
+%% Deployment - one static artifact, three modes
+flowchart TB
+
+  repo["GitHub Repository<br>content - config - workflows"]
+  ci["GitHub Actions<br>docusaurus build"]
+  artifact["Static Build Artifact<br>identical in every mode<br>html - assets - local search index"]
+
+  repo --> ci
+  ci --> artifact
+
+  subgraph modeB["Mode B - GitHub Pages default"]
+    pages["GitHub Pages<br>Actions deploy<br>public HTTPS"]
+    algolia["Optional Algolia DocSearch<br>Mode B only"]
+    pages -.-> algolia
+  end
+
+  subgraph modeA["Mode A - any static host"]
+    statichost["Static Server<br>nginx - S3 - Netlify<br>self-managed"]
+  end
+
+  subgraph modeC["Mode C - offline local"]
+    localserve["Local Static Serve<br>file open or simple server<br>air-gapped capable"]
+  end
+
+  artifact -->|"default deploy"| pages
+  artifact -->|"copy artifact"| statichost
+  artifact -->|"copy artifact"| localserve
+
+  localendpoint["Local Model Endpoint<br>OpenAI-compatible<br>for private content generation"]
+  genplane["Generation Plane<br>CI or local CLI"]
+
+  genplane -.->|"Modes A and C route private tasks here"| localendpoint
+  genplane -->|"opens PRs with generated content"| repo
+
+  readerB["Readers - public"]
+  readerA["Readers - self-hosted"]
+  readerC["Readers - offline"]
+
+  readerB --> pages
+  readerA --> statichost
+  readerC --> localserve

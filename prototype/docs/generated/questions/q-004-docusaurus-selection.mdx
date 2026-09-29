@@ -1,0 +1,38 @@
+---
+id: q-004-docusaurus-selection
+slug: /questions/q-004-docusaurus-selection
+title: 'Question: Docusaurus Platform Selection Rationale'
+type: generated
+audience:
+- developer
+- architect
+owners:
+- architecture
+last_validated: '2026-09-21'
+generated: true
+generation:
+  contract: GenerateQuestionPage
+  contract_version: 1
+  prompt_version: question-page.v1
+  source_documents:
+  - id: decisions-adr-002-docusaurus-foundation
+    path: docs/source/decisions/adr-002-docusaurus-foundation.md
+    content_hash: sha256:a030baba8df9f5c661f8eabaccf342783f95b2e371b65d09695f62baf6407e6c
+  provider: fixture
+  model: deterministic-demo-fixture
+  generation_mode: demo
+  generated_at: '2026-09-21T00:00:00Z'
+  approval_status: approved-for-demo
+---
+
+import EvidenceLink from '@site/src/components/EvidenceLink';
+
+# Question: Why did DOCCAD select Docusaurus over Mintlify or MkDocs?
+
+## Grounded Answer
+
+Docusaurus 3.x won the 11-criterion weighted evaluation (88.6/100) due to native multi-instance docs separation, offline static compilation, React 19 component flexibility (`EvidenceLink`, `InterviewPrep`), and complete freedom from cloud SaaS vendor lock-in.
+
+## Supporting Canonical Evidence
+- <EvidenceLink to="/docs/decisions/adr-002-docusaurus-foundation">Canonical Reference: decisions-adr-002-docusaurus-foundation</EvidenceLink>
+

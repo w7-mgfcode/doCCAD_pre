@@ -1,0 +1,40 @@
+%% C4 Level 1 - System Context
+%% GitHub-Native AI Documentation System
+flowchart TB
+
+  subgraph personas["Personas"]
+    direction LR
+    author["Engineer Author<br>writes canonical docs"]
+    reviewer["Reviewer<br>approves generation PRs"]
+    reader["Reader<br>browses published docs"]
+    recruiter["Recruiter<br>views career pages"]
+    hm["Hiring Manager<br>views evidence pages"]
+  end
+
+  subgraph system["GitHub-Native AI Documentation System"]
+    docsys["Docs System<br>docs-as-code plus AI-in-CI<br>repo is source of truth<br>site is a build artifact"]
+  end
+
+  subgraph external["External Systems"]
+    direction LR
+    github["GitHub<br>repo hosting - Actions - PRs"]
+    subgraph aiproviders["AI Providers"]
+      direction LR
+      claude["Claude API"]
+      gemini["Gemini API"]
+      openai["OpenAI API"]
+      localmodel["Local Model<br>OpenAI-compatible endpoint"]
+    end
+    hosting["Static Hosting<br>GitHub Pages or any static host"]
+  end
+
+  author -->|"authors canonical content via commits and PRs"| docsys
+  reviewer -->|"reviews and approves generated content"| docsys
+  reader -->|"reads published docs"| hosting
+  recruiter -->|"reads recruiter views"| hosting
+  hm -->|"reads interview prep and evidence"| hosting
+
+  docsys -->|"stores files - runs CI - opens PRs"| github
+  docsys -->|"generation-time model calls only"| aiproviders
+  docsys -->|"deploys static build artifact"| hosting
+  hosting -.->|"never calls AI at read time"| aiproviders

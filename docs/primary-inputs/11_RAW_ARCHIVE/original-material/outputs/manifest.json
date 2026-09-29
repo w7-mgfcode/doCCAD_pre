@@ -1,0 +1,1984 @@
+{
+ "generated_at": "2026-08-13T15:54:05Z",
+ "session": "docs-platform-architecture-2026-08-12",
+ "artifact_count": 247,
+ "notes": "PoC validation: VERIFIED BY EXECUTION per 04_validation/validation_report.md Gate F; node_modules and build caches excluded from listing",
+ "artifacts": [
+  {
+   "path": "outputs/00_research/analysis_brief.md",
+   "purpose": "shared analysis brief for platform agents",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/ADRs/adr-001-adopt-docusaurus-with-faster-flags.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/ADRs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/ADRs/adr-003-i18n-en-hu-strategy.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/ADRs/adr-004-local-search-first-algolia-optional.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/ADRs/adr-005-generated-mdx-contract-and-validation-gate.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/SAD_docusaurus.md",
+   "purpose": "solution architecture document for the platform",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/repo_health.json",
+   "purpose": "repository health snapshot",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/roadmap_docusaurus.csv",
+   "purpose": "adoption roadmap CSV",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/runbook_docusaurus.md",
+   "purpose": "operational runbook",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/scores.json",
+   "purpose": "weighted criteria scores with evidence",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/docusaurus/sources.md",
+   "purpose": "evidence source log",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/ADRs/adr-001-git-sync-one-way-discipline.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/ADRs/adr-002-frontmatter-and-metadata-strategy.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/ADRs/adr-003-bilingual-monorepo-layout.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/ADRs/adr-004-exit-strategy-fallback-ssg.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/ADRs/adr-005-derived-content-representation.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/SAD_gitbook.md",
+   "purpose": "solution architecture document for the platform",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/repo_health.json",
+   "purpose": "repository health snapshot",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/roadmap_gitbook.csv",
+   "purpose": "adoption roadmap CSV",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/runbook_gitbook.md",
+   "purpose": "operational runbook",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/scores.json",
+   "purpose": "weighted criteria scores with evidence",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/gitbook/sources.md",
+   "purpose": "evidence source log",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/ADRs/adr-001-pin-and-vendor-hyperbook-cli.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/ADRs/adr-002-derived-ai-content-as-data-plus-templates.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/ADRs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/ADRs/adr-004-post-build-hardening-pipeline.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/ADRs/adr-005-no-secrets-protect-is-not-access-control.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/SAD_hyperbook.md",
+   "purpose": "solution architecture document for the platform",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/repo_health.json",
+   "purpose": "repository health snapshot",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/roadmap_hyperbook.csv",
+   "purpose": "adoption roadmap CSV",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/runbook_hyperbook.md",
+   "purpose": "operational runbook",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/scores.json",
+   "purpose": "weighted criteria scores with evidence",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/hyperbook/sources.md",
+   "purpose": "evidence source log",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/ADRs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/ADRs/adr-002-derived-content-isolation.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/ADRs/adr-003-bilingual-en-hu-strategy.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/ADRs/adr-004-ai-boundary-external-pipeline.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/ADRs/adr-005-exit-strategy-lock-in-bounds.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/SAD_mintlify.md",
+   "purpose": "solution architecture document for the platform",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/repo_health.json",
+   "purpose": "repository health snapshot",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/roadmap_mintlify.csv",
+   "purpose": "adoption roadmap CSV",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/runbook_mintlify.md",
+   "purpose": "operational runbook",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/scores.json",
+   "purpose": "weighted criteria scores with evidence",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mintlify/sources.md",
+   "purpose": "evidence source log",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/ADRs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/ADRs/adr-002-derived-content-committed-markdown-not-build-time.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/ADRs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/ADRs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/ADRs/adr-005-validation-via-hooks-and-strict-ci.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/SAD_mkdocs.md",
+   "purpose": "solution architecture document for the platform",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/repo_health.json",
+   "purpose": "repository health snapshot",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/roadmap_mkdocs.csv",
+   "purpose": "adoption roadmap CSV",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/runbook_mkdocs.md",
+   "purpose": "operational runbook",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/scores.json",
+   "purpose": "weighted criteria scores with evidence",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/mkdocs/sources.md",
+   "purpose": "evidence source log",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/ADRs/adr-001-canonical-config-mkdocs-yml.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/ADRs/adr-002-external-ai-pipeline-no-build-hooks.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/ADRs/adr-003-bilingual-dual-build.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/ADRs/adr-004-version-pinning-and-exit-strategy.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/ADRs/adr-005-mermaid-client-side-self-hosted.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/SAD_zensical.md",
+   "purpose": "solution architecture document for the platform",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/repo_health.json",
+   "purpose": "repository health snapshot",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/roadmap_zensical.csv",
+   "purpose": "adoption roadmap CSV",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/runbook_zensical.md",
+   "purpose": "operational runbook",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/scores.json",
+   "purpose": "weighted criteria scores with evidence",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/01_products/zensical/sources.md",
+   "purpose": "evidence source log",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/02_comparison/comparison.md",
+   "purpose": "master comparison incl. HU section",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/02_comparison/decision_matrix.md",
+   "purpose": "weighted decision model and justification",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/02_comparison/scorecard.csv",
+   "purpose": "raw score grid",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-001-github-source-of-truth.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-002-docusaurus-framework.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-003-canonical-generated-separation.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-004-provider-abstraction.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-005-generated-content-via-pr.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-006-retrieval-level1.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-007-mermaid-as-code.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-008-build-time-ai.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ADRs/adr-009-deployment-github-pages.md",
+   "purpose": "architecture decision record",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ARCHITECTURE-SPINE.md",
+   "purpose": "bmad architecture spine - binding invariants",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/ai_architecture.md",
+   "purpose": "AI plane: providers, routing, retrieval, contracts",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/automation_architecture.md",
+   "purpose": "ingestion, drift, CI/CD",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/content_architecture.md",
+   "purpose": "taxonomy, metadata, conventions",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/VALIDATION.md",
+   "purpose": "diagram compilation results",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/architecture_overview.html",
+   "purpose": "dark-themed SVG overview diagram",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/c4_l1_context.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/c4_l2_containers.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/c4_l3_components.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/deployment.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/flow_git_change_to_docs.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/flow_publishing.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/flow_recruiter_generation.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/flow_special_question.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/model_routing.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/diagrams/trust_boundaries.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/implementation_roadmap.csv",
+   "purpose": "MVP/Scale/Harden milestones",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/security_architecture.md",
+   "purpose": "trust boundaries and threat model",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/03_solution/solution_architecture.md",
+   "purpose": "final solution SAD - MEGOLDAS",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "hu+en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/04_validation/validation_report.md",
+   "purpose": "Gates A-F validation report",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/.docs-manifest.json",
+   "purpose": "artifact manifest",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/.env.example",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/.github/workflows/docs-generate.yml",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/.github/workflows/docs-validate.yml",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/README.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/VALIDATION_NOTES.md",
+   "purpose": "PoC execution log",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai.config.yaml",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__init__.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__pycache__/__init__.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__pycache__/anthropic_provider.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__pycache__/gemini_provider.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__pycache__/local_provider.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__pycache__/openai_provider.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__pycache__/provider.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/__pycache__/router.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/anthropic_provider.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/gemini_provider.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/local_provider.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/openai_provider.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/provider.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/ai/router.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/contracts/GenerateInterviewPrep.yaml",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/contracts/GenerateQuestionPage.yaml",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/contracts/GenerateRecruiterPage.yaml",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/docs/diagrams/README.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/docs/diagrams/generation-pipeline.mmd",
+   "purpose": "Mermaid diagram source (compile-validated)",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/docs/generated/interview/architecture-system-overview.interview.json",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "generated-demo"
+  },
+  {
+   "path": "outputs/05_poc/docs/generated/interview/architecture-system-overview.mdx",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "generated-demo"
+  },
+  {
+   "path": "outputs/05_poc/docs/generated/recruiter/project-overview.mdx",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "generated-demo"
+  },
+  {
+   "path": "outputs/05_poc/docs/source/architecture/system-overview.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "canonical-demo"
+  },
+  {
+   "path": "outputs/05_poc/docs/source/development/setup.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "canonical-demo"
+  },
+  {
+   "path": "outputs/05_poc/docs/source/overview/index.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "canonical-demo"
+  },
+  {
+   "path": "outputs/05_poc/docusaurus.config.ts",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/impact.json",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/package-lock.json",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/package.json",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/prompts/interview.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/prompts/question-page.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/prompts/recruiter.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/schemas/document.schema.json",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/schemas/interview.schema.json",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/scripts/__pycache__/validate_docs.cpython-311.pyc",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/scripts/detect_changes.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/scripts/generate_page.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/scripts/validate_docs.py",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/sidebars-generated.ts",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/sidebars-source.ts",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/src/components/EvidenceLink/index.tsx",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/src/components/InterviewPrep/index.tsx",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/src/css/custom.css",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/src/pages/index.md",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/src/theme/MDXComponents.tsx",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/05_poc/tsconfig.json",
+   "purpose": "runnable PoC file",
+   "status": "final",
+   "validation": "executed",
+   "language": "en",
+   "classification": "project-artifact"
+  },
+  {
+   "path": "outputs/06_knowledge_base/00-foundations/docs-as-code.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/00-foundations/i18n-models.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/00-foundations/markdown-mdx-frontmatter.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/00-foundations/mermaid-diagrams-as-code.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/00-foundations/search-models.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/00-foundations/static-site-generator-anatomy.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/10-platforms/comparison-logic.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/10-platforms/docusaurus.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/10-platforms/gitbook.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/10-platforms/hyperbook.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/10-platforms/mintlify.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/10-platforms/mkdocs.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/10-platforms/zensical.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/ai-in-ci-not-in-serving.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/canonical-vs-generated-separation.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/hash-based-drift-detection.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/leveled-retrieval.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/metadata-provenance-contract.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/pr-gated-generation.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/task-contracts.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/20-patterns/thin-provider-abstraction.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/30-best-practices/bilingual-docs-en-hu.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/30-best-practices/ci-quality-gates.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/30-best-practices/evidence-discipline.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/30-best-practices/github-actions-security.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/30-best-practices/prompt-injection-defenses.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/40-decision-frameworks/anti-overengineering-rules.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/40-decision-frameworks/build-vs-buy-vs-host.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/40-decision-frameworks/maintenance-risk-assessment.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/40-decision-frameworks/weighted-decision-model.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/README.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-001-adopt-docusaurus-with-faster-flags.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-003-i18n-en-hu-strategy.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-004-local-search-first-algolia-optional.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-005-generated-mdx-contract-and-validation-gate.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/architecture.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "hu+en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/roadmap.csv",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/runbook.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/sources.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/README.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-001-git-sync-one-way-discipline.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-002-frontmatter-and-metadata-strategy.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-003-bilingual-monorepo-layout.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-004-exit-strategy-fallback-ssg.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-005-derived-content-representation.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/architecture.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "hu+en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/roadmap.csv",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/runbook.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/gitbook/sources.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/README.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-001-pin-and-vendor-hyperbook-cli.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-002-derived-ai-content-as-data-plus-templates.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-004-post-build-hardening-pipeline.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-005-no-secrets-protect-is-not-access-control.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/architecture.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "hu+en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/roadmap.csv",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/runbook.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/sources.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/README.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-002-derived-content-isolation.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-003-bilingual-en-hu-strategy.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-004-ai-boundary-external-pipeline.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-005-exit-strategy-lock-in-bounds.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/architecture.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "hu+en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/roadmap.csv",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/runbook.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mintlify/sources.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/README.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-002-derived-content-committed-markdown-not-build-time.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-005-validation-via-hooks-and-strict-ci.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/architecture.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "hu+en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/roadmap.csv",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/runbook.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/sources.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/README.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-001-canonical-config-mkdocs-yml.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-002-external-ai-pipeline-no-build-hooks.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-003-bilingual-dual-build.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-004-version-pinning-and-exit-strategy.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-005-mermaid-client-side-self-hosted.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/architecture.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "hu+en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/roadmap.csv",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/runbook.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/50-platform-architectures/zensical/sources.md",
+   "purpose": "full platform architecture doc in knowledge base",
+   "status": "final",
+   "validation": "link-checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/90-glossary.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/INDEX.md",
+   "purpose": "knowledge base page",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/06_knowledge_base/llms.txt",
+   "purpose": "knowledge base index/archive",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/knowledge_base.zip",
+   "purpose": "knowledge base index/archive",
+   "status": "final",
+   "validation": "link-and-frontmatter checked",
+   "language": "en",
+   "classification": "knowledge-distillation"
+  },
+  {
+   "path": "outputs/progress.json",
+   "purpose": "checkpoint/resume state",
+   "status": "final",
+   "validation": "reviewed",
+   "language": "en",
+   "classification": "project-artifact"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+%% DIAG-106 extracted from outputs/01_products/gitbook/SAD_gitbook.md
+sequenceDiagram
+  participant Dev as Engineer or AI pipeline
+  participant GH as GitHub repo
+  participant GS as Git Sync
+  participant GB as GitBook content store
+  participant Site as Published site CDN
+  Dev->>GH: Open PR with Markdown plus SUMMARY.md update
+  GH-->>Dev: PR preview URL via GitBook status check
+  Dev->>GH: Merge PR to synced branch
+  GH->>GS: Commit webhook
+  GS->>GB: Parse Markdown to internal block model
+  GB->>Site: Revision published, cache updated
+  Note over GB,Site: Reverse path - change request merge in GitBook creates a commit GITBOOK-N on the branch

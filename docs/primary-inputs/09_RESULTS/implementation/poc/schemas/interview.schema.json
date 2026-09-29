@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "interview.schema.json",
+  "title": "InterviewPrep dataset (ai_architecture.md section 7, AD-11)",
+  "type": "object",
+  "required": [
+    "id",
+    "elevator_pitch",
+    "technical_explanation",
+    "concepts",
+    "design_decisions",
+    "tradeoffs",
+    "likely_questions",
+    "example_answers",
+    "follow_ups",
+    "evidence_links"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Canonical page id this prep material is derived from."
+    },
+    "elevator_pitch": {"type": "string", "minLength": 50, "maxLength": 800},
+    "technical_explanation": {"type": "string", "minLength": 200},
+    "concepts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "explanation"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "explanation": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "design_decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["decision", "rationale", "evidence"],
+        "properties": {
+          "decision": {"type": "string"},
+          "rationale": {"type": "string"},
+          "evidence": {
+            "type": "string",
+            "description": "Canonical doc id or ADR id backing the decision."
+          }
+        }
+      }
+    },
+    "tradeoffs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["choice", "benefit", "cost"],
+        "properties": {
+          "choice": {"type": "string"},
+          "benefit": {"type": "string"},
+          "cost": {"type": "string"}
+        }
+      }
+    },
+    "likely_questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 5}
+    },
+    "example_answers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["question", "answer"],
+        "properties": {
+          "question": {"type": "string"},
+          "answer": {"type": "string", "minLength": 20}
+        }
+      }
+    },
+    "follow_ups": {"type": "array", "items": {"type": "string"}},
+    "evidence_links": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["label", "to"],
+        "properties": {
+          "label": {"type": "string"},
+          "to": {"type": "string", "pattern": "^/docs/"}
+        }
+      }
+    },
+    "generation": {"$ref": "document.schema.json#/$defs/generation"}
+  }
+}

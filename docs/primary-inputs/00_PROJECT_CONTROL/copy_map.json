@@ -1,0 +1,2667 @@
+[
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/progress.json",
+  "source": "outputs/progress.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/manifest.json",
+  "source": "outputs/manifest.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/content_architecture.md",
+  "source": "outputs/03_solution/content_architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/automation_architecture.md",
+  "source": "outputs/03_solution/automation_architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/implementation_roadmap.csv",
+  "source": "outputs/03_solution/implementation_roadmap.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ARCHITECTURE-SPINE.md",
+  "source": "outputs/03_solution/ARCHITECTURE-SPINE.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ai_architecture.md",
+  "source": "outputs/03_solution/ai_architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/security_architecture.md",
+  "source": "outputs/03_solution/security_architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/solution_architecture.md",
+  "source": "outputs/03_solution/solution_architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-002-docusaurus-framework.md",
+  "source": "outputs/03_solution/ADRs/adr-002-docusaurus-framework.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-009-deployment-github-pages.md",
+  "source": "outputs/03_solution/ADRs/adr-009-deployment-github-pages.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-003-canonical-generated-separation.md",
+  "source": "outputs/03_solution/ADRs/adr-003-canonical-generated-separation.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-008-build-time-ai.md",
+  "source": "outputs/03_solution/ADRs/adr-008-build-time-ai.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-005-generated-content-via-pr.md",
+  "source": "outputs/03_solution/ADRs/adr-005-generated-content-via-pr.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-004-provider-abstraction.md",
+  "source": "outputs/03_solution/ADRs/adr-004-provider-abstraction.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-006-retrieval-level1.md",
+  "source": "outputs/03_solution/ADRs/adr-006-retrieval-level1.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-001-github-source-of-truth.md",
+  "source": "outputs/03_solution/ADRs/adr-001-github-source-of-truth.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/ADRs/adr-007-mermaid-as-code.md",
+  "source": "outputs/03_solution/ADRs/adr-007-mermaid-as-code.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/model_routing.mmd",
+  "source": "outputs/03_solution/diagrams/model_routing.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/flow_recruiter_generation.mmd",
+  "source": "outputs/03_solution/diagrams/flow_recruiter_generation.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/c4_l3_components.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l3_components.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/flow_git_change_to_docs.mmd",
+  "source": "outputs/03_solution/diagrams/flow_git_change_to_docs.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/c4_l2_containers.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l2_containers.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/VALIDATION.md",
+  "source": "outputs/03_solution/diagrams/VALIDATION.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/flow_publishing.mmd",
+  "source": "outputs/03_solution/diagrams/flow_publishing.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/c4_l1_context.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l1_context.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/architecture_overview.html",
+  "source": "outputs/03_solution/diagrams/architecture_overview.html",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/deployment.mmd",
+  "source": "outputs/03_solution/diagrams/deployment.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/flow_special_question.mmd",
+  "source": "outputs/03_solution/diagrams/flow_special_question.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/03_solution/diagrams/trust_boundaries.mmd",
+  "source": "outputs/03_solution/diagrams/trust_boundaries.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/00_research/analysis_brief.md",
+  "source": "outputs/00_research/analysis_brief.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/90-glossary.md",
+  "source": "outputs/06_knowledge_base/90-glossary.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/llms.txt",
+  "source": "outputs/06_knowledge_base/llms.txt",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/INDEX.md",
+  "source": "outputs/06_knowledge_base/INDEX.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/_PAGE_TEMPLATE.md",
+  "source": "outputs/06_knowledge_base/_PAGE_TEMPLATE.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/30-best-practices/evidence-discipline.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/evidence-discipline.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/30-best-practices/bilingual-docs-en-hu.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/bilingual-docs-en-hu.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/30-best-practices/prompt-injection-defenses.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/prompt-injection-defenses.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/30-best-practices/ci-quality-gates.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/ci-quality-gates.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/30-best-practices/github-actions-security.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/github-actions-security.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/40-decision-frameworks/weighted-decision-model.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/weighted-decision-model.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/40-decision-frameworks/anti-overengineering-rules.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/anti-overengineering-rules.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/40-decision-frameworks/build-vs-buy-vs-host.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/build-vs-buy-vs-host.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/40-decision-frameworks/maintenance-risk-assessment.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/maintenance-risk-assessment.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/task-contracts.md",
+  "source": "outputs/06_knowledge_base/20-patterns/task-contracts.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/pr-gated-generation.md",
+  "source": "outputs/06_knowledge_base/20-patterns/pr-gated-generation.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/leveled-retrieval.md",
+  "source": "outputs/06_knowledge_base/20-patterns/leveled-retrieval.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/thin-provider-abstraction.md",
+  "source": "outputs/06_knowledge_base/20-patterns/thin-provider-abstraction.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/canonical-vs-generated-separation.md",
+  "source": "outputs/06_knowledge_base/20-patterns/canonical-vs-generated-separation.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/ai-in-ci-not-in-serving.md",
+  "source": "outputs/06_knowledge_base/20-patterns/ai-in-ci-not-in-serving.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/hash-based-drift-detection.md",
+  "source": "outputs/06_knowledge_base/20-patterns/hash-based-drift-detection.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/20-patterns/metadata-provenance-contract.md",
+  "source": "outputs/06_knowledge_base/20-patterns/metadata-provenance-contract.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/00-foundations/mermaid-diagrams-as-code.md",
+  "source": "outputs/06_knowledge_base/00-foundations/mermaid-diagrams-as-code.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/00-foundations/search-models.md",
+  "source": "outputs/06_knowledge_base/00-foundations/search-models.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/00-foundations/docs-as-code.md",
+  "source": "outputs/06_knowledge_base/00-foundations/docs-as-code.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/00-foundations/i18n-models.md",
+  "source": "outputs/06_knowledge_base/00-foundations/i18n-models.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/00-foundations/static-site-generator-anatomy.md",
+  "source": "outputs/06_knowledge_base/00-foundations/static-site-generator-anatomy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/00-foundations/markdown-mdx-frontmatter.md",
+  "source": "outputs/06_knowledge_base/00-foundations/markdown-mdx-frontmatter.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/roadmap.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/runbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-004-exit-strategy-fallback-ssg.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-004-exit-strategy-fallback-ssg.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-003-bilingual-monorepo-layout.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-003-bilingual-monorepo-layout.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-001-git-sync-one-way-discipline.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-001-git-sync-one-way-discipline.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-002-frontmatter-and-metadata-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-002-frontmatter-and-metadata-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-005-derived-content-representation.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-005-derived-content-representation.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/roadmap.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/runbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-004-version-pinning-and-exit-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-004-version-pinning-and-exit-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-003-bilingual-dual-build.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-003-bilingual-dual-build.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-001-canonical-config-mkdocs-yml.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-001-canonical-config-mkdocs-yml.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-005-mermaid-client-side-self-hosted.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-005-mermaid-client-side-self-hosted.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/roadmap.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/runbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-003-i18n-en-hu-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-003-i18n-en-hu-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-004-local-search-first-algolia-optional.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-004-local-search-first-algolia-optional.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/roadmap.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/runbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-004-post-build-hardening-pipeline.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-004-post-build-hardening-pipeline.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/roadmap.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/runbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/roadmap.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/architecture.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/runbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-004-ai-boundary-external-pipeline.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-004-ai-boundary-external-pipeline.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-005-exit-strategy-lock-in-bounds.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-005-exit-strategy-lock-in-bounds.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-002-derived-content-isolation.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-002-derived-content-isolation.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-003-bilingual-en-hu-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-003-bilingual-en-hu-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/10-platforms/mintlify.md",
+  "source": "outputs/06_knowledge_base/10-platforms/mintlify.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/10-platforms/gitbook.md",
+  "source": "outputs/06_knowledge_base/10-platforms/gitbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/10-platforms/docusaurus.md",
+  "source": "outputs/06_knowledge_base/10-platforms/docusaurus.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/10-platforms/comparison-logic.md",
+  "source": "outputs/06_knowledge_base/10-platforms/comparison-logic.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/10-platforms/hyperbook.md",
+  "source": "outputs/06_knowledge_base/10-platforms/hyperbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/10-platforms/zensical.md",
+  "source": "outputs/06_knowledge_base/10-platforms/zensical.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/06_knowledge_base/10-platforms/mkdocs.md",
+  "source": "outputs/06_knowledge_base/10-platforms/mkdocs.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/impact.json",
+  "source": "outputs/05_poc/impact.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/sidebars-generated.ts",
+  "source": "outputs/05_poc/sidebars-generated.ts",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/README.md",
+  "source": "outputs/05_poc/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/.docs-manifest.json",
+  "source": "outputs/05_poc/.docs-manifest.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/sidebars-source.ts",
+  "source": "outputs/05_poc/sidebars-source.ts",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/package-lock.json",
+  "source": "outputs/05_poc/package-lock.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docusaurus.config.ts",
+  "source": "outputs/05_poc/docusaurus.config.ts",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/package.json",
+  "source": "outputs/05_poc/package.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai.config.yaml",
+  "source": "outputs/05_poc/ai.config.yaml",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/.env.example",
+  "source": "outputs/05_poc/.env.example",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/VALIDATION_NOTES.md",
+  "source": "outputs/05_poc/VALIDATION_NOTES.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/tsconfig.json",
+  "source": "outputs/05_poc/tsconfig.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/openai_provider.py",
+  "source": "outputs/05_poc/ai/openai_provider.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/anthropic_provider.py",
+  "source": "outputs/05_poc/ai/anthropic_provider.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/provider.py",
+  "source": "outputs/05_poc/ai/provider.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__init__.py",
+  "source": "outputs/05_poc/ai/__init__.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/router.py",
+  "source": "outputs/05_poc/ai/router.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/gemini_provider.py",
+  "source": "outputs/05_poc/ai/gemini_provider.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/local_provider.py",
+  "source": "outputs/05_poc/ai/local_provider.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__pycache__/gemini_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/gemini_provider.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__pycache__/router.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/router.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__pycache__/provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/provider.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__pycache__/openai_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/openai_provider.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__pycache__/local_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/local_provider.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__pycache__/anthropic_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/anthropic_provider.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/ai/__pycache__/__init__.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/__init__.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/src/components/InterviewPrep/index.tsx",
+  "source": "outputs/05_poc/src/components/InterviewPrep/index.tsx",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/src/components/EvidenceLink/index.tsx",
+  "source": "outputs/05_poc/src/components/EvidenceLink/index.tsx",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/src/theme/MDXComponents.tsx",
+  "source": "outputs/05_poc/src/theme/MDXComponents.tsx",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/src/css/custom.css",
+  "source": "outputs/05_poc/src/css/custom.css",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/src/pages/index.md",
+  "source": "outputs/05_poc/src/pages/index.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/schemas/interview.schema.json",
+  "source": "outputs/05_poc/schemas/interview.schema.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/schemas/document.schema.json",
+  "source": "outputs/05_poc/schemas/document.schema.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/.github/workflows/docs-validate.yml",
+  "source": "outputs/05_poc/.github/workflows/docs-validate.yml",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/.github/workflows/docs-generate.yml",
+  "source": "outputs/05_poc/.github/workflows/docs-generate.yml",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/scripts/validate_docs.py",
+  "source": "outputs/05_poc/scripts/validate_docs.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/scripts/generate_page.py",
+  "source": "outputs/05_poc/scripts/generate_page.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/scripts/detect_changes.py",
+  "source": "outputs/05_poc/scripts/detect_changes.py",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/scripts/__pycache__/validate_docs.cpython-311.pyc",
+  "source": "outputs/05_poc/scripts/__pycache__/validate_docs.cpython-311.pyc",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/prompts/interview.md",
+  "source": "outputs/05_poc/prompts/interview.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/prompts/question-page.md",
+  "source": "outputs/05_poc/prompts/question-page.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/prompts/recruiter.md",
+  "source": "outputs/05_poc/prompts/recruiter.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/contracts/GenerateInterviewPrep.yaml",
+  "source": "outputs/05_poc/contracts/GenerateInterviewPrep.yaml",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/contracts/GenerateQuestionPage.yaml",
+  "source": "outputs/05_poc/contracts/GenerateQuestionPage.yaml",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/contracts/GenerateRecruiterPage.yaml",
+  "source": "outputs/05_poc/contracts/GenerateRecruiterPage.yaml",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/generated/interview/architecture-system-overview.interview.json",
+  "source": "outputs/05_poc/docs/generated/interview/architecture-system-overview.interview.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/generated/interview/architecture-system-overview.mdx",
+  "source": "outputs/05_poc/docs/generated/interview/architecture-system-overview.mdx",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/generated/recruiter/project-overview.mdx",
+  "source": "outputs/05_poc/docs/generated/recruiter/project-overview.mdx",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/source/overview/index.md",
+  "source": "outputs/05_poc/docs/source/overview/index.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/source/development/setup.md",
+  "source": "outputs/05_poc/docs/source/development/setup.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/source/architecture/system-overview.md",
+  "source": "outputs/05_poc/docs/source/architecture/system-overview.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/diagrams/generation-pipeline.mmd",
+  "source": "outputs/05_poc/docs/diagrams/generation-pipeline.mmd",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/05_poc/docs/diagrams/README.md",
+  "source": "outputs/05_poc/docs/diagrams/README.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/02_comparison/decision_matrix.md",
+  "source": "outputs/02_comparison/decision_matrix.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/02_comparison/comparison.md",
+  "source": "outputs/02_comparison/comparison.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/02_comparison/scorecard.csv",
+  "source": "outputs/02_comparison/scorecard.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/runbook_gitbook.md",
+  "source": "outputs/01_products/gitbook/runbook_gitbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/scores.json",
+  "source": "outputs/01_products/gitbook/scores.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/SAD_gitbook.md",
+  "source": "outputs/01_products/gitbook/SAD_gitbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/repo_health.json",
+  "source": "outputs/01_products/gitbook/repo_health.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/sources.md",
+  "source": "outputs/01_products/gitbook/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/roadmap_gitbook.csv",
+  "source": "outputs/01_products/gitbook/roadmap_gitbook.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/ADRs/adr-004-exit-strategy-fallback-ssg.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-004-exit-strategy-fallback-ssg.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/ADRs/adr-003-bilingual-monorepo-layout.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-003-bilingual-monorepo-layout.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/ADRs/adr-001-git-sync-one-way-discipline.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-001-git-sync-one-way-discipline.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/ADRs/adr-002-frontmatter-and-metadata-strategy.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-002-frontmatter-and-metadata-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/gitbook/ADRs/adr-005-derived-content-representation.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-005-derived-content-representation.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/scores.json",
+  "source": "outputs/01_products/zensical/scores.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/runbook_zensical.md",
+  "source": "outputs/01_products/zensical/runbook_zensical.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/repo_health.json",
+  "source": "outputs/01_products/zensical/repo_health.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/roadmap_zensical.csv",
+  "source": "outputs/01_products/zensical/roadmap_zensical.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/sources.md",
+  "source": "outputs/01_products/zensical/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/SAD_zensical.md",
+  "source": "outputs/01_products/zensical/SAD_zensical.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/ADRs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/ADRs/adr-004-version-pinning-and-exit-strategy.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-004-version-pinning-and-exit-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/ADRs/adr-003-bilingual-dual-build.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-003-bilingual-dual-build.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/ADRs/adr-001-canonical-config-mkdocs-yml.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-001-canonical-config-mkdocs-yml.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/zensical/ADRs/adr-005-mermaid-client-side-self-hosted.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-005-mermaid-client-side-self-hosted.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/roadmap_docusaurus.csv",
+  "source": "outputs/01_products/docusaurus/roadmap_docusaurus.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/scores.json",
+  "source": "outputs/01_products/docusaurus/scores.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/repo_health.json",
+  "source": "outputs/01_products/docusaurus/repo_health.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/sources.md",
+  "source": "outputs/01_products/docusaurus/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/runbook_docusaurus.md",
+  "source": "outputs/01_products/docusaurus/runbook_docusaurus.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/SAD_docusaurus.md",
+  "source": "outputs/01_products/docusaurus/SAD_docusaurus.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/ADRs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/ADRs/adr-003-i18n-en-hu-strategy.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-003-i18n-en-hu-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/ADRs/adr-004-local-search-first-algolia-optional.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-004-local-search-first-algolia-optional.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/ADRs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/docusaurus/ADRs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/scores.json",
+  "source": "outputs/01_products/hyperbook/scores.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/SAD_hyperbook.md",
+  "source": "outputs/01_products/hyperbook/SAD_hyperbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/roadmap_hyperbook.csv",
+  "source": "outputs/01_products/hyperbook/roadmap_hyperbook.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/repo_health.json",
+  "source": "outputs/01_products/hyperbook/repo_health.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/sources.md",
+  "source": "outputs/01_products/hyperbook/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/runbook_hyperbook.md",
+  "source": "outputs/01_products/hyperbook/runbook_hyperbook.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/ADRs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/ADRs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/ADRs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/ADRs/adr-004-post-build-hardening-pipeline.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-004-post-build-hardening-pipeline.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/hyperbook/ADRs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/runbook_mkdocs.md",
+  "source": "outputs/01_products/mkdocs/runbook_mkdocs.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/roadmap_mkdocs.csv",
+  "source": "outputs/01_products/mkdocs/roadmap_mkdocs.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/scores.json",
+  "source": "outputs/01_products/mkdocs/scores.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/SAD_mkdocs.md",
+  "source": "outputs/01_products/mkdocs/SAD_mkdocs.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/repo_health.json",
+  "source": "outputs/01_products/mkdocs/repo_health.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/sources.md",
+  "source": "outputs/01_products/mkdocs/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/ADRs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/ADRs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/ADRs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/ADRs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mkdocs/ADRs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/SAD_mintlify.md",
+  "source": "outputs/01_products/mintlify/SAD_mintlify.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/scores.json",
+  "source": "outputs/01_products/mintlify/scores.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/roadmap_mintlify.csv",
+  "source": "outputs/01_products/mintlify/roadmap_mintlify.csv",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/runbook_mintlify.md",
+  "source": "outputs/01_products/mintlify/runbook_mintlify.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/repo_health.json",
+  "source": "outputs/01_products/mintlify/repo_health.json",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/sources.md",
+  "source": "outputs/01_products/mintlify/sources.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/ADRs/adr-004-ai-boundary-external-pipeline.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-004-ai-boundary-external-pipeline.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/ADRs/adr-005-exit-strategy-lock-in-bounds.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-005-exit-strategy-lock-in-bounds.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/ADRs/adr-002-derived-content-isolation.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-002-derived-content-isolation.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/ADRs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/01_products/mintlify/ADRs/adr-003-bilingual-en-hu-strategy.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-003-bilingual-en-hu-strategy.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "11_RAW_ARCHIVE/original-material/outputs/04_validation/validation_report.md",
+  "source": "outputs/04_validation/validation_report.md",
+  "note": "ORIGINAL - raw session workspace snapshot"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/SAD_mintlify.md",
+  "source": "outputs/01_products/mintlify/SAD_mintlify.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/scores.json",
+  "source": "outputs/01_products/mintlify/scores.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/roadmap_mintlify.csv",
+  "source": "outputs/01_products/mintlify/roadmap_mintlify.csv",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/runbook_mintlify.md",
+  "source": "outputs/01_products/mintlify/runbook_mintlify.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/repo_health.json",
+  "source": "outputs/01_products/mintlify/repo_health.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/sources.md",
+  "source": "outputs/01_products/mintlify/sources.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/ADRs/adr-004-ai-boundary-external-pipeline.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-004-ai-boundary-external-pipeline.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/ADRs/adr-005-exit-strategy-lock-in-bounds.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-005-exit-strategy-lock-in-bounds.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/ADRs/adr-002-derived-content-isolation.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-002-derived-content-isolation.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/ADRs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mintlify/ADRs/adr-003-bilingual-en-hu-strategy.md",
+  "source": "outputs/01_products/mintlify/ADRs/adr-003-bilingual-en-hu-strategy.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/runbook_gitbook.md",
+  "source": "outputs/01_products/gitbook/runbook_gitbook.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/scores.json",
+  "source": "outputs/01_products/gitbook/scores.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/SAD_gitbook.md",
+  "source": "outputs/01_products/gitbook/SAD_gitbook.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/repo_health.json",
+  "source": "outputs/01_products/gitbook/repo_health.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/sources.md",
+  "source": "outputs/01_products/gitbook/sources.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/roadmap_gitbook.csv",
+  "source": "outputs/01_products/gitbook/roadmap_gitbook.csv",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/ADRs/adr-004-exit-strategy-fallback-ssg.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-004-exit-strategy-fallback-ssg.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/ADRs/adr-003-bilingual-monorepo-layout.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-003-bilingual-monorepo-layout.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/ADRs/adr-001-git-sync-one-way-discipline.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-001-git-sync-one-way-discipline.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/ADRs/adr-002-frontmatter-and-metadata-strategy.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-002-frontmatter-and-metadata-strategy.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/gitbook/ADRs/adr-005-derived-content-representation.md",
+  "source": "outputs/01_products/gitbook/ADRs/adr-005-derived-content-representation.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/roadmap_docusaurus.csv",
+  "source": "outputs/01_products/docusaurus/roadmap_docusaurus.csv",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/scores.json",
+  "source": "outputs/01_products/docusaurus/scores.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/repo_health.json",
+  "source": "outputs/01_products/docusaurus/repo_health.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/sources.md",
+  "source": "outputs/01_products/docusaurus/sources.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/runbook_docusaurus.md",
+  "source": "outputs/01_products/docusaurus/runbook_docusaurus.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/SAD_docusaurus.md",
+  "source": "outputs/01_products/docusaurus/SAD_docusaurus.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/ADRs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/ADRs/adr-003-i18n-en-hu-strategy.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-003-i18n-en-hu-strategy.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/ADRs/adr-004-local-search-first-algolia-optional.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-004-local-search-first-algolia-optional.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/ADRs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/docusaurus/ADRs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "source": "outputs/01_products/docusaurus/ADRs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/runbook_mkdocs.md",
+  "source": "outputs/01_products/mkdocs/runbook_mkdocs.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/roadmap_mkdocs.csv",
+  "source": "outputs/01_products/mkdocs/roadmap_mkdocs.csv",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/scores.json",
+  "source": "outputs/01_products/mkdocs/scores.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/SAD_mkdocs.md",
+  "source": "outputs/01_products/mkdocs/SAD_mkdocs.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/repo_health.json",
+  "source": "outputs/01_products/mkdocs/repo_health.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/sources.md",
+  "source": "outputs/01_products/mkdocs/sources.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/ADRs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/ADRs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/ADRs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/ADRs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/mkdocs/ADRs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "source": "outputs/01_products/mkdocs/ADRs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/scores.json",
+  "source": "outputs/01_products/zensical/scores.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/runbook_zensical.md",
+  "source": "outputs/01_products/zensical/runbook_zensical.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/repo_health.json",
+  "source": "outputs/01_products/zensical/repo_health.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/roadmap_zensical.csv",
+  "source": "outputs/01_products/zensical/roadmap_zensical.csv",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/sources.md",
+  "source": "outputs/01_products/zensical/sources.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/SAD_zensical.md",
+  "source": "outputs/01_products/zensical/SAD_zensical.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/ADRs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/ADRs/adr-004-version-pinning-and-exit-strategy.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-004-version-pinning-and-exit-strategy.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/ADRs/adr-003-bilingual-dual-build.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-003-bilingual-dual-build.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/ADRs/adr-001-canonical-config-mkdocs-yml.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-001-canonical-config-mkdocs-yml.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/zensical/ADRs/adr-005-mermaid-client-side-self-hosted.md",
+  "source": "outputs/01_products/zensical/ADRs/adr-005-mermaid-client-side-self-hosted.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/scores.json",
+  "source": "outputs/01_products/hyperbook/scores.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/SAD_hyperbook.md",
+  "source": "outputs/01_products/hyperbook/SAD_hyperbook.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/roadmap_hyperbook.csv",
+  "source": "outputs/01_products/hyperbook/roadmap_hyperbook.csv",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/repo_health.json",
+  "source": "outputs/01_products/hyperbook/repo_health.json",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/sources.md",
+  "source": "outputs/01_products/hyperbook/sources.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/runbook_hyperbook.md",
+  "source": "outputs/01_products/hyperbook/runbook_hyperbook.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/ADRs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/ADRs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/ADRs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/ADRs/adr-004-post-build-hardening-pipeline.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-004-post-build-hardening-pipeline.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/hyperbook/ADRs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "source": "outputs/01_products/hyperbook/ADRs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "note": "CANONICAL research deliverable"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/_comparison/decision_matrix.md",
+  "source": "outputs/02_comparison/decision_matrix.md",
+  "note": "CANONICAL comparison"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/_comparison/comparison.md",
+  "source": "outputs/02_comparison/comparison.md",
+  "note": "CANONICAL comparison"
+ },
+ {
+  "dest": "02_RESEARCH/documentation-platforms/_comparison/scorecard.csv",
+  "source": "outputs/02_comparison/scorecard.csv",
+  "note": "CANONICAL comparison"
+ },
+ {
+  "dest": "03_PROMPTS/research/PROMPT-004_platform-analysis-brief.md",
+  "source": "outputs/00_research/analysis_brief.md",
+  "note": "ORIGINAL shared agent brief"
+ },
+ {
+  "dest": "03_PROMPTS/documentation-generation/PROMPT-005_recruiter-page.md",
+  "source": "outputs/05_poc/prompts/recruiter.md",
+  "note": "CANONICAL generation prompt template from PoC"
+ },
+ {
+  "dest": "03_PROMPTS/documentation-generation/PROMPT-006_interview-prep.md",
+  "source": "outputs/05_poc/prompts/interview.md",
+  "note": "CANONICAL generation prompt template from PoC"
+ },
+ {
+  "dest": "03_PROMPTS/documentation-generation/PROMPT-007_question-page.md",
+  "source": "outputs/05_poc/prompts/question-page.md",
+  "note": "CANONICAL generation prompt template from PoC"
+ },
+ {
+  "dest": "03_PROMPTS/documentation-generation/PROMPT-008_kb-page-template.md",
+  "source": "outputs/06_knowledge_base/_PAGE_TEMPLATE.md",
+  "note": "CANONICAL KB page template"
+ },
+ {
+  "dest": "04_ARCHITECTURE/SAD/ARCHITECTURE-SPINE.md",
+  "source": "outputs/03_solution/ARCHITECTURE-SPINE.md",
+  "note": "CANONICAL target-system architecture"
+ },
+ {
+  "dest": "04_ARCHITECTURE/SAD/solution_architecture.md",
+  "source": "outputs/03_solution/solution_architecture.md",
+  "note": "CANONICAL target-system architecture"
+ },
+ {
+  "dest": "04_ARCHITECTURE/SAD/security_architecture.md",
+  "source": "outputs/03_solution/security_architecture.md",
+  "note": "CANONICAL target-system architecture"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-002-docusaurus-framework.md",
+  "source": "outputs/03_solution/ADRs/adr-002-docusaurus-framework.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-009-deployment-github-pages.md",
+  "source": "outputs/03_solution/ADRs/adr-009-deployment-github-pages.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-003-canonical-generated-separation.md",
+  "source": "outputs/03_solution/ADRs/adr-003-canonical-generated-separation.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-008-build-time-ai.md",
+  "source": "outputs/03_solution/ADRs/adr-008-build-time-ai.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-005-generated-content-via-pr.md",
+  "source": "outputs/03_solution/ADRs/adr-005-generated-content-via-pr.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-004-provider-abstraction.md",
+  "source": "outputs/03_solution/ADRs/adr-004-provider-abstraction.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-006-retrieval-level1.md",
+  "source": "outputs/03_solution/ADRs/adr-006-retrieval-level1.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-001-github-source-of-truth.md",
+  "source": "outputs/03_solution/ADRs/adr-001-github-source-of-truth.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/ADR/adr-007-mermaid-as-code.md",
+  "source": "outputs/03_solution/ADRs/adr-007-mermaid-as-code.md",
+  "note": "CANONICAL solution ADR"
+ },
+ {
+  "dest": "04_ARCHITECTURE/C4/c4_l3_components.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l3_components.mmd",
+  "note": "CANONICAL C4 diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/C4/c4_l2_containers.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l2_containers.mmd",
+  "note": "CANONICAL C4 diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/C4/c4_l1_context.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l1_context.mmd",
+  "note": "CANONICAL C4 diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/deployment/deployment.mmd",
+  "source": "outputs/03_solution/diagrams/deployment.mmd",
+  "note": "CANONICAL"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/flow_recruiter_generation.mmd",
+  "source": "outputs/03_solution/diagrams/flow_recruiter_generation.mmd",
+  "note": "CANONICAL flow diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/flow_git_change_to_docs.mmd",
+  "source": "outputs/03_solution/diagrams/flow_git_change_to_docs.mmd",
+  "note": "CANONICAL flow diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/flow_publishing.mmd",
+  "source": "outputs/03_solution/diagrams/flow_publishing.mmd",
+  "note": "CANONICAL flow diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/flow_special_question.mmd",
+  "source": "outputs/03_solution/diagrams/flow_special_question.mmd",
+  "note": "CANONICAL flow diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/model_routing.mmd",
+  "source": "outputs/03_solution/diagrams/model_routing.mmd",
+  "note": "CANONICAL flow diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/trust_boundaries.mmd",
+  "source": "outputs/03_solution/diagrams/trust_boundaries.mmd",
+  "note": "CANONICAL flow diagram source"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/architecture_overview.html",
+  "source": "outputs/03_solution/diagrams/architecture_overview.html",
+  "note": "DERIVED rendered overview"
+ },
+ {
+  "dest": "04_ARCHITECTURE/data-flows/DIAGRAM_VALIDATION.md",
+  "source": "outputs/03_solution/diagrams/VALIDATION.md",
+  "note": "CANONICAL validation record"
+ },
+ {
+  "dest": "04_ARCHITECTURE/architecture-decisions/decision_matrix.md",
+  "source": "outputs/02_comparison/decision_matrix.md",
+  "note": "DUPLICATE-BY-DESIGN organized copy; canonical in 02_RESEARCH/_comparison"
+ },
+ {
+  "dest": "05_DOCUMENTATION_DESIGN/information-architecture/content_architecture.md",
+  "source": "outputs/03_solution/content_architecture.md",
+  "note": "CANONICAL"
+ },
+ {
+  "dest": "05_DOCUMENTATION_DESIGN/documentation-process/automation_architecture.md",
+  "source": "outputs/03_solution/automation_architecture.md",
+  "note": "CANONICAL"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/model-strategy/ai_architecture.md",
+  "source": "outputs/03_solution/ai_architecture.md",
+  "note": "CANONICAL"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/openai_provider.py",
+  "source": "outputs/05_poc/ai/openai_provider.py",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/anthropic_provider.py",
+  "source": "outputs/05_poc/ai/anthropic_provider.py",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/provider.py",
+  "source": "outputs/05_poc/ai/provider.py",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/__init__.py",
+  "source": "outputs/05_poc/ai/__init__.py",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/router.py",
+  "source": "outputs/05_poc/ai/router.py",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/gemini_provider.py",
+  "source": "outputs/05_poc/ai/gemini_provider.py",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/local_provider.py",
+  "source": "outputs/05_poc/ai/local_provider.py",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/ai.config.yaml",
+  "source": "outputs/05_poc/ai.config.yaml",
+  "note": "CANONICAL PoC implementation copy"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/provider-abstraction/env.example",
+  "source": "outputs/05_poc/.env.example",
+  "note": "CANONICAL - template only, no secrets"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/generation/GenerateInterviewPrep.yaml",
+  "source": "outputs/05_poc/contracts/GenerateInterviewPrep.yaml",
+  "note": "CANONICAL task contract / schema"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/generation/GenerateQuestionPage.yaml",
+  "source": "outputs/05_poc/contracts/GenerateQuestionPage.yaml",
+  "note": "CANONICAL task contract / schema"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/generation/GenerateRecruiterPage.yaml",
+  "source": "outputs/05_poc/contracts/GenerateRecruiterPage.yaml",
+  "note": "CANONICAL task contract / schema"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/generation/interview.schema.json",
+  "source": "outputs/05_poc/schemas/interview.schema.json",
+  "note": "CANONICAL task contract / schema"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/generation/document.schema.json",
+  "source": "outputs/05_poc/schemas/document.schema.json",
+  "note": "CANONICAL task contract / schema"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/recruiter/project-overview.mdx",
+  "source": "outputs/05_poc/docs/generated/recruiter/project-overview.mdx",
+  "note": "EXPERIMENT - PoC demo generated page"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/interview/architecture-system-overview.interview.json",
+  "source": "outputs/05_poc/docs/generated/interview/architecture-system-overview.interview.json",
+  "note": "EXPERIMENT - PoC demo generated artifact"
+ },
+ {
+  "dest": "06_AI_DOCUMENTATION/interview/architecture-system-overview.mdx",
+  "source": "outputs/05_poc/docs/generated/interview/architecture-system-overview.mdx",
+  "note": "EXPERIMENT - PoC demo generated artifact"
+ },
+ {
+  "dest": "07_MERMAID/workflows/model_routing.mmd",
+  "source": "outputs/03_solution/diagrams/model_routing.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/workflows/flow_recruiter_generation.mmd",
+  "source": "outputs/03_solution/diagrams/flow_recruiter_generation.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/c4/c4_l3_components.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l3_components.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/workflows/flow_git_change_to_docs.mmd",
+  "source": "outputs/03_solution/diagrams/flow_git_change_to_docs.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/c4/c4_l2_containers.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l2_containers.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/workflows/flow_publishing.mmd",
+  "source": "outputs/03_solution/diagrams/flow_publishing.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/c4/c4_l1_context.mmd",
+  "source": "outputs/03_solution/diagrams/c4_l1_context.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/deployment/deployment.mmd",
+  "source": "outputs/03_solution/diagrams/deployment.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/workflows/flow_special_question.mmd",
+  "source": "outputs/03_solution/diagrams/flow_special_question.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/misc/trust_boundaries.mmd",
+  "source": "outputs/03_solution/diagrams/trust_boundaries.mmd",
+  "note": "CANONICAL standalone diagram"
+ },
+ {
+  "dest": "07_MERMAID/misc/poc_generation-pipeline.mmd",
+  "source": "outputs/05_poc/docs/diagrams/generation-pipeline.mmd",
+  "note": "EXPERIMENT PoC diagram"
+ },
+ {
+  "dest": "08_TASKS/completed/progress_final.json",
+  "source": "outputs/progress.json",
+  "note": "CANONICAL phase checkpoint record"
+ },
+ {
+  "dest": "08_TASKS/future/implementation_roadmap.csv",
+  "source": "outputs/03_solution/implementation_roadmap.csv",
+  "note": "CANONICAL future-work source"
+ },
+ {
+  "dest": "09_RESULTS/validation/validation_report.md",
+  "source": "outputs/04_validation/validation_report.md",
+  "note": "CANONICAL"
+ },
+ {
+  "dest": "09_RESULTS/validation/POC_VALIDATION_NOTES.md",
+  "source": "outputs/05_poc/VALIDATION_NOTES.md",
+  "note": "CANONICAL execution log"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/90-glossary.md",
+  "source": "outputs/06_knowledge_base/90-glossary.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/llms.txt",
+  "source": "outputs/06_knowledge_base/llms.txt",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/INDEX.md",
+  "source": "outputs/06_knowledge_base/INDEX.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/_PAGE_TEMPLATE.md",
+  "source": "outputs/06_knowledge_base/_PAGE_TEMPLATE.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/30-best-practices/evidence-discipline.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/evidence-discipline.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/30-best-practices/bilingual-docs-en-hu.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/bilingual-docs-en-hu.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/30-best-practices/prompt-injection-defenses.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/prompt-injection-defenses.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/30-best-practices/ci-quality-gates.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/ci-quality-gates.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/30-best-practices/github-actions-security.md",
+  "source": "outputs/06_knowledge_base/30-best-practices/github-actions-security.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/40-decision-frameworks/weighted-decision-model.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/weighted-decision-model.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/40-decision-frameworks/anti-overengineering-rules.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/anti-overengineering-rules.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/40-decision-frameworks/build-vs-buy-vs-host.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/build-vs-buy-vs-host.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/40-decision-frameworks/maintenance-risk-assessment.md",
+  "source": "outputs/06_knowledge_base/40-decision-frameworks/maintenance-risk-assessment.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/task-contracts.md",
+  "source": "outputs/06_knowledge_base/20-patterns/task-contracts.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/pr-gated-generation.md",
+  "source": "outputs/06_knowledge_base/20-patterns/pr-gated-generation.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/leveled-retrieval.md",
+  "source": "outputs/06_knowledge_base/20-patterns/leveled-retrieval.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/thin-provider-abstraction.md",
+  "source": "outputs/06_knowledge_base/20-patterns/thin-provider-abstraction.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/canonical-vs-generated-separation.md",
+  "source": "outputs/06_knowledge_base/20-patterns/canonical-vs-generated-separation.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/ai-in-ci-not-in-serving.md",
+  "source": "outputs/06_knowledge_base/20-patterns/ai-in-ci-not-in-serving.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/hash-based-drift-detection.md",
+  "source": "outputs/06_knowledge_base/20-patterns/hash-based-drift-detection.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/20-patterns/metadata-provenance-contract.md",
+  "source": "outputs/06_knowledge_base/20-patterns/metadata-provenance-contract.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/00-foundations/mermaid-diagrams-as-code.md",
+  "source": "outputs/06_knowledge_base/00-foundations/mermaid-diagrams-as-code.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/00-foundations/search-models.md",
+  "source": "outputs/06_knowledge_base/00-foundations/search-models.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/00-foundations/docs-as-code.md",
+  "source": "outputs/06_knowledge_base/00-foundations/docs-as-code.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/00-foundations/i18n-models.md",
+  "source": "outputs/06_knowledge_base/00-foundations/i18n-models.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/00-foundations/static-site-generator-anatomy.md",
+  "source": "outputs/06_knowledge_base/00-foundations/static-site-generator-anatomy.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/00-foundations/markdown-mdx-frontmatter.md",
+  "source": "outputs/06_knowledge_base/00-foundations/markdown-mdx-frontmatter.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/roadmap.csv",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/README.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/architecture.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/sources.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/runbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/adrs/adr-004-exit-strategy-fallback-ssg.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-004-exit-strategy-fallback-ssg.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/adrs/adr-003-bilingual-monorepo-layout.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-003-bilingual-monorepo-layout.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/adrs/adr-001-git-sync-one-way-discipline.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-001-git-sync-one-way-discipline.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/adrs/adr-002-frontmatter-and-metadata-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-002-frontmatter-and-metadata-strategy.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/gitbook/adrs/adr-005-derived-content-representation.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/gitbook/adrs/adr-005-derived-content-representation.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/roadmap.csv",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/README.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/architecture.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/sources.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/runbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/adrs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-002-external-ai-pipeline-no-build-hooks.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/adrs/adr-004-version-pinning-and-exit-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-004-version-pinning-and-exit-strategy.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/adrs/adr-003-bilingual-dual-build.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-003-bilingual-dual-build.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/adrs/adr-001-canonical-config-mkdocs-yml.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-001-canonical-config-mkdocs-yml.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/zensical/adrs/adr-005-mermaid-client-side-self-hosted.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/zensical/adrs/adr-005-mermaid-client-side-self-hosted.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/roadmap.csv",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/README.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/architecture.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/sources.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/runbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/adrs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-005-generated-mdx-contract-and-validation-gate.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/adrs/adr-003-i18n-en-hu-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-003-i18n-en-hu-strategy.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/adrs/adr-004-local-search-first-algolia-optional.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-004-local-search-first-algolia-optional.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/adrs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-001-adopt-docusaurus-with-faster-flags.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/docusaurus/adrs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/docusaurus/adrs/adr-002-multi-instance-docs-for-canonical-vs-generated.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/roadmap.csv",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/README.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/architecture.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/sources.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/runbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/adrs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-005-no-secrets-protect-is-not-access-control.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/adrs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-002-derived-ai-content-as-data-plus-templates.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/adrs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-003-bilingual-en-hu-via-hyperlibrary.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/adrs/adr-004-post-build-hardening-pipeline.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-004-post-build-hardening-pipeline.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/hyperbook/adrs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/hyperbook/adrs/adr-001-pin-and-vendor-hyperbook-cli.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/roadmap.csv",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/README.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/architecture.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/sources.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/runbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/adrs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-001-adopt-mkdocs-material-pinned-with-exit-plan.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/adrs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-003-bilingual-en-hu-static-i18n-suffix.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/adrs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-004-mermaid-superfences-selfhosted-runtime.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/adrs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-002-derived-content-committed-markdown-not-build-time.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mkdocs/adrs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mkdocs/adrs/adr-005-validation-via-hooks-and-strict-ci.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/roadmap.csv",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/roadmap.csv",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/README.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/README.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/architecture.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/architecture.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/sources.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/sources.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/runbook.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/runbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/adrs/adr-004-ai-boundary-external-pipeline.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-004-ai-boundary-external-pipeline.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/adrs/adr-005-exit-strategy-lock-in-bounds.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-005-exit-strategy-lock-in-bounds.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/adrs/adr-002-derived-content-isolation.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-002-derived-content-isolation.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/adrs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-001-adopt-mintlify-hosted-presentation-layer.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/50-platform-architectures/mintlify/adrs/adr-003-bilingual-en-hu-strategy.md",
+  "source": "outputs/06_knowledge_base/50-platform-architectures/mintlify/adrs/adr-003-bilingual-en-hu-strategy.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/10-platforms/mintlify.md",
+  "source": "outputs/06_knowledge_base/10-platforms/mintlify.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/10-platforms/gitbook.md",
+  "source": "outputs/06_knowledge_base/10-platforms/gitbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/10-platforms/docusaurus.md",
+  "source": "outputs/06_knowledge_base/10-platforms/docusaurus.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/10-platforms/comparison-logic.md",
+  "source": "outputs/06_knowledge_base/10-platforms/comparison-logic.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/10-platforms/hyperbook.md",
+  "source": "outputs/06_knowledge_base/10-platforms/hyperbook.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/10-platforms/zensical.md",
+  "source": "outputs/06_knowledge_base/10-platforms/zensical.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/research/knowledge-base/10-platforms/mkdocs.md",
+  "source": "outputs/06_knowledge_base/10-platforms/mkdocs.md",
+  "note": "DERIVED knowledge distillation"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/impact.json",
+  "source": "outputs/05_poc/impact.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/sidebars-generated.ts",
+  "source": "outputs/05_poc/sidebars-generated.ts",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/README.md",
+  "source": "outputs/05_poc/README.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/.docs-manifest.json",
+  "source": "outputs/05_poc/.docs-manifest.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/sidebars-source.ts",
+  "source": "outputs/05_poc/sidebars-source.ts",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/package-lock.json",
+  "source": "outputs/05_poc/package-lock.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docusaurus.config.ts",
+  "source": "outputs/05_poc/docusaurus.config.ts",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/package.json",
+  "source": "outputs/05_poc/package.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai.config.yaml",
+  "source": "outputs/05_poc/ai.config.yaml",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/.env.example",
+  "source": "outputs/05_poc/.env.example",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/VALIDATION_NOTES.md",
+  "source": "outputs/05_poc/VALIDATION_NOTES.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/tsconfig.json",
+  "source": "outputs/05_poc/tsconfig.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/openai_provider.py",
+  "source": "outputs/05_poc/ai/openai_provider.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/anthropic_provider.py",
+  "source": "outputs/05_poc/ai/anthropic_provider.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/provider.py",
+  "source": "outputs/05_poc/ai/provider.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__init__.py",
+  "source": "outputs/05_poc/ai/__init__.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/router.py",
+  "source": "outputs/05_poc/ai/router.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/gemini_provider.py",
+  "source": "outputs/05_poc/ai/gemini_provider.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/local_provider.py",
+  "source": "outputs/05_poc/ai/local_provider.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__pycache__/gemini_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/gemini_provider.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__pycache__/router.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/router.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__pycache__/provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/provider.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__pycache__/openai_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/openai_provider.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__pycache__/local_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/local_provider.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__pycache__/anthropic_provider.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/anthropic_provider.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/ai/__pycache__/__init__.cpython-311.pyc",
+  "source": "outputs/05_poc/ai/__pycache__/__init__.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/src/components/InterviewPrep/index.tsx",
+  "source": "outputs/05_poc/src/components/InterviewPrep/index.tsx",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/src/components/EvidenceLink/index.tsx",
+  "source": "outputs/05_poc/src/components/EvidenceLink/index.tsx",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/src/theme/MDXComponents.tsx",
+  "source": "outputs/05_poc/src/theme/MDXComponents.tsx",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/src/css/custom.css",
+  "source": "outputs/05_poc/src/css/custom.css",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/src/pages/index.md",
+  "source": "outputs/05_poc/src/pages/index.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/schemas/interview.schema.json",
+  "source": "outputs/05_poc/schemas/interview.schema.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/schemas/document.schema.json",
+  "source": "outputs/05_poc/schemas/document.schema.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/.github/workflows/docs-validate.yml",
+  "source": "outputs/05_poc/.github/workflows/docs-validate.yml",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/.github/workflows/docs-generate.yml",
+  "source": "outputs/05_poc/.github/workflows/docs-generate.yml",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/scripts/validate_docs.py",
+  "source": "outputs/05_poc/scripts/validate_docs.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/scripts/generate_page.py",
+  "source": "outputs/05_poc/scripts/generate_page.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/scripts/detect_changes.py",
+  "source": "outputs/05_poc/scripts/detect_changes.py",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/scripts/__pycache__/validate_docs.cpython-311.pyc",
+  "source": "outputs/05_poc/scripts/__pycache__/validate_docs.cpython-311.pyc",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/prompts/interview.md",
+  "source": "outputs/05_poc/prompts/interview.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/prompts/question-page.md",
+  "source": "outputs/05_poc/prompts/question-page.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/prompts/recruiter.md",
+  "source": "outputs/05_poc/prompts/recruiter.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/contracts/GenerateInterviewPrep.yaml",
+  "source": "outputs/05_poc/contracts/GenerateInterviewPrep.yaml",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/contracts/GenerateQuestionPage.yaml",
+  "source": "outputs/05_poc/contracts/GenerateQuestionPage.yaml",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/contracts/GenerateRecruiterPage.yaml",
+  "source": "outputs/05_poc/contracts/GenerateRecruiterPage.yaml",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/generated/interview/architecture-system-overview.interview.json",
+  "source": "outputs/05_poc/docs/generated/interview/architecture-system-overview.interview.json",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/generated/interview/architecture-system-overview.mdx",
+  "source": "outputs/05_poc/docs/generated/interview/architecture-system-overview.mdx",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/generated/recruiter/project-overview.mdx",
+  "source": "outputs/05_poc/docs/generated/recruiter/project-overview.mdx",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/source/overview/index.md",
+  "source": "outputs/05_poc/docs/source/overview/index.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/source/development/setup.md",
+  "source": "outputs/05_poc/docs/source/development/setup.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/source/architecture/system-overview.md",
+  "source": "outputs/05_poc/docs/source/architecture/system-overview.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/diagrams/generation-pipeline.mmd",
+  "source": "outputs/05_poc/docs/diagrams/generation-pipeline.mmd",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/implementation/poc/docs/diagrams/README.md",
+  "source": "outputs/05_poc/docs/diagrams/README.md",
+  "note": "CANONICAL runnable PoC (node_modules/build excluded)"
+ },
+ {
+  "dest": "09_RESULTS/completed/session_manifest.json",
+  "source": "outputs/manifest.json",
+  "note": "CANONICAL session artifact manifest"
+ },
+ {
+  "dest": "10_EXTERNAL_ARTIFACTS/reference-documents/skills/bmad-architecture_SKILL.md",
+  "source": "/root/.claude/skills/synced/bmad-architecture/SKILL.md",
+  "note": "REFERENCE - methodology skill applied during architecture phase (local synced copy, collected 2026-08-13)"
+ },
+ {
+  "dest": "10_EXTERNAL_ARTIFACTS/reference-documents/skills/architecture-diagram_SKILL.md",
+  "source": "/root/.claude/skills/synced/architecture-diagram/SKILL.md",
+  "note": "REFERENCE - methodology skill applied during architecture phase (local synced copy, collected 2026-08-13)"
+ },
+ {
+  "dest": "10_EXTERNAL_ARTIFACTS/reference-documents/skills/agent-v3-security-architect_SKILL.md",
+  "source": "/root/.claude/skills/synced/agent-v3-security-architect/SKILL.md",
+  "note": "REFERENCE - methodology skill applied during architecture phase (local synced copy, collected 2026-08-13)"
+ }
+]

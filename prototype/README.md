@@ -1,0 +1,225 @@
+# DOCCAD Prototype
+
+A runnable, local prototype of **DOCCAD**: a GitHub-native documentation system in which canonical,
+human-owned documentation lives in the repository and an AI layer derives governed views from it —
+recruiter pages, interview preparation, and answers to specific questions.
+
+It is two things:
+
+- **A static Docusaurus 3.10.2 + React 19 site** with two separate content planes: canonical pages at
+  `/docs` and AI-derived views at `/views`. The site makes no model calls at runtime.
+- **An offline generation and governance toolchain** in Python: task contracts, evidence retrieval,
+  sha256 provenance hashes, drift detection, a simulated review ledger and a publication filter. The
+  default AI provider is `fixture`, which is deterministic and needs no keys or network.
+
+Design intent: [`planning/CONCEPT.md`](planning/CONCEPT.md). Requirements mapping (REQ-001…016):
+[`planning/ACCEPTANCE.md`](planning/ACCEPTANCE.md). Status and verification record:
+[`planning/PROGRESS.md`](planning/PROGRESS.md). The research archive behind it is
+[`../docs/primary-inputs/`](../docs/primary-inputs/README.md).
+
+## Status
+
+Verified on 2026-09-29 (Node 24.19, Python 3.14, on a copy of this directory):
+
+| Area | Works today | Not yet |
+| --- | --- | --- |
+| Static site | Builds in `en` and `hu`; every page, view, workbench, inspector, explorer and local search | Hungarian covers 4 docs pages; the landing page, navbar and footer are English only |
+| Checks | `validate`, `detect`, 19 unit tests, `typecheck`, `build` all pass | 4 required failure cases have no test (see `PROGRESS.md` §2) |
+| Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip | — |
+| Page pipeline | `generate_page.py --dry-run` for all contracts | Live runs fail validation — see [Known issues](#known-issues) |
+| Regeneration | `seed_generated_views.py` rebuilds every derived view with fresh hashes | Targeted per-view regeneration through `generate_page.py` |
+| Review | Simulated review ledger; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (no remote or CI yet) |
+| Cloud / local models | Adapters and routing exist | Never run with real keys or a local endpoint |
+
+## Requirements
+
+- Node.js >= 20 and npm
+- Python 3 with PyYAML
+- Recommended: `jsonschema` (with `referencing`). Without it, `validate_docs.py` silently falls back to a
+  minimal frontmatter check instead of full schema validation, and `generate_page.py` uses the same
+  minimal check (none at all for interview JSON), so it can write output that the schemas reject.
+
+No API keys, database or network access are needed.
+
+## Quick start
+
+```bash
+cd prototype
+npm ci
+npm run validate      # → "Validated 40 pages, 4 interview datasets, 17 provenance hashes." + OK
+npm run build         # → [SUCCESS] for en, then for build/hu
+npm run serve         # → http://localhost:3000
+```
+
+`npm run start` serves a live-reloading dev server instead, one locale at a time
+(`npm run start -- --locale hu` for Hungarian).
+
+## Commands
+
+All from `prototype/`.
+
+| Command | Does | Writes |
+| --- | --- | --- |
+| `npm run start` | Dev server with live reload | — |
+| `npm run build` | Static build, `en` + `hu` | `build/` |
+| `npm run serve` | Serve `build/` | — |
+| `npm run typecheck` | `tsc` | — |
+| `npm run validate` | Frontmatter schemas, plane separation, ID uniqueness, provenance hashes, links, MDX safety. Exits 1 on failure | — |
+| `npm run detect` | Drift report: which generated pages are stale. **Always exits 0 — read the output** | `.docs-manifest.json`, `impact.json` |
+| `npm run test` | `unittest` suite | Temporarily moves files out of `docs/generated/` and restores them |
+| `npm run build:demo` | Restore stashed views, then build | `docs/generated/`, `build/` |
+| `npm run build:production` | Remove drafts and demo-approved views, then build | **`docs/generated/`** — run `build:demo` afterwards |
+| `npm run clear` | Clear Docusaurus caches | — |
+
+Several commands rewrite tracked files. To look without changing anything, copy the directory first:
+
+```bash
+rsync -a --exclude node_modules --exclude build --exclude .docusaurus prototype/ /tmp/doccad/
+ln -s "$PWD/prototype/node_modules" /tmp/doccad/node_modules && cd /tmp/doccad
+```
+
+## Using the site
+
+| Route | What to do there |
+| --- | --- |
+| `/` | Landing page: vision, tenets, navigation cards |
+| `/docs/overview` | Canonical documentation: architecture, decisions (ADRs), security, operations, Mermaid diagrams |
+| `/views/recruiter/project-overview` | Recruiter view: switch between 30-second, 2-minute and deep-dive modes; evidence links jump to the canonical source |
+| `/views/interview/…` | Interview prep: concepts, design decisions, tradeoffs, likely questions, model answers |
+| `/views/questions/…` | Question pages `q-001`…`q-005`; `q-006` shows the honest `insufficient_evidence` answer |
+| `/workbench` | Question Workbench: choose a question, inspect evidence, generate a draft, step through simulated review, export `QuestionRequest.json` |
+| `/inspector` | Drift Inspector: source hashes and staleness |
+| `/explorer` | Knowledge Explorer |
+| `/hu/` | Hungarian locale |
+
+Search is local and offline (search box, or `/search`).
+
+The workbench runs entirely in the browser. It uses built-in example scenarios, and for a custom question
+it assembles a demo draft on the client. It does not call the Python pipeline. For real retrieval and
+generation, export the request and run it through the CLI (below).
+
+Every generated page carries a provenance banner: contract, provider, model, source hashes and approval
+state. `approved-for-demo` is a simulated demo record, never a human approval.
+
+## Using the toolchain
+
+### Ask a question
+
+```bash
+python3 scripts/generate_question.py --question "How does DOCCAD detect drift?" --audience developer
+```
+
+It prints the evidence it retrieved (with hashes), the files it rejected and why, and the provider chain,
+then writes a draft to `.work/drafts/<id>.mdx`. Useful options:
+
+| Option | Effect |
+| --- | --- |
+| `--request QuestionRequest.json` | Run a request exported from `/workbench` (UI→CLI round-trip) |
+| `--target <doc-id>` | Focus retrieval on one canonical page |
+| `--privacy private` | Route only to the local provider; fails with `PrivacyRoutingError` rather than use a cloud provider |
+| `--export-run run.json` | Save the GenerationRun record (evidence, provider, hashes) |
+| `--persist` | Write to `docs/generated/questions/` instead of `.work/drafts/` |
+
+An out-of-scope question (for example, *"What is the multi-cluster Kubernetes topology?"*) produces an
+`insufficient_evidence` page instead of an invented answer.
+
+### Review a generated artifact
+
+```bash
+python3 scripts/review_governance.py review --artifact q-002-drift-detection --decision in-review
+python3 scripts/review_governance.py review --artifact q-002-drift-detection --decision approved-for-demo --notes "checked"
+python3 scripts/review_governance.py list
+python3 scripts/review_governance.py check-production --artifact q-002-drift-detection   # BLOCKED, exit 1
+```
+
+States: `draft` → `in-review` → `approved-for-demo` or `rejected`. The ledger is
+`.work/demo_reviews.json`. `check-production` always blocks simulated approval, since production
+publication requires a real, human-approved pull request.
+
+### Detect drift and regenerate
+
+1. Edit a canonical page, for example `docs/source/architecture/content-planes.md`.
+2. `npm run detect` lists the generated pages built from that page as stale, with a regeneration plan.
+   Unrelated views stay clean.
+3. `npm run validate` now fails on the provenance-hash mismatch.
+4. Regenerate: `python3 scripts/seed_generated_views.py` rebuilds all derived views with current hashes.
+   For a single question page, `generate_question.py --persist` also works.
+5. `npm run detect` reports `stale generated: 0`, and `npm run validate` passes.
+
+Never hand-edit files under `docs/generated/`; they are produced by these scripts.
+
+### Preview a page-generation contract
+
+```bash
+python3 scripts/generate_page.py --contract GenerateRecruiterPage --target architecture-system-overview --dry-run
+```
+
+This prints the filtered evidence and the assembled prompt without calling a model or writing anything.
+The contracts are `GenerateRecruiterPage`, `GenerateInterviewPrep` and `GenerateQuestionPage`
+(`contracts/*.yaml`). Live runs currently fail; see Known issues.
+
+### Production vs demo build
+
+```bash
+npm run build:production   # drafts and demo-approved views moved to .work/stashed_unapproved/, hold stubs left
+npm run serve              # those views are gone
+npm run build:demo         # REQUIRED afterwards: restores them
+```
+
+## AI providers
+
+Routing is configured in `ai.config.yaml` and implemented in `ai/router.py`:
+
+- `fixture` is the default and comes first in every public chain.
+- `privacy: private` routes only to `local`. `local` is disabled by default, so private tasks fail on
+  purpose; they never fall back to a cloud provider.
+- Model IDs are never written in code or config, only referenced as `${AI_MODEL_*}` environment
+  variables.
+- The provider chain falls back only on transport or HTTP failures, never on content.
+
+For live generation (not yet exercised): copy `.env.example` to `.env`, which is git-ignored, and fill in
+the keys and `AI_MODEL_*` values. To use a local model, set `local.enabled: true` in `ai.config.yaml` and run
+an OpenAI-compatible endpoint (for example Ollama) at `http://localhost:11434/v1`. Never commit `.env`.
+
+## Layout
+
+| Path | Contents |
+| --- | --- |
+| `docs/source/` | Canonical pages (`type: canonical`), served at `/docs` |
+| `docs/generated/` | Derived views (`type: generated`), served at `/views` — script output only |
+| `docs/diagrams/` | Mermaid sources |
+| `i18n/hu/` | Hungarian translations |
+| `src/` | Components (`EvidenceLink`, `InterviewPrep`, `ProvenanceBanner`, `QuestionWorkbench`, `DriftInspector`, `KnowledgeExplorer`) and pages |
+| `ai/`, `ai.config.yaml` | Provider protocol, adapters, router, routing policy |
+| `contracts/`, `prompts/`, `schemas/` | Task contracts, prompt templates, JSON schemas |
+| `scripts/` | Validate, detect, generate, seed, review, build filter |
+| `tests/` | `unittest` suite |
+| `planning/` | Concept, acceptance matrix, progress |
+| `.docs-manifest.json`, `impact.json` | Dependency manifest and last drift report (rewritten by `detect`) |
+| `.work/` | Drafts, review ledger, stashed views (git-ignored) |
+
+## Rules
+
+- Canonical pages never import or cite generated pages.
+- Generated pages come only from `scripts/` and carry a `generation` block with source hashes.
+- `approved-for-demo` is a simulation. Never present it as human approval.
+- The site never calls a model at runtime.
+- Python code uses the standard library and PyYAML only.
+- No keys, tokens or `.env` values in the repository.
+
+Contributor and agent conventions: [`../AGENTS.md`](../AGENTS.md).
+
+## Known issues
+
+- **`generate_page.py` live runs fail.** Recruiter pages fail post-generation validation with
+  `last_validated: datetime.date(...) is not of type 'string'` (YAML parses the date). Interview prep fails
+  because the fixture's JSON uses plain strings for `concepts` and `example_answers`, and omits
+  `evidence`, `choice`/`benefit`/`cost` and `to` fields that `schemas/interview.schema.json` requires.
+  Use `seed_generated_views.py` to regenerate those views.
+- **`detect`'s regeneration plan** names `GenerateRecruiterPage` and `GenerateInterviewPrep` targets
+  that the failure above cannot run, and it lists some interview targets twice under different IDs.
+- **`detect_changes.py --range`** needs git history; until the repository has commits, use `--all`.
+- **The test suite works on the live `docs/generated/` tree.** An interrupted run can leave views
+  stashed; `npm run build:demo` restores them.
+- **Not verified:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a browser,
+  and any real provider call.

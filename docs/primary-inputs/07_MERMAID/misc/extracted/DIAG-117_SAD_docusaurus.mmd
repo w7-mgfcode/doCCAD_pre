@@ -1,0 +1,16 @@
+%% DIAG-117 extracted from outputs/01_products/docusaurus/SAD_docusaurus.md
+sequenceDiagram
+  participant H as Published Site
+  participant C as DocSearch Crawler
+  participant AL as Algolia Index
+  participant U as Reader Browser
+
+  Note over H,C: index-time, decoupled from build
+  C->>H: crawl HTML pages on schedule
+  C->>AL: push extracted records
+  Note over U,AL: query-time
+  U->>U: open SearchBar component
+  U->>AL: query via API key
+  AL-->>U: ranked hits with URLs
+  U->>H: navigate to result page
+  Note over U,H: local search plugin variant indexes at build time and serves index as static asset

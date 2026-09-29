@@ -1,0 +1,92 @@
+{
+  "platform": "mintlify",
+  "criteria": {
+    "github_docs_as_code_fit": {
+      "weight": 15,
+      "score": 5,
+      "rationale": "True Git-as-single-source: MDX + docs.json in your repo, GitHub App webhook deploys, web editor and even vendor AI write back via commits/PRs, automatic PR preview deployments, CI checks (broken links, Vale), monorepo path and multi-repo composition, GHES/GitLab/Bitbucket also supported. No shadow CMS when you own the repo.",
+      "evidence": "mintlify/docs repo: deploy/github.mdx, deploy/preview-deployments.mdx, deploy/ci.mdx, deploy/monorepo.mdx, what-is-mintlify.mdx [VERIFIED-OFFICIAL]",
+      "confidence": "HIGH"
+    },
+    "ai_integration_extensibility": {
+      "weight": 15,
+      "score": 5,
+      "rationale": "Best-in-class AI-consumption surface at zero cost: auto llms.txt/llms-full.txt (+.well-known + discovery headers), per-page .md endpoints and Accept: text/markdown, hosted search MCP server per site, auto skill.md, Visibility for=agents, markdown.instructions. Plus optional paid assistant/agent/automations and agent-job REST API. Ding acknowledged but not scored down: built-in generation AI is credit-metered and provider-locked; the ecosystem's external pipeline coexists cleanly since content is plain MDX in Git.",
+      "evidence": "ai/llmstxt.mdx, ai/markdown-export.mdx, ai/model-context-protocol.mdx, ai/skillmd.mdx, ai/mintlify-mcp.mdx, api/introduction.mdx [VERIFIED-OFFICIAL]",
+      "confidence": "HIGH"
+    },
+    "architecture_simplicity": {
+      "weight": 12,
+      "score": 4,
+      "rationale": "For the operator, near-zero moving parts: repo + docs.json + vendor-run everything; ideal for one engineer. Docked one point because the build/serve plane is an uninspectable black box with continuous unversioned vendor deploys, and failure recovery beyond a manual redeploy button depends on the vendor.",
+      "evidence": "what-is-mintlify.mdx, deploy/deployments.mdx [VERIFIED-OFFICIAL]; self-host architecture disclosure (MongoDB/PostgreSQL/Redis/workers) shows underlying complexity vendor absorbs [VERIFIED-OFFICIAL deploy/self-host.mdx]",
+      "confidence": "HIGH"
+    },
+    "structured_content_ia": {
+      "weight": 10,
+      "score": 5,
+      "rationale": "Rich declarative IA: navigation with pages/groups/tabs/anchors/dropdowns/menus/versions/products/languages, $ref config splitting, frontmatter metadata incl. custom keys, reusable snippets, hidden pages, .mintignore, redirects, OpenAPI-driven page generation. Directly supports canonical vs derived-view separation.",
+      "evidence": "organize/navigation.mdx, organize/settings*.mdx, create/reusable-snippets.mdx, organize/hidden-pages.mdx, organize/mintignore.mdx [VERIFIED-OFFICIAL]",
+      "confidence": "HIGH"
+    },
+    "security_governance": {
+      "weight": 10,
+      "score": 3,
+      "rationale": "Sound model (per-repo GitHub App, PR-forcing branch protection honored by the agent, CSP config, key expiry) but nearly all governance features are Enterprise-gated: SSO, SCIM, RBAC, audit logs, session/network policies, OAuth/JWT reader auth. On Starter/Pro you get shared-password or org-private reader auth and no dashboard RBAC. Compliance certifications not verified.",
+      "evidence": "dashboard/*.mdx plan gates, deploy/authentication-setup.mdx [VERIFIED-OFFICIAL]; compliance [UNKNOWN]",
+      "confidence": "HIGH"
+    },
+    "mermaid_diagrams_as_code": {
+      "weight": 8,
+      "score": 5,
+      "rationale": "Native fenced mermaid blocks, all upstream diagram types, ELK layout engine option for complex graphs, built-in zoom/pan/reset controls with placement props. Zero configuration; vendor uses it in own architecture docs.",
+      "evidence": "components/mermaid-diagrams.mdx [VERIFIED-OFFICIAL]; usage in deploy/self-host.mdx and what-is-mintlify.mdx [VERIFIED-REPO]",
+      "confidence": "HIGH"
+    },
+    "localization_bilingual": {
+      "weight": 8,
+      "score": 4,
+      "rationale": "Hungarian (hu) officially supported; navigation.languages with automatic switcher, language-filtered search and MCP, default-language control. Workarounds required: per-language duplicated navigation and directory trees, translation itself is DIY (or paid credits automation ~913 credits/run); no built-in parity/staleness tracking.",
+      "evidence": "guides/internationalization.mdx (hu in supported list), ai/model-context-protocol.mdx language filter, credits.mdx [VERIFIED-OFFICIAL]; vendor's own bot-maintained es/fr/zh trees [VERIFIED-REPO]",
+      "confidence": "HIGH"
+    },
+    "deployment_self_hosting": {
+      "weight": 7,
+      "score": 2,
+      "rationale": "Hosted-only in practice. Self-hosting exists but is Enterprise-only, sold as a scoped account-team engagement (CDK/Helm) needing MongoDB+PostgreSQL+Redis+object storage at ~45-60 vCPU — not self-serve and wildly oversized for one engineer. Offline static export (mint export) and static-export API are also Enterprise-gated. No build-artifact ownership on Starter/Pro.",
+      "evidence": "deploy/self-host.mdx, deploy/export.mdx, api/static-export/* [VERIFIED-OFFICIAL]",
+      "confidence": "HIGH"
+    },
+    "dev_author_ux": {
+      "weight": 7,
+      "score": 5,
+      "rationale": "Excellent dual workflow: mint dev hot-reload local preview, validate/broken-links CLI, JSON-schema'd docs.json with IDE autocomplete, plus a genuinely good Git-backed web editor (visual+markdown modes, branching, comments, suggestions, live preview) for non-developer contributors. Agent-tool guides (Claude Code, Cursor) and AGENTS.md in starter.",
+      "evidence": "cli/commands.mdx, editor/*.mdx [VERIFIED-OFFICIAL]; starter repo AGENTS.md and $schema [VERIFIED-REPO]",
+      "confidence": "HIGH"
+    },
+    "search_seo": {
+      "weight": 5,
+      "score": 4,
+      "rationale": "SEO is best-in-class-automatic (JSON-LD @graph, sitemaps, canonical, OG image generation, metatags overrides, GEO guidance). In-product search is solid with boost/searchable/frontmatter tuning and rebuild-on-publish, but the engine is undisclosed and non-swappable, and search filters are Enterprise-gated.",
+      "evidence": "optimize/seo.mdx, optimize/search.mdx [VERIFIED-OFFICIAL]; engine technology [UNKNOWN]",
+      "confidence": "HIGH"
+    },
+    "cost_efficiency": {
+      "weight": 3,
+      "score": 2,
+      "rationale": "Starter $0 is generous (custom domain, 5 seats, full rendering, MCP). But the target workflow's PR preview review, REST API, and any platform AI require Pro, reported by third parties at ~$450/mo annual ($540 monthly) — heavy for a one-engineer project; AI credits add-ons ($145-$800/mo) if vendor AI used. Official Pro price renders client-side and was not directly verifiable.",
+      "evidence": "Official pricing page: Starter $0, tier features, Enterprise contact-sales [VERIFIED-OFFICIAL]; credits.mdx add-on prices [VERIFIED-OFFICIAL]; Pro $450/540 from ferndesk.com Dec-2025 article [OBSERVED third-party, not official]",
+      "confidence": "MEDIUM"
+    }
+  },
+  "weighted_score": 85.0,
+  "critical_constraints": [
+    "Proprietary black-box build/serve plane; no build plugins, no remark/rehype hooks, non-swappable undisclosed search engine",
+    "Self-hosting and static export are Enterprise-only (scoped engagement, ~45-60 vCPU stack) — effectively hosted-only for this project",
+    "Preview deployments, REST API, and all AI features require Pro plan (third-party-reported ~$450/mo annual; official number not statically published)",
+    "Reader OAuth/JWT auth, SSO/RBAC/audit logs Enterprise-only; hidden pages are public-by-URL",
+    "CLI is Elastic-2.0 with a private source repo; continuous unversioned platform updates on hosted plans",
+    "Built-in AI is credit-metered and provider-locked (model choice only on self-host) — keep generation external per ecosystem rules"
+  ],
+  "verdict_one_liner": "Best-in-class Git-native authoring and AI-consumption surface with near-zero ops for one engineer — adopt as a deliberately replaceable presentation tier, accepting hosted-only serving and a Pro-plan cost floor."
+}

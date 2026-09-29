@@ -1,0 +1,64 @@
+%% C4 Level 3 - Components of the Generation Plane
+%% Runs inside GitHub Actions generate pipeline or local CLI
+flowchart TB
+
+  trigger["Trigger<br>push - PR - workflow dispatch"]
+
+  subgraph detect["Change Analysis"]
+    direction LR
+    changedet["Change Detector<br>diff plus source hash compare"]
+    contractload["Contract Loader<br>reads contracts yaml<br>selects task contract"]
+  end
+
+  subgraph context["Context Assembly - Level 1 retrieval"]
+    direction LR
+    fileselect["File Selector<br>files named in contract"]
+    fmclosure["Frontmatter Closure<br>sources and related links"]
+    grepstep["Repo Grep<br>keyword expansion"]
+  end
+
+  promptrender["Prompt Renderer<br>versioned template plus<br>delimited untrusted content"]
+
+  subgraph routing["Model Routing"]
+    direction TB
+    modelrouter["Model Router<br>policy from ai config yaml<br>fallback chain"]
+    subgraph adapters["Provider Adapters"]
+      direction LR
+      anthad["Anthropic Adapter"]
+      gemad["Gemini Adapter"]
+      oaiad["OpenAI Adapter"]
+      localad["Local Adapter<br>OpenAI-compatible"]
+    end
+  end
+
+  subgraph validation["Deterministic Validation"]
+    direction LR
+    parser["Output Parser<br>schema validator<br>contract output schema"]
+    linkcheck["Link Allowlist Checker<br>external links must match"]
+    mmdcheck["Mermaid Validator<br>compile every diagram"]
+  end
+
+  provstamp["Provenance Stamper<br>generated true frontmatter<br>source hashes recorded"]
+  prcompose["PR Composer<br>bot branch docs-gen<br>validation report attached"]
+
+  trigger --> changedet
+  changedet -->|"stale set of pages"| contractload
+  contractload --> fileselect
+  fileselect --> fmclosure
+  fmclosure --> grepstep
+  grepstep -->|"assembled evidence"| promptrender
+  contractload -->|"prompt template ref"| promptrender
+  promptrender --> modelrouter
+  modelrouter --> anthad
+  modelrouter --> gemad
+  modelrouter --> oaiad
+  modelrouter --> localad
+  anthad -->|"raw model output"| parser
+  gemad --> parser
+  oaiad --> parser
+  localad --> parser
+  parser --> linkcheck
+  linkcheck --> mmdcheck
+  mmdcheck --> provstamp
+  provstamp --> prcompose
+  prcompose -->|"pull request for human review"| trigger

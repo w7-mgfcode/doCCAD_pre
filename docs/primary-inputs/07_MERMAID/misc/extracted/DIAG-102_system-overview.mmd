@@ -1,0 +1,12 @@
+%% DIAG-102 extracted from outputs/05_poc/docs/source/architecture/system-overview.md
+flowchart LR
+  A[Canonical docs] --> B[Contract loader]
+  B --> C[Evidence assembler]
+  C --> D[Prompt renderer]
+  D --> E[Provider router]
+  E --> F[Model call]
+  F --> G[Schema validation]
+  G --> H[Provenance stamp]
+  H --> I[PR to docs-gen branch]
+  I --> J[Human review and merge]
+  J --> K[Static site build]

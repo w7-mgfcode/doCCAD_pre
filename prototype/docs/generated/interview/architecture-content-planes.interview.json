@@ -1,0 +1,80 @@
+{
+  "id": "architecture-content-planes",
+  "elevator_pitch": "DOCCAD implements Two Content Planes Separation to guarantee that documentation is strictly versioned in Git, verified mechanically via hashes, and served statically without runtime AI dependencies.",
+  "technical_explanation": "In DOCCAD, Two Content Planes Separation establishes architectural boundaries between human-authored canon and AI-generated derived views, ensuring auditability in PRs and complete offline reproducibility. Context is assembled deterministically and proven with cryptographic hashes.",
+  "concepts": [
+    {
+      "name": "Docs-as-code and Single Source of Truth",
+      "explanation": "Version-controlled files in Git represent the primary ground truth. No external database or CMS is permitted in the serving path."
+    },
+    {
+      "name": "Two-Plane Structural Separation",
+      "explanation": "Canonical documentation (/docs) and AI-generated views (/views) run in separate Docusaurus plugin instances, physically isolating human truth from bot drafts."
+    },
+    {
+      "name": "Mechanical Drift Detection",
+      "explanation": "Derived pages record sha256 digests of their input sources. When source bytes change, CI detects drift and schedules targeted regeneration."
+    }
+  ],
+  "design_decisions": [
+    {
+      "decision": "Adopt Two Content Planes Separation as an architectural invariant",
+      "rationale": "Prevents split-brain state, eliminates unverified hallucinations, and ensures predictable static builds.",
+      "evidence": "architecture-content-planes"
+    }
+  ],
+  "tradeoffs": [
+    {
+      "choice": "Deterministic Level-1 retrieval over embeddings",
+      "benefit": "Auditable evidence assembly with zero index infrastructure and 100% reproducible PR diffs.",
+      "cost": "Retrieval depends on frontmatter discipline and will need escalation if the corpus exceeds ~1,500 documents."
+    },
+    {
+      "choice": "Static-first publishing",
+      "benefit": "The site builds and serves with all AI providers down; hosting is trivial and secure.",
+      "cost": "No runtime personalization or on-demand chat \u2014 new views require a CI generation job."
+    }
+  ],
+  "likely_questions": [
+    "What is the rationale behind Two Content Planes Separation?",
+    "How does the system prevent unreviewed AI content from entering production?",
+    "Why is retrieval deterministic instead of embedding-based?"
+  ],
+  "example_answers": [
+    {
+      "question": "What is the rationale behind Two Content Planes Separation?",
+      "answer": "Two Content Planes Separation ensures that human engineering knowledge remains the authoritative ground truth, while derived views are generated strictly via explicit task contracts and reviewed via pull requests."
+    },
+    {
+      "question": "How does the system prevent unreviewed AI content from entering production?",
+      "answer": "Generated views are committed to isolated docs-gen/* branches and require human peer review approval before merging into the main branch. Auto-merge is strictly disabled."
+    }
+  ],
+  "follow_ups": [
+    "How does hash-based drift detection scale as the repository grows?",
+    "How the one-repair-retry policy bounds generation cost"
+  ],
+  "evidence_links": [
+    {
+      "label": "Two Content Planes Separation (canonical)",
+      "to": "/docs/architecture/content-planes"
+    }
+  ],
+  "generation": {
+    "contract": "GenerateInterviewPrep",
+    "contract_version": 1,
+    "prompt_version": "interview.v1",
+    "source_documents": [
+      {
+        "id": "architecture-content-planes",
+        "path": "docs/source/architecture/content-planes.md",
+        "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+      }
+    ],
+    "provider": "fixture",
+    "model": "deterministic-demo-fixture",
+    "generation_mode": "demo",
+    "generated_at": "2026-09-21T00:00:00Z",
+    "approval_status": "approved-for-demo"
+  }
+}

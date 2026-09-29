@@ -1,0 +1,28 @@
+%% DIAG-128 extracted from outputs/01_products/mintlify/SAD_mintlify.md
+flowchart TB
+  subgraph People
+    AUTH[Engineer author]
+    READ[Readers and recruiters]
+    AGT[External AI agents]
+  end
+  subgraph GitHubSide[GitHub]
+    REPO[Docs repository - MDX plus docs.json]
+    PR[Pull requests]
+    ACT[GitHub Actions - AI derivation pipeline]
+  end
+  subgraph MintlifySaaS[Mintlify SaaS - proprietary]
+    PLAT[Mintlify platform - build and hosting]
+    DASH[Dashboard and web editor]
+    AI[Mintlify AI services - assistant agent automations]
+  end
+  SITE[Published docs site - custom domain]
+  AUTH -->|writes MDX locally with mint dev| REPO
+  AUTH -->|edits in browser| DASH
+  DASH -->|commits and PRs| REPO
+  ACT -->|generates derived MDX and opens PRs| PR
+  PR --> REPO
+  REPO -->|GitHub App webhook| PLAT
+  PLAT --> SITE
+  AI -.->|optional PRs| PR
+  READ --> SITE
+  AGT -->|llms.txt md export MCP| SITE

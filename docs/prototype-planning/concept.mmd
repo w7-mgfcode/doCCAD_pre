@@ -1,0 +1,13 @@
+flowchart TD
+    C[Canonical project files] --> S[Static documentation]
+    C --> R[Deterministic evidence retrieval]
+    Q[User question] --> R
+    R --> G[Contract-driven generation]
+    G --> V[Draft with provenance and validation]
+    V --> H[Review gate]
+    H -->|Simulated review in prototype| D[Local demo preview]
+    H -->|Human-approved PR in future integration| A[Approved derived views]
+    A --> S
+    S --> U[Readers and recruiters]
+    C -->|Source hashes and dependencies| F[Find stale derivatives]
+    F -->|Regenerate affected content| R

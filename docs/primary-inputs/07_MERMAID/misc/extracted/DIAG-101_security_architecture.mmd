@@ -1,0 +1,69 @@
+%% DIAG-101 extracted from outputs/03_solution/security_architecture.md
+flowchart TB
+  subgraph Z0[Zone 0 - Untrusted Input]
+    UQ[User special questions]
+    XPR[External pull requests]
+    DEP[Third party npm and pip packages and actions]
+  end
+
+  subgraph Z1[Zone 1 - Repository]
+    SRC[Canonical docs source]
+    GEN[Generated docs plane]
+    CFG[Contracts prompts and ai config]
+    WF[Workflow definitions]
+  end
+
+  subgraph Z2[Zone 2 - CI Generation Plane]
+    CTX[Context assembly as delimited data]
+    RTR[Provider router]
+    GATE[Schema link and mermaid gates]
+    SECRETS[Actions secrets in protected environment]
+  end
+
+  subgraph Z3[Zone 3 - Cloud Model Providers]
+    ANT[Anthropic API]
+    GGL[Google API]
+    OAI[OpenAI API]
+  end
+
+  subgraph Z4[Zone 4 - Local Model]
+    LOC[Local OpenAI compatible endpoint]
+  end
+
+  subgraph Z5[Zone 5 - Build and Publish]
+    BLD[Docusaurus build]
+    MMD[Mermaid compile check]
+    PAGES[GitHub Pages static site]
+  end
+
+  RDR[Readers and recruiters]
+
+  UQ -->|data only never instructions| CTX
+  XPR -->|human review and branch protection| SRC
+  DEP -->|pinned SHAs and lockfiles| BLD
+  DEP -->|pinned SHAs| WF
+
+  SRC --> CTX
+  GEN --> CTX
+  CFG --> CTX
+  CFG --> RTR
+  SECRETS --> RTR
+
+  CTX -->|secret scan then send| RTR
+  RTR -->|public content only| ANT
+  RTR -->|public content only| GGL
+  RTR -->|public content only| OAI
+  RTR -->|private content route| LOC
+
+  ANT -->|untrusted output| GATE
+  GGL -->|untrusted output| GATE
+  OAI -->|untrusted output| GATE
+  LOC -->|untrusted output| GATE
+
+  GATE -->|bot branch PR human approval| GEN
+
+  SRC --> BLD
+  GEN --> BLD
+  BLD --> MMD
+  BLD -->|OIDC deploy token| PAGES
+  PAGES --> RDR

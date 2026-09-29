@@ -1,0 +1,25 @@
+%% Flow - publishing pipeline on merge to main
+sequenceDiagram
+  autonumber
+  participant GH as GitHub Repo
+  participant CI as Actions Build Job
+  participant Doc as Docusaurus Build
+  participant I18n as i18n Locales
+  participant Idx as Local Search Indexer
+  participant Pages as GitHub Pages
+  participant Smoke as Smoke Test
+
+  GH->>CI: merge to main triggers deploy workflow
+  CI->>Doc: run docusaurus build
+  Doc->>I18n: build EN canonical locale
+  Doc->>I18n: build HU locale with EN fallback
+  I18n-->>Doc: locale bundles
+  Doc->>Idx: generate build-time search index
+  Idx-->>Doc: index files in artifact
+  Doc-->>CI: static artifact in build directory
+  CI->>Pages: upload and deploy artifact
+  Pages-->>CI: deployment URL
+  CI->>Smoke: fetch key routes on live site
+  Smoke->>Smoke: check docs root - views root - search asset
+  Smoke-->>CI: pass or fail
+  CI-->>GH: report deploy status on commit

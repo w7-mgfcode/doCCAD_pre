@@ -1,0 +1,22 @@
+%% DIAG-123 extracted from outputs/01_products/mkdocs/SAD_mkdocs.md
+graph TB
+  subgraph People
+    ENG[Docs engineer]
+    VIS[Reader recruiter interviewer]
+    REV[PR reviewer]
+  end
+  subgraph GitHub
+    REPO[Canonical docs repo Markdown Mermaid frontmatter]
+    ACT[GitHub Actions CI]
+    PAGES[GitHub Pages static hosting]
+  end
+  AI[AI derivation layer Claude Gemini local]
+  MK[MkDocs plus Material build toolchain]
+
+  ENG -->|writes commits| REPO
+  AI -->|opens PRs with derived pages| REPO
+  REV -->|reviews merges| REPO
+  REPO --> ACT
+  ACT -->|runs mkdocs build strict| MK
+  MK -->|static site output| PAGES
+  VIS -->|reads HTTPS no AI needed| PAGES

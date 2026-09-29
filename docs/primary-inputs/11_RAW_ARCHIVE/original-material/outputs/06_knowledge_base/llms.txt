@@ -1,0 +1,57 @@
+# GitHub-Native AI Documentation Ecosystem — Knowledge Base
+
+> Structured distillation of a six-platform documentation research corpus and the resulting
+> AI-augmented docs-as-code architecture. 31 topic pages + glossary, Markdown with YAML frontmatter
+> carrying id, tags, sources, confidence and related-page links. Start at INDEX.md.
+
+## Foundations
+- [Docs-as-Code — Git as Source of Truth, PR as Editorial Gate, CI as Quality Gate](00-foundations/docs-as-code.md): Docs-as-code treats documentation exactly like software: content is plain text files in a Git repository, every change flows through a pull request that a human
+- [Localization Models for Docs Platforms — Five Patterns and the EN-Canonical Strategy](00-foundations/i18n-models.md): The six-platform field exhibits every localization architecture that exists in practice: filesystem locale copies (Docusaurus, Mintlify), plugin-assembled multi
+- [Markdown, MDX, and Frontmatter — Content Formats as Contracts](00-foundations/markdown-mdx-frontmatter.md): "Markdown" is not one thing: the six platforms span CommonMark-adjacent MDX v3, the Python-Markdown/pymdownx dialect, Hyperbook's `:::` directive extension, and
+- [Mermaid and Diagrams-as-Code — Rendering Models, Validation, Syntax Discipline](00-foundations/mermaid-diagrams-as-code.md): Diagrams-as-code stores diagrams as text (Mermaid) in the same Git repository as prose, making them diffable, PR-reviewable, AI-editable, and CI-validatable. Al
+- [Search Models for Docs Sites — Local Build-Time Index vs. SaaS vs. Black Box](00-foundations/search-models.md): Documentation search comes in three architectures: a build-time local index executed client-side (lunr, flexsearch, Zensical's Disco), an external SaaS index qu
+- [Anatomy of a Static Site Generator — The Ten-Layer Model](00-foundations/static-site-generator-anatomy.md): All six platform analyses in this corpus decomposed their subject into the same ten layers: authoring, configuration, parsing, build, rendering, plugin, theme, 
+
+## Platform Profiles
+- [How the Six-Platform Comparison Was Decided — Weights, Anchors, Constraints, Sensitivity](10-platforms/comparison-logic.md): Six analysts scored six platforms against the same 11 weighted criteria on a 1–5 anchor scale, producing weighted totals out of 100 (Docusaurus 88.6 › Mintlify 
+- [Docusaurus — Profile (Winner, 88.6/100)](10-platforms/docusaurus.md): Meta's MIT-licensed, React/MDX static documentation generator (v3.10.2 at analysis, 2026-07; ~65k stars) [VERIFIED-OFFICIAL]. It won the six-platform comparison
+- [GitBook — Profile (72.2/100; Rejected — Git Is a Mirror, Not the Engine)](10-platforms/gitbook.md): GitBook is a proprietary SaaS documentation platform with a best-in-class block-based WYSIWYG editor, bidirectional Git Sync, and excellent LLM-readability (per
+- [Hyperbook — Profile (76.0/100; The Wildcard — Great Mechanism, Wrong Audience, Bus Factor 1)](10-platforms/hyperbook.md): Hyperbook is an MIT-licensed TypeScript/Node SSG built for interactive educational workbooks (OER), maintained essentially by one person (Mike Barkmin, OpenPatc
+- [Mintlify — Profile (Runner-up on Raw Score, 85.0/100; Rejected on Constraint)](10-platforms/mintlify.md): Mintlify is a commercial hosted docs-as-code platform: MDX + a single `docs.json` in your Git repo; a vendor-operated pipeline builds and serves on every push [
+- [MkDocs + Material — Profile (83.8/100; Best Mechanics, Worst Trajectory)](10-platforms/mkdocs.md): MkDocs is a small Python SSG whose architecture is "close to the theoretical minimum for a docs-as-code publishing layer" [VERIFIED-REPO]; with the Material the
+- [Zensical — Profile (76.4/100; Credible Successor, Alpha Today)](10-platforms/zensical.md): Zensical is the Material-for-MkDocs team's successor project (announced 2025-11-05, created because "MkDocs must be considered a supply chain risk" [VERIFIED-OF
+
+## Architecture Patterns
+- [AI in CI, Never in Serving](20-patterns/ai-in-ci-not-in-serving.md): All AI output is produced at build/CI time (or via a local CLI), committed through pull requests, and only then served as static files. The published site has z
+- [Canonical vs Generated Content — Structural Separation](20-patterns/canonical-vs-generated-separation.md): AI-derived documentation must never silently become authoritative. This pattern makes the boundary between human-owned canonical knowledge and AI-generated deri
+- [Hash-Based Drift Detection and Incremental Regeneration](20-patterns/hash-based-drift-detection.md): Every generated page records a sha256 content hash of each source document it was derived from. CI recomputes those hashes at HEAD; any mismatch flags the page 
+- [Leveled Retrieval — Deterministic First, Escalate on Evidence](20-patterns/leveled-retrieval.md): Context for AI generation is assembled by four escalating levels: L1 deterministic file selection (adopted), L2 build-time full-text index, L3 embeddings, L4 hy
+- [Metadata & Provenance as a Frontmatter Contract](20-patterns/metadata-provenance-contract.md): Every page's YAML frontmatter is a schema-validated contract, not decoration. Canonical pages declare identity, audience, the repo paths they document, and owne
+- [PR-Gated Generation — Bot Branch, Run Report, Human Approval](20-patterns/pr-gated-generation.md): AI output persists exclusively through pull requests: the bot commits to `docs-gen/*` branches, the PR carries a machine-produced run report, branch protection 
+- [Task Contracts — Bounded Generation Instead of Free-Form Prompting](20-patterns/task-contracts.md): Every AI generation job references a named, versioned YAML contract that defines what the task may read, what it must produce, which deterministic gates its out
+- [Thin Provider Abstraction — Protocol, Four Adapters, YAML Routing](20-patterns/thin-provider-abstraction.md): Model access sits behind one Python Protocol (`complete(task_meta, messages, opts) → {text, usage, provider, model}`), four ~40-line HTTP adapters (Anthropic, G
+
+## Best Practices
+- [Bilingual Documentation (EN/HU) — Canonical Language plus Fallback](30-best-practices/bilingual-docs-en-hu.md): Bilingual capability without bilingual fork drift: English is the single canonical authoring language; Hungarian lives as filesystem-mirrored copies under `i18n
+- [CI Quality Gates — The Deterministic Gate Ladder](30-best-practices/ci-quality-gates.md): Every PR (human or bot) passes an ordered ladder of deterministic, merge-blocking checks: lint → frontmatter schema → internal links → Mermaid compile → full bu
+- [Evidence Discipline — Tagged Claims and Calibrated Honesty](30-best-practices/evidence-discipline.md): Every factual capability claim in the research corpus carries an explicit evidence tag, invention of unverifiable facts is banned by a named list, and proprieta
+- [GitHub Actions Security for AI Pipelines](30-best-practices/github-actions-security.md): When CI holds AI provider keys and write access, the workflows themselves become the primary attack surface. The distilled posture: least-privilege permissions 
+- [Prompt Injection Defenses for Generation Pipelines](30-best-practices/prompt-injection-defenses.md): A pipeline that feeds repository content (including user-submitted questions and its own previous output) into LLMs must assume injection attempts are present. 
+
+## Decision Frameworks
+- [Anti-Overengineering Rules — Every Component Beats a Simpler Alternative](40-decision-frameworks/anti-overengineering-rules.md): Anti-overengineering was a *hard rule* of the corpus, not a taste: the system must be operable by one capable engineer, and every component must demonstrably be
+- [Build vs Buy vs Host — SaaS and OSS-Static Decision Logic](40-decision-frameworks/build-vs-buy-vs-host.md): The six-platform field split cleanly into hosted SaaS (Mintlify, GitBook) and OSS static generators (Docusaurus, MkDocs, Zensical, Hyperbook), and the decision 
+- [Maintenance Risk Assessment — Judging Repo Health and Successor Dynamics](40-decision-frameworks/maintenance-risk-assessment.md): An OSS dependency's biggest risk is rarely its code; it is whether anyone will be maintaining it in two years. The corpus assessed this with a structured repo-h
+- [Weighted Decision Model — 11 Criteria, Anchored Scores, Constraint Override](40-decision-frameworks/weighted-decision-model.md): The platform decision was made with a weighted scoring model: 11 criteria with fixed percentage weights, 1–5 scores with written anchors, weighted total = Σ(sco
+
+## Full Platform Architecture Documents
+- [Mintlify full SAD](50-platform-architectures/mintlify/architecture.md): complete repository-grounded architecture document with C4 models, threat model, ops, risks; ADRs, runbook, roadmap and evidence log alongside in the same folder
+- [Gitbook full SAD](50-platform-architectures/gitbook/architecture.md): complete repository-grounded architecture document with C4 models, threat model, ops, risks; ADRs, runbook, roadmap and evidence log alongside in the same folder
+- [Docusaurus full SAD](50-platform-architectures/docusaurus/architecture.md): complete repository-grounded architecture document with C4 models, threat model, ops, risks; ADRs, runbook, roadmap and evidence log alongside in the same folder
+- [Mkdocs full SAD](50-platform-architectures/mkdocs/architecture.md): complete repository-grounded architecture document with C4 models, threat model, ops, risks; ADRs, runbook, roadmap and evidence log alongside in the same folder
+- [Zensical full SAD](50-platform-architectures/zensical/architecture.md): complete repository-grounded architecture document with C4 models, threat model, ops, risks; ADRs, runbook, roadmap and evidence log alongside in the same folder
+- [Hyperbook full SAD](50-platform-architectures/hyperbook/architecture.md): complete repository-grounded architecture document with C4 models, threat model, ops, risks; ADRs, runbook, roadmap and evidence log alongside in the same folder
+
+## Reference
+- [Glossary](90-glossary.md): ~50 corpus terms with definitions and page pointers
+- [Index](INDEX.md): human entry point and map of content

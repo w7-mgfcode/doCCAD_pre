@@ -1,0 +1,29 @@
+# Private agent layer. Only the root AGENTS.md and CLAUDE.md are shared.
+# .agents/skills is a symlink into .claude/skills. See .claude/rules/skills.md (local).
+.claude/
+.agents/
+CLAUDE.local.md
+
+# Dependencies and generated build output.
+node_modules/
+prototype/build/
+prototype/.docusaurus/
+prototype/.work/
+
+# Local-only session notes and pending-removal bundles.
+HANDOFF.md
+.handoffs/
+docs/primary-inputs/_to_delete/
+docs/self-log/
+# Agent-generated analysis cache (analyzing-ai-repos skill); promote pieces into docs/ deliberately.
+.kb/
+
+# Vendored virtual environments (the excalidraw skill carries ~136 MB).
+**/.venv/
+__pycache__/
+*.pyc
+
+# Never publishable. This repository is intended to be public.
+.env
+.env.*
+!.env.example

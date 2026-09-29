@@ -1,0 +1,119 @@
+{
+  "id": "architecture-system-overview",
+  "elevator_pitch": "I built a GitHub-native documentation system where one repository is the system of record and the published site is a pure static build artifact. AI is used only as a generation plane: CI jobs read canonical human-owned pages and produce derived views, but every AI output lands as a pull request that a human must approve. The site builds and serves with every AI provider completely unreachable.",
+  "technical_explanation": "The core design move is a structural boundary between two content planes. Canonical docs live under docs/source and are served at /docs; generated docs live under docs/generated and are served at /views — implemented as two independent Docusaurus docs-plugin instances, so a generated file physically cannot appear under the canonical route. Generation is contract-driven: each job references a YAML contract defining typed inputs, allowed evidence globs, an output schema, quality gates and a prohibited list. Context assembly is deterministic — the files named by the contract plus the frontmatter sources and related closure — no embeddings. Provider access goes through one complete() interface with four thin HTTP adapters and a config router; privacy-marked tasks are hard-pinned to a local provider and fail rather than fall back to the cloud. Every generated page carries provenance frontmatter with per-source content hashes, so CI detects staleness mechanically by recomputing hashes.",
+  "concepts": [
+    {
+      "name": "Two content planes",
+      "explanation": "Canonical (human-owned, only admissible AI evidence) and generated (bot-authored via PR, deletable and regenerable) are separated structurally by two docs-plugin instances with separate routes, not by naming convention."
+    },
+    {
+      "name": "Task contracts",
+      "explanation": "Every generation job references a named YAML contract bounding inputs, allowed evidence, output schema, quality gates and prohibited content — no free-form prompting."
+    },
+    {
+      "name": "Deterministic retrieval",
+      "explanation": "Context is assembled from files named by the contract plus the frontmatter sources/related closure. Auditable and reviewable in the PR; vector infrastructure is deferred until the corpus outgrows this."
+    },
+    {
+      "name": "Hash-based drift detection",
+      "explanation": "Generated pages record a content_hash per source document; CI recomputes hashes and flags mismatches as stale, so staleness is mechanical rather than judgment-based."
+    },
+    {
+      "name": "Untrusted-content boundary",
+      "explanation": "Repository content enters prompts as delimited data blocks, never as instructions, and model output is parsed against the contract schema before anything is written."
+    }
+  ],
+  "design_decisions": [
+    {
+      "decision": "AI runs only in CI or a developer shell, never in the serving path",
+      "rationale": "The published site must work with every provider unreachable; readers never wait on a model.",
+      "evidence": "architecture-system-overview"
+    },
+    {
+      "decision": "Structural separation of canonical and generated content",
+      "rationale": "Prevents generated content from laundering into canon; a generated page may cite canonical pages, never the reverse.",
+      "evidence": "architecture-system-overview"
+    },
+    {
+      "decision": "Thin provider abstraction instead of an agent framework",
+      "rationale": "Four HTTP adapters of about fifty lines each are fully auditable; model identifiers live only in configuration, so provider churn never requires a code change.",
+      "evidence": "architecture-system-overview"
+    },
+    {
+      "decision": "Privacy hard-pinning in the router",
+      "rationale": "Tasks marked private route to the local provider and fail rather than silently upgrading to a cloud provider.",
+      "evidence": "architecture-system-overview"
+    }
+  ],
+  "tradeoffs": [
+    {
+      "choice": "Pull-request-only persistence for AI output",
+      "benefit": "No unreviewed AI content can go live; provenance and review history are first-class",
+      "cost": "Generation results are not instant — a human approval step sits between generation and publication"
+    },
+    {
+      "choice": "Deterministic Level-1 retrieval over embeddings",
+      "benefit": "Auditable evidence assembly with zero index infrastructure",
+      "cost": "Retrieval quality depends on frontmatter discipline and will need escalation if the corpus grows large"
+    },
+    {
+      "choice": "Static-first publishing",
+      "benefit": "The site builds and serves with all AI providers down; hosting is trivial",
+      "cost": "No runtime personalization or on-demand answers — new views require a CI generation job"
+    }
+  ],
+  "likely_questions": [
+    "How do you stop AI-generated content from becoming a source of truth?",
+    "What happens when a canonical page changes after a view was generated?",
+    "Why not use LangChain or a similar framework for the provider layer?",
+    "How do you defend against prompt injection from repository content?",
+    "Why is retrieval deterministic instead of embedding-based?"
+  ],
+  "example_answers": [
+    {
+      "question": "How do you stop AI-generated content from becoming a source of truth?",
+      "answer": "Structurally, not by policy alone: generated pages live in a separate plugin instance with its own route, generation jobs may only write under docs/generated on a bot branch, and canonical pages never include generated content. Generated pages also carry provenance frontmatter, and only canonical pages are admissible evidence for further generation — so there are no AI-citing-AI chains."
+    },
+    {
+      "question": "What happens when a canonical page changes after a view was generated?",
+      "answer": "Every generated page records a content hash per source document. CI recomputes those hashes; a mismatch flags the page stale and only the affected pages regenerate. Staleness detection is mechanical — no model call is needed to know something drifted."
+    },
+    {
+      "question": "How do you defend against prompt injection from repository content?",
+      "answer": "Evidence enters the prompt as delimited data blocks with an explicit statement that it carries no instruction authority; the model's output is then parsed against the contract's schema, and the deterministic gates plus human PR review sit behind that. Injection can at worst produce a rejected artifact, not an action."
+    }
+  ],
+  "follow_ups": [
+    "Escalation criteria from deterministic retrieval to an index or embeddings",
+    "How the one-repair-retry policy bounds generation cost",
+    "Bilingual EN/HU strategy with filesystem locales and English fallback",
+    "How branch protection and CODEOWNERS enforce the review gate"
+  ],
+  "evidence_links": [
+    {
+      "label": "System Architecture Overview (canonical)",
+      "to": "/docs/architecture/system-overview"
+    },
+    {
+      "label": "Project Overview (canonical)",
+      "to": "/docs/overview"
+    }
+  ],
+  "generation": {
+    "contract": "GenerateInterviewPrep",
+    "contract_version": 1,
+    "prompt_version": "interview.v1",
+    "provider": "anthropic",
+    "model": "set-by-ai-config",
+    "generated_at": "2026-08-12T10:00:00Z",
+    "approval_status": "draft",
+    "source_documents": [
+      {
+        "id": "architecture-system-overview",
+        "path": "docs/source/architecture/system-overview.md",
+        "content_hash": "sha256:cf605b80e630df6cce0b166e57830f7aa781d8c15d93d19f36a60a4ef0736c60"
+      }
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+/**
+ * PoC theme overrides. Kept minimal on purpose (anti-overengineering).
+ * The one real job of this file: make the generated-content plane visually
+ * distinct so readers always know when they are looking at AI-derived views.
+ */
+
+:root {
+  --ifm-color-primary: #1d5fbf;
+  --ifm-color-primary-dark: #1a55ac;
+  --ifm-color-primary-darker: #1950a2;
+  --ifm-color-primary-darkest: #144285;
+  --ifm-color-primary-light: #2069d2;
+  --ifm-color-primary-lighter: #266fd8;
+  --ifm-color-primary-lightest: #4a84e0;
+  --poc-generated-banner-bg: #fff7e0;
+  --poc-generated-banner-border: #d4a017;
+  --poc-evidence-badge-bg: #e7f0fd;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #6ea3ef;
+  --ifm-color-primary-dark: #4f90eb;
+  --ifm-color-primary-darker: #4087e9;
+  --ifm-color-primary-darkest: #196fe0;
+  --ifm-color-primary-light: #8db6f3;
+  --ifm-color-primary-lighter: #9cbff4;
+  --ifm-color-primary-lightest: #cadcf9;
+  --poc-generated-banner-bg: #3a3320;
+  --poc-generated-banner-border: #d4a017;
+  --poc-evidence-badge-bg: #1e2c44;
+}
+
+/* Provenance banner rendered by <InterviewPrep> and usable by generated pages. */
+.poc-provenance-banner {
+  background: var(--poc-generated-banner-bg);
+  border-left: 4px solid var(--poc-generated-banner-border);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* Evidence links: claims in generated content link back to canonical pages. */
+.poc-evidence-link {
+  background: var(--poc-evidence-badge-bg);
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.poc-evidence-link::before {
+  content: '\1F4CE\00a0'; /* paperclip */
+}
+
+.poc-interview-section {
+  margin-bottom: 1rem;
+}
+
+.poc-interview-section > summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.poc-interview-section > div {
+  padding: 0.5rem 0 0.25rem 1rem;
+  border-left: 2px solid var(--ifm-color-emphasis-300);
+  margin-top: 0.5rem;
+}

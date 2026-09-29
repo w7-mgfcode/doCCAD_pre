@@ -1,0 +1,35 @@
+%% DIAG-124 extracted from outputs/01_products/mkdocs/SAD_mkdocs.md
+graph TB
+  subgraph Repo[Docs repository]
+    SRC[docs tree canonical Markdown]
+    GEN[generated tree AI derived Markdown]
+    CFG[mkdocs yml config and nav]
+    HOOKS[hooks py validation scripts]
+  end
+  subgraph Build[Build container Python]
+    CLI[mkdocs CLI]
+    CORE[mkdocs core build pipeline]
+    THEME[Material theme Jinja2 assets]
+    PLUGS[Plugins gen-files literate-nav i18n search]
+    MDX[Python-Markdown plus pymdownx]
+  end
+  subgraph Delivery
+    SITE[site directory static HTML JS CSS]
+    IDX[search index json lunr]
+    HOST[GitHub Pages or any static host]
+  end
+  BROWSER[Reader browser runs lunr and mermaid client side]
+
+  SRC --> CLI
+  GEN --> CLI
+  CFG --> CLI
+  HOOKS --> CORE
+  CLI --> CORE
+  CORE --> MDX
+  CORE --> PLUGS
+  CORE --> THEME
+  CORE --> SITE
+  PLUGS --> IDX
+  SITE --> HOST
+  IDX --> HOST
+  HOST --> BROWSER

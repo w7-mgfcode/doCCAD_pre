@@ -1,0 +1,33 @@
+# AI routing policy (ai_architecture.md §2, AD-5).
+# Model identifiers are ${ENV_VAR} references ONLY — never hard-coded here or in code.
+# API keys are read from the environment variables named by env_key.
+ai:
+  default_provider: anthropic
+  providers:
+    anthropic:
+      enabled: true
+      env_key: ANTHROPIC_API_KEY
+      model: ${AI_MODEL_ANTHROPIC}
+    gemini:
+      enabled: true
+      env_key: GEMINI_API_KEY
+      model: ${AI_MODEL_GEMINI}
+    openai:
+      enabled: true
+      env_key: OPENAI_API_KEY
+      model: ${AI_MODEL_OPENAI}
+    local:
+      enabled: false            # enable when an OpenAI-compatible endpoint runs locally
+      endpoint: "http://localhost:11434/v1"
+      model: ${AI_MODEL_LOCAL}
+  routing:
+    # Ordered rules; first match wins. Privacy pinning is enforced in code as a
+    # hard rule regardless of ordering — a private task never reaches the cloud.
+    - match: {privacy: private}
+      chain: [local]
+    - match: {task: UpdateMermaidDiagram}
+      chain: [anthropic, openai]
+    - match: {context_tokens: ">100k"}
+      chain: [gemini, anthropic]
+    - match: {}
+      chain: [anthropic, gemini, openai]

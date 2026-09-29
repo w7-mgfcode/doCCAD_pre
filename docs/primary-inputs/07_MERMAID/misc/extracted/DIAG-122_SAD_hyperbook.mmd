@@ -1,0 +1,15 @@
+%% DIAG-122 extracted from outputs/01_products/hyperbook/SAD_hyperbook.md
+sequenceDiagram
+  participant B as Build hyperbook build
+  participant L as lunr plus language plugin
+  participant F as search.js static file
+  participant U as Reader browser
+
+  B->>B: remarkCollectSearchDocuments per page
+  B->>L: add docs href description keywords heading content
+  L-->>B: serialized index plus positions
+  B->>F: write LUNR_INDEX and SEARCH_DOCUMENTS
+  U->>F: load search.js on page visit
+  U->>U: type query
+  U->>U: lunr query in browser show results
+  Note over U: fully client side no search server

@@ -1,0 +1,87 @@
+# Human-triggered generation job (AD-4, AD-9): runs a contract, opens a PR from a
+# docs-gen/* branch. Never auto-merges; branch protection requires human approval.
+name: docs-generate
+
+on:
+  workflow_dispatch:
+    inputs:
+      contract:
+        description: Task contract to run
+        type: choice
+        required: true
+        options:
+          - GenerateRecruiterPage
+          - GenerateInterviewPrep
+          - GenerateQuestionPage
+      target:
+        description: Canonical doc id (or question text for GenerateQuestionPage)
+        type: string
+        required: true
+      privacy:
+        description: Privacy class — private hard-pins to the local provider
+        type: choice
+        required: true
+        default: public
+        options: [public, private]
+
+# Least privilege: write only what the PR path needs.
+permissions:
+  contents: write        # push the docs-gen/* branch
+  pull-requests: write   # open the generation PR
+
+concurrency:
+  group: docs-generate-${{ inputs.contract }}-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Environment-protected secrets: the 'ai-generation' environment holds the
+    # provider keys and can require reviewers before the job may start.
+    environment: ai-generation
+    env:
+      # Keys and model ids come ONLY from environment secrets/variables (AD-5).
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AI_MODEL_ANTHROPIC: ${{ vars.AI_MODEL_ANTHROPIC }}
+      AI_MODEL_GEMINI: ${{ vars.AI_MODEL_GEMINI }}
+      AI_MODEL_OPENAI: ${{ vars.AI_MODEL_OPENAI }}
+    steps:
+      # Pinned to major versions for the PoC; pin to commit SHAs in production.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install pyyaml jsonschema
+
+      - name: Run generation contract
+        run: |
+          python3 scripts/generate_page.py \
+            --contract "${{ inputs.contract }}" \
+            --target "${{ inputs.target }}" \
+            --privacy "${{ inputs.privacy }}"
+
+      - name: Validate the generated output before opening a PR
+        run: python3 scripts/validate_docs.py
+
+      - name: Open pull request from docs-gen branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Placeholder PR plumbing — real repo would use these exact commands.
+          BRANCH="docs-gen/$(echo '${{ inputs.contract }}' | tr '[:upper:]' '[:lower:]')-${{ inputs.target }}"
+          git config user.name "docs-bot"
+          git config user.email "docs-bot@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add docs/generated/
+          git commit -m "docs(gen): ${{ inputs.contract }} for ${{ inputs.target }}"
+          # git push origin "$BRANCH"
+          # gh pr create --base main --head "$BRANCH" \
+          #   --title "AI generation: ${{ inputs.contract }} — ${{ inputs.target }}" \
+          #   --body "Automated generation run. Validation report attached as job log. Human review required (AD-9); auto-merge is never enabled for generation PRs."
+          echo "PoC placeholder: PR would be opened from $BRANCH (push/create commented out)."

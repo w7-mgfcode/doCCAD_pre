@@ -1,0 +1,38 @@
+# Task contract (AD-6): interview-preparation dataset for one canonical page.
+contract: GenerateInterviewPrep
+version: 1
+prompt_version: interview.v1
+prompt_template: interview.md
+
+inputs:
+  - name: target
+    type: doc_id
+    description: The canonical page to prepare interview material for.
+
+allowed_evidence:
+  - "docs/source/**/*.md"
+  - "docs/source/**/*.mdx"
+
+output:
+  format: json                       # <target>.interview.json + MDX stub page
+  dir: interview
+  schema: schemas/interview.schema.json
+
+quality_gates:
+  - json_schema_valid
+  - design_decision_evidence_ids_resolve   # each evidence value is a real doc id
+  - evidence_links_resolve
+  - source_hashes_current
+  - docusaurus_build_passes
+
+prohibited:
+  - claims not derivable from the target page and its related closure
+  - invented metrics or benchmarks
+  - references to documents outside allowed_evidence
+  - self-reported confidence scores
+
+model_requirements:
+  structured_output: true
+  min_context_tokens: 16000
+
+persistence: pr

@@ -1,0 +1,13 @@
+criterion,weight_pct,mintlify,gitbook,docusaurus,mkdocs,zensical,hyperbook,notes
+github_docs_as_code_fit,15,5,3,5,5,5,4,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+ai_integration_extensibility,15,5,4,4,4,3,3,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:MEDIUM; hyperbook:HIGH
+architecture_simplicity,12,4,4,4,5,4,4,mintlify:HIGH; gitbook:MEDIUM; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+structured_content_ia,10,5,4,5,4,3,4,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+security_governance,10,3,4,4,3,3,3,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+mermaid_diagrams_as_code,8,5,4,5,4,5,5,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+localization_bilingual,8,4,4,4,3,2,3,mintlify:HIGH; gitbook:MEDIUM; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+deployment_self_hosting,7,2,1,5,5,5,5,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+dev_author_ux,7,5,4,4,4,4,4,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+search_seo,5,4,4,4,4,4,3,mintlify:HIGH; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+cost_efficiency,3,2,3,5,5,5,5,mintlify:MEDIUM; gitbook:HIGH; docusaurus:HIGH; mkdocs:HIGH; zensical:HIGH; hyperbook:HIGH
+WEIGHTED_TOTAL,100,85.0,72.2,88.6,83.8,76.4,76.0,

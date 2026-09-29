@@ -1,0 +1,126 @@
+{
+  "pages": [
+    {
+      "id": "architecture-system-overview",
+      "path": "docs/source/architecture/system-overview.md",
+      "type": "canonical",
+      "content_hash": "sha256:cf605b80e630df6cce0b166e57830f7aa781d8c15d93d19f36a60a4ef0736c60",
+      "sources": [
+        "scripts/",
+        "ai/"
+      ],
+      "related": [
+        "overview",
+        "development-setup"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "development-setup",
+      "path": "docs/source/development/setup.md",
+      "type": "canonical",
+      "content_hash": "sha256:22074a8fc931c6cc1e99e0d224bd2fe65be8ee807be5d52b550997eaf40e9296",
+      "sources": [
+        "package.json",
+        ".env.example",
+        "ai.config.yaml"
+      ],
+      "related": [
+        "overview",
+        "architecture-system-overview"
+      ],
+      "derived_pages": []
+    },
+    {
+      "id": "overview",
+      "path": "docs/source/overview/index.md",
+      "type": "canonical",
+      "content_hash": "sha256:7e9afc23ad81b7d8bc487eae432dce0c094ef48c71375e07c81dbce779f917ae",
+      "sources": [
+        "docusaurus.config.ts",
+        "package.json",
+        "scripts/",
+        "ai/"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "development-setup"
+      ],
+      "derived_pages": [
+        "recruiter"
+      ]
+    },
+    {
+      "id": "interview-architecture-system-overview",
+      "path": "docs/generated/interview/architecture-system-overview.mdx",
+      "type": "generated",
+      "content_hash": "sha256:06bafc55a11a2cbefb03c5fc25fb7d1873388979f1ae57f6339ab753b8d2ea2d",
+      "sources": [],
+      "related": [
+        "architecture-system-overview"
+      ],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "architecture-system-overview",
+            "path": "docs/source/architecture/system-overview.md",
+            "content_hash": "sha256:cf605b80e630df6cce0b166e57830f7aa781d8c15d93d19f36a60a4ef0736c60"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recruiter-project-overview",
+      "path": "docs/generated/recruiter/project-overview.mdx",
+      "type": "generated",
+      "content_hash": "sha256:7ec08feb5b0fd23f6dffb92f99da991c620be385f498aa92bd304f7e4fdb65de",
+      "sources": [],
+      "related": [
+        "overview",
+        "architecture-system-overview"
+      ],
+      "generation": {
+        "contract": "GenerateRecruiterPage",
+        "source_documents": [
+          {
+            "id": "overview",
+            "path": "docs/source/overview/index.md",
+            "content_hash": "sha256:7e9afc23ad81b7d8bc487eae432dce0c094ef48c71375e07c81dbce779f917ae"
+          },
+          {
+            "id": "architecture-system-overview",
+            "path": "docs/source/architecture/system-overview.md",
+            "content_hash": "sha256:cf605b80e630df6cce0b166e57830f7aa781d8c15d93d19f36a60a4ef0736c60"
+          },
+          {
+            "id": "development-setup",
+            "path": "docs/source/development/setup.md",
+            "content_hash": "sha256:22074a8fc931c6cc1e99e0d224bd2fe65be8ee807be5d52b550997eaf40e9296"
+          }
+        ]
+      }
+    },
+    {
+      "id": "architecture-system-overview",
+      "path": "docs/generated/interview/architecture-system-overview.interview.json",
+      "type": "generated-data",
+      "content_hash": "sha256:4b867ac78c18591123a409294a534024788ef028789007351ee0155e3bc37f70",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "architecture-system-overview",
+            "path": "docs/source/architecture/system-overview.md",
+            "content_hash": "sha256:cf605b80e630df6cce0b166e57830f7aa781d8c15d93d19f36a60a4ef0736c60"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+%% Flow - special question to versioned answer page
+sequenceDiagram
+  autonumber
+  participant User as Question Author
+  participant GH as GitHub
+  participant CI as Actions Generate Pipeline
+  participant Cls as Classifier
+  participant Ret as Retrieval Level 1
+  participant Ctr as Contract and Prompt Selection
+  participant Rt as Model Router
+  participant AI as AI Provider
+  participant Val as Citation and Mermaid Validators
+  participant Rev as Reviewer
+  participant Site as Published Site
+
+  User->>GH: submit question via workflow dispatch or issue
+  GH->>CI: trigger question pipeline
+  CI->>Cls: classify question type and scope
+  Cls-->>CI: task type label
+  CI->>Ret: deterministic file selection
+  Ret->>Ret: contract files plus frontmatter closure plus grep
+  Ret-->>CI: evidence bundle
+  CI->>Ctr: select contract and prompt template
+  Ctr-->>CI: contract with output schema and gates
+  CI->>Rt: route by task policy
+  Rt->>AI: completion call with delimited evidence
+  AI-->>Rt: draft answer page
+  Rt-->>CI: parsed draft
+  CI->>Val: validate citations against evidence and compile mermaid
+  Val-->>CI: pass or fail report
+  CI->>GH: open preview PR on docs-gen branch
+  GH->>Rev: request approval
+  Rev->>GH: approve and merge
+  GH->>Site: build publishes versioned answer page

@@ -1,0 +1,23 @@
+{
+  "mode": "full-scan",
+  "changed_paths": [],
+  "affected_canonical": [
+    {
+      "id": "architecture-system-overview",
+      "path": "docs/source/architecture/system-overview.md",
+      "matched_changes": []
+    },
+    {
+      "id": "development-setup",
+      "path": "docs/source/development/setup.md",
+      "matched_changes": []
+    },
+    {
+      "id": "overview",
+      "path": "docs/source/overview/index.md",
+      "matched_changes": []
+    }
+  ],
+  "stale_generated": [],
+  "regenerate": []
+}

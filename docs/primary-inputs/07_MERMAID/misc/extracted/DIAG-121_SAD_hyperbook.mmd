@@ -1,0 +1,20 @@
+%% DIAG-121 extracted from outputs/01_products/hyperbook/SAD_hyperbook.md
+sequenceDiagram
+  participant A as Author or AI bot
+  participant G as GitHub
+  participant C as GitHub Actions
+  participant H as hyperbook CLI
+  participant S as Static Host
+
+  A->>G: push branch with md or md.yml changes
+  A->>G: open PR review derived AI content
+  G->>C: merge to main triggers workflow
+  C->>C: npm install hyperbook
+  C->>H: hyperbook build
+  H->>H: read hyperbook.json and hyperlibrary.json
+  H->>H: vfile walk book glossary snippets templates
+  H->>H: render md.yml via handlebars templates
+  H->>H: remark rehype pipeline per page
+  H->>H: write HTML search.js llms.txt assets
+  C->>S: upload .hyperbook out to Pages
+  S-->>A: site live no AI at serve time

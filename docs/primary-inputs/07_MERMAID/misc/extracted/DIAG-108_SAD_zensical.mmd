@@ -1,0 +1,10 @@
+%% DIAG-108 extracted from outputs/01_products/zensical/SAD_zensical.md
+graph TB
+  A[Author or AI agent] -->|commits Markdown| G[GitHub repository]
+  G -->|push triggers| CI[GitHub Actions]
+  CI -->|runs zensical build| Z[Zensical CLI]
+  Z -->|writes static site| P[GitHub Pages or any static host]
+  R[Reader] -->|HTTPS| P
+  R -->|search runs in browser| P
+  D[Developer preview] -->|zensical serve| Z
+  Z -.->|mermaid.js and fonts from CDN| CDN[Public CDNs]

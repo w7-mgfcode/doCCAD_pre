@@ -1,0 +1,88 @@
+---
+id: recruiter-project-overview
+slug: /recruiter/project-overview
+title: Project Overview for Recruiters
+type: generated
+generated: true
+audience: [recruiter]
+owners: [docs-bot]
+related: [overview, architecture-system-overview]
+generation:
+  contract: GenerateRecruiterPage
+  contract_version: 1
+  prompt_version: recruiter.v1
+  source_documents:
+    - id: overview
+      path: docs/source/overview/index.md
+      content_hash: sha256:7e9afc23ad81b7d8bc487eae432dce0c094ef48c71375e07c81dbce779f917ae
+    - id: architecture-system-overview
+      path: docs/source/architecture/system-overview.md
+      content_hash: sha256:cf605b80e630df6cce0b166e57830f7aa781d8c15d93d19f36a60a4ef0736c60
+    - id: development-setup
+      path: docs/source/development/setup.md
+      content_hash: sha256:22074a8fc931c6cc1e99e0d224bd2fe65be8ee807be5d52b550997eaf40e9296
+  repo_evidence: [package.json, ai.config.yaml]
+  provider: anthropic
+  model: set-by-ai-config
+  generated_at: 2026-08-12T10:00:00Z
+  approval_status: draft
+---
+
+<div className="poc-provenance-banner">
+  <strong>AI-generated view.</strong> Every claim below links to the canonical page
+  that evidences it. Contract GenerateRecruiterPage v1 (recruiter.v1), status draft.
+  This page is regenerable and is never a source of truth.
+</div>
+
+## 30-second version
+
+This project is a <EvidenceLink to="/docs/overview">proof of concept for a
+GitHub-native AI documentation system</EvidenceLink>: one Git repository is the
+system of record, the published site is a
+<EvidenceLink to="/docs/architecture/system-overview"> static build artifact</EvidenceLink>,
+and AI generates derived pages <EvidenceLink to="/docs/architecture/system-overview">only
+through pull requests</EvidenceLink> — it never serves readers.
+
+## 2-minute version
+
+The system separates content into two planes:
+<EvidenceLink to="/docs/architecture/system-overview">human-owned canonical
+documentation and bot-authored generated views, enforced structurally by two
+independent docs-plugin instances</EvidenceLink> rather than by naming convention.
+AI-derived pages carry <EvidenceLink to="/docs/architecture/system-overview">frontmatter
+provenance with per-source content hashes</EvidenceLink>, so staleness detection is
+mechanical, not judgment-based.
+
+The AI integration is deliberately thin:
+<EvidenceLink to="/docs/architecture/system-overview">one completion interface with
+four HTTP adapters of about fifty lines each</EvidenceLink> and a
+<EvidenceLink to="/docs/architecture/system-overview">config-driven router in which
+privacy-marked tasks are hard-pinned to a local provider and fail rather than fall
+back to the cloud</EvidenceLink>.
+<EvidenceLink to="/docs/architecture/system-overview">Model identifiers live only in
+configuration and environment variables, never in code</EvidenceLink>.
+
+## What this demonstrates about the engineering
+
+- **Boundary thinking** — <EvidenceLink to="/docs/architecture/system-overview">generated
+  content cannot silently become canonical; humans approve every generation PR via
+  branch protection</EvidenceLink>.
+- **Security awareness** — <EvidenceLink to="/docs/architecture/system-overview">repository
+  content enters prompts as delimited data, never as instructions</EvidenceLink>.
+- **Restraint** — <EvidenceLink to="/docs/architecture/system-overview">deterministic
+  file-based retrieval instead of vector infrastructure until the corpus demands
+  it</EvidenceLink>, and <EvidenceLink to="/docs/overview">honest scoping: no search
+  index, no deployed instance, dry-run generation only in the PoC</EvidenceLink>.
+- **Operability** — <EvidenceLink to="/docs/development/setup">the site builds and all
+  pipeline checks run with zero API keys configured</EvidenceLink>.
+
+## Technologies in evidence
+
+<EvidenceLink to="/docs/development/setup">Node.js 20+ with Docusaurus 3.10</EvidenceLink>,
+<EvidenceLink to="/docs/development/setup">Python 3.11+ with PyYAML for the pipeline
+scripts</EvidenceLink>, and
+<EvidenceLink to="/docs/architecture/system-overview">GitHub Actions for validation and
+generation jobs</EvidenceLink>.
+
+*(No metrics, user counts, or performance numbers appear in the canonical sources,
+so none are claimed here — the contract prohibits inventing them.)*

@@ -1,0 +1,34 @@
+%% DIAG-129 extracted from outputs/01_products/mintlify/SAD_mintlify.md
+flowchart TB
+  subgraph Client[Author side - inspectable]
+    CLI[mint CLI - npm Elastic-2.0]
+    LOCAL[Local preview server - mint dev]
+    EDITOR[Web editor]
+  end
+  subgraph Mintlify[Mintlify platform - black box]
+    CDN[CDN and WAF]
+    WEB[Docs site renderer]
+    API2[Dashboard and REST API]
+    BUILD[Build workers]
+    SRCH[Search and indexing service]
+    AISVC[AI services - assistant agent MCP hosting]
+    MONGO[(MongoDB - content store)]
+    PG[(PostgreSQL - metadata)]
+    REDIS[(Redis - build queue cache)]
+    OBJ[(Object storage - built bundles)]
+  end
+  GIT[Git provider - GitHub GitLab Bitbucket]
+  CLI --> LOCAL
+  CLI -->|push| GIT
+  EDITOR -->|commits| GIT
+  GIT -->|webhook via GitHub App| API2
+  API2 --> BUILD
+  BUILD -->|clone content| GIT
+  BUILD --> OBJ
+  BUILD --> MONGO
+  API2 --> PG
+  API2 --> REDIS
+  WEB --> OBJ
+  CDN --> WEB
+  SRCH -->|index rebuild on publish| OBJ
+  AISVC --> SRCH

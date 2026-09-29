@@ -1,0 +1,18 @@
+%% DIAG-118 extracted from outputs/01_products/hyperbook/SAD_hyperbook.md
+graph TB
+  Author[Author or Engineer]
+  AI[AI Generation Layer<br/>Claude Gemini OpenAI]
+  Reader[Reader<br/>Recruiter Candidate Dev]
+  GH[GitHub Repo<br/>canonical Markdown plus frontmatter]
+  CI[GitHub Actions CI]
+  HB[Hyperbook CLI<br/>static site generator]
+  Host[Static Host<br/>GitHub Pages Vercel Netlify]
+  VSC[VS Code plus hyperbook-studio]
+
+  Author -->|writes md| VSC
+  VSC -->|commits| GH
+  AI -->|derived md.yml data plus PRs| GH
+  GH -->|push triggers| CI
+  CI -->|runs| HB
+  HB -->|static HTML JS CSS| Host
+  Reader -->|HTTPS no AI needed| Host

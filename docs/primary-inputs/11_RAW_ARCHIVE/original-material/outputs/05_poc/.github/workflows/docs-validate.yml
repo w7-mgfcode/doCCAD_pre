@@ -1,0 +1,69 @@
+# Deterministic-first validation gate (AD-10): lint -> frontmatter/schema ->
+# mermaid compile -> full docusaurus build. All checks are merge-blocking.
+name: docs-validate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Least privilege: this workflow only reads the repo.
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Actions pinned to major versions for the PoC; in production pin to full
+      # commit SHAs (e.g. actions/checkout@<sha>) to prevent tag-rewrite attacks.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install JS dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Python dependencies
+        run: pip install pyyaml jsonschema
+
+      - name: Lint (light) — YAML well-formedness of contracts and config
+        run: |
+          python3 - <<'EOF'
+          import glob, yaml, sys
+          files = glob.glob('contracts/*.yaml') + ['ai.config.yaml'] + \
+                  glob.glob('.github/workflows/*.yml')
+          for f in files:
+              yaml.safe_load(open(f, encoding='utf-8'))
+              print(f'ok {f}')
+          EOF
+
+      - name: Frontmatter, schema and provenance-hash validation
+        run: python3 scripts/validate_docs.py
+
+      - name: Change impact report (advisory)
+        run: python3 scripts/detect_changes.py --all
+
+      - name: Mermaid compile of all .mmd diagram sources
+        run: |
+          npx -y @mermaid-js/mermaid-cli@11 --version
+          for f in $(find docs/diagrams -name '*.mmd'); do
+            npx -y @mermaid-js/mermaid-cli@11 -i "$f" -o "/tmp/$(basename "$f").svg"
+            echo "compiled $f"
+          done
+
+      - name: Docusaurus build (en + hu, onBrokenLinks=throw)
+        run: npm run build

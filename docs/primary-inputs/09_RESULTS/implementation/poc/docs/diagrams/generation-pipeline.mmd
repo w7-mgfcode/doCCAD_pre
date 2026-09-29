@@ -1,0 +1,29 @@
+flowchart TD
+  subgraph Repository
+    canon[Canonical docs under docs source]
+    contracts[Contracts and prompt templates]
+    gen[Generated docs under docs generated]
+  end
+
+  subgraph CI generation job
+    loader[Contract loader]
+    assembler[Deterministic evidence assembler]
+    renderer[Prompt renderer with delimited evidence]
+    router[Provider router from ai config]
+    model[Single model call with one repair retry]
+    gates[Deterministic quality gates]
+    stamp[Provenance stamp with content hashes]
+  end
+
+  canon --> assembler
+  contracts --> loader
+  loader --> assembler
+  assembler --> renderer
+  renderer --> router
+  router --> model
+  model --> gates
+  gates --> stamp
+  stamp --> pr[Pull request on docs-gen branch]
+  pr --> review[Human review and approval]
+  review --> gen
+  gen --> build[Static Docusaurus build]

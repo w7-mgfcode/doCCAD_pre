@@ -1,0 +1,799 @@
+{
+  "pages": [
+    {
+      "id": "architecture-ai-generation-plane",
+      "path": "docs/source/architecture/ai-generation-plane.md",
+      "type": "canonical",
+      "content_hash": "sha256:9f667c1ae0df16eaee09fe81a1a92b0973b2790283810f340518275d620dd82b",
+      "sources": [
+        "ai/provider.py",
+        "ai/router.py",
+        "ai.config.yaml"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "decisions-adr-004-provider-abstraction"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "architecture-content-planes",
+      "path": "docs/source/architecture/content-planes.md",
+      "type": "canonical",
+      "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a",
+      "sources": [
+        "docusaurus.config.ts",
+        "sidebars-source.ts",
+        "sidebars-generated.ts"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "decisions-adr-003-canonical-generated-separation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "architecture-platform-research",
+      "path": "docs/source/architecture/platform-research.md",
+      "type": "canonical",
+      "content_hash": "sha256:8325c9be7127c74b2bbdc3f0666aed594cd1df101b9f98ff8eb01faf78e7a74d",
+      "sources": [
+        "docusaurus.config.ts"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "decisions-adr-002-docusaurus-foundation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "architecture-system-overview",
+      "path": "docs/source/architecture/system-overview.md",
+      "type": "canonical",
+      "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60",
+      "sources": [
+        "docusaurus.config.ts",
+        "scripts/generate_page.py"
+      ],
+      "related": [
+        "architecture-content-planes",
+        "architecture-ai-generation-plane",
+        "decisions-adr-002-docusaurus-foundation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-001-github-source-of-truth",
+      "path": "docs/source/decisions/adr-001-github-source-of-truth.md",
+      "type": "canonical",
+      "content_hash": "sha256:2fa98329bc12722da2ff9292061dc14dae9bb79c25bb7738911b749a0f35cc50",
+      "sources": [
+        ".github/workflows/",
+        ".docs-manifest.json"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "decisions-adr-003-canonical-generated-separation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-002-docusaurus-foundation",
+      "path": "docs/source/decisions/adr-002-docusaurus-foundation.md",
+      "type": "canonical",
+      "content_hash": "sha256:a030baba8df9f5c661f8eabaccf342783f95b2e371b65d09695f62baf6407e6c",
+      "sources": [
+        "package.json",
+        "docusaurus.config.ts"
+      ],
+      "related": [
+        "architecture-platform-research",
+        "decisions-adr-003-canonical-generated-separation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-003-canonical-generated-separation",
+      "path": "docs/source/decisions/adr-003-canonical-generated-separation.md",
+      "type": "canonical",
+      "content_hash": "sha256:daf3958b6400fd40f11295b68be1ecc3b0613ab656095b00cbd9aa568d815055",
+      "sources": [
+        "docusaurus.config.ts",
+        "sidebars-source.ts",
+        "sidebars-generated.ts"
+      ],
+      "related": [
+        "architecture-content-planes",
+        "decisions-adr-005-pr-gated-generation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-004-provider-abstraction",
+      "path": "docs/source/decisions/adr-004-provider-abstraction.md",
+      "type": "canonical",
+      "content_hash": "sha256:3a9e29b1112bfcca3ec2a75bebaf5c9e09f90eead21821539a60d66ec4e34bab",
+      "sources": [
+        "ai/provider.py",
+        "ai/router.py",
+        "ai.config.yaml"
+      ],
+      "related": [
+        "architecture-ai-generation-plane",
+        "decisions-adr-005-pr-gated-generation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-005-pr-gated-generation",
+      "path": "docs/source/decisions/adr-005-pr-gated-generation.md",
+      "type": "canonical",
+      "content_hash": "sha256:ebad540189ebd2200516b3c13504e7d13c107d9840e05df9ffdc0adef7983c16",
+      "sources": [
+        ".github/workflows/docs-generate.yml"
+      ],
+      "related": [
+        "architecture-content-planes",
+        "decisions-adr-003-canonical-generated-separation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-006-retrieval-level1",
+      "path": "docs/source/decisions/adr-006-retrieval-level1.md",
+      "type": "canonical",
+      "content_hash": "sha256:fb2566b126ec2ac85022faea704359267fd6a1e86828d1bd0d9e134244e65009",
+      "sources": [
+        "scripts/generate_page.py",
+        "scripts/generate_question.py"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "architecture-ai-generation-plane"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-007-mermaid-as-code",
+      "path": "docs/source/decisions/adr-007-mermaid-as-code.md",
+      "type": "canonical",
+      "content_hash": "sha256:e19941161619e71022f686fbf0e543a04390691e09e12f920ca974d372e58997",
+      "sources": [
+        "docs/diagrams/",
+        "docusaurus.config.ts"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "decisions-adr-002-docusaurus-foundation"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-008-build-time-ai",
+      "path": "docs/source/decisions/adr-008-build-time-ai.md",
+      "type": "canonical",
+      "content_hash": "sha256:ccdad5afdad76d3b2ffe71fdd6be0e79969e001bc2a095edd2a442f157cbd547",
+      "sources": [
+        "scripts/generate_page.py",
+        "docusaurus.config.ts"
+      ],
+      "related": [
+        "architecture-ai-generation-plane",
+        "decisions-adr-009-deployment-github-pages"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "decisions-adr-009-deployment-github-pages",
+      "path": "docs/source/decisions/adr-009-deployment-github-pages.md",
+      "type": "canonical",
+      "content_hash": "sha256:14a9e6e56e4690aee0cc557af269cf0608c8f885a57a13b94490cf8b9f809f30",
+      "sources": [
+        ".github/workflows/docs-publish.yml",
+        "docusaurus.config.ts"
+      ],
+      "related": [
+        "architecture-system-overview",
+        "decisions-adr-002-docusaurus-foundation"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "development-contracts-and-schemas",
+      "path": "docs/source/development/contracts-and-schemas.md",
+      "type": "canonical",
+      "content_hash": "sha256:a2aab493daf7fef0f5b986b6a5eb83262a0046eda05cfd493d1bc476566db270",
+      "sources": [
+        "schemas/document.schema.json",
+        "schemas/interview.schema.json",
+        "contracts/GenerateRecruiterPage.yaml"
+      ],
+      "related": [
+        "generation-pipeline-lifecycle",
+        "generation-contracts"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "development-setup",
+      "path": "docs/source/development/setup.md",
+      "type": "canonical",
+      "content_hash": "sha256:6d8747200403c0ff73a1afb90c3bb6b10fc2a10a7f025cbb9019829787ae4793",
+      "sources": [
+        "package.json",
+        "scripts/validate_docs.py"
+      ],
+      "related": [
+        "getting-started-installation",
+        "development-contracts-and-schemas"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "generation-contracts",
+      "path": "docs/source/generation/contracts.md",
+      "type": "canonical",
+      "content_hash": "sha256:bc160faf5c5e268e5f0ae23d4630e3c258452091843f5d67b90785ed0ce573a2",
+      "sources": [
+        "contracts/GenerateRecruiterPage.yaml",
+        "contracts/GenerateInterviewPrep.yaml",
+        "contracts/GenerateQuestionPage.yaml"
+      ],
+      "related": [
+        "generation-pipeline-lifecycle",
+        "development-contracts-and-schemas"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "generation-pipeline-lifecycle",
+      "path": "docs/source/generation/pipeline-lifecycle.md",
+      "type": "canonical",
+      "content_hash": "sha256:08cb649585444a449b40b4ce1da500762e27fa0cd880dcd516956aca1ee5d699",
+      "sources": [
+        "scripts/generate_page.py",
+        "scripts/generate_question.py",
+        "ai/router.py"
+      ],
+      "related": [
+        "architecture-ai-generation-plane",
+        "generation-contracts",
+        "validation-quality-gates"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "getting-started-installation",
+      "path": "docs/source/getting-started/installation.md",
+      "type": "canonical",
+      "content_hash": "sha256:13913861bc968354037bee54fd965814dc55db375d10b92dfae3d9a789ee648b",
+      "sources": [
+        "package.json",
+        "tsconfig.json"
+      ],
+      "related": [
+        "getting-started-quickstart",
+        "development-setup"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "getting-started-quickstart",
+      "path": "docs/source/getting-started/quickstart.md",
+      "type": "canonical",
+      "content_hash": "sha256:9d21bcc1ae435590b588f9563465a6c853f6b694e7c7880a5c76a4fa444b55ce",
+      "sources": [
+        "package.json",
+        "scripts/validate_docs.py",
+        "scripts/detect_changes.py"
+      ],
+      "related": [
+        "getting-started-installation",
+        "validation-quality-gates"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "operations-monitoring-and-metrics",
+      "path": "docs/source/operations/monitoring-and-metrics.md",
+      "type": "canonical",
+      "content_hash": "sha256:dfcebc2c07ea45a5be85f5815e04a31d958e9c61bc173c81a5675b0dee147695",
+      "sources": [
+        ".docs-manifest.json",
+        "impact.json"
+      ],
+      "related": [
+        "validation-drift-detection",
+        "operations-runbook-stale-views"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "operations-runbook-stale-views",
+      "path": "docs/source/operations/runbook-stale-views.md",
+      "type": "canonical",
+      "content_hash": "sha256:ec199055384711b57a01e5583ac1004bee3ad93deaf2a8f35a6fd5e08f168101",
+      "sources": [
+        "scripts/detect_changes.py",
+        "scripts/generate_page.py"
+      ],
+      "related": [
+        "validation-drift-detection",
+        "troubleshooting-generation-failures"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "overview-glossary",
+      "path": "docs/source/overview/glossary.md",
+      "type": "canonical",
+      "content_hash": "sha256:f4d5074cea309ca1b88fb5ef3afcf6ecf1298b12f35044ab5aace498e6ff9163",
+      "sources": [
+        "schemas/document.schema.json"
+      ],
+      "related": [
+        "overview-index",
+        "architecture-content-planes"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "overview-index",
+      "path": "docs/source/overview/index.md",
+      "type": "canonical",
+      "content_hash": "sha256:42b81722440ea5efff869b2a62faf09dc372b4c8c5ca90c3b3aa42ff923d08ed",
+      "sources": [
+        "package.json",
+        "docusaurus.config.ts"
+      ],
+      "related": [
+        "overview-vision-and-goals",
+        "architecture-system-overview"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview",
+        "questions"
+      ]
+    },
+    {
+      "id": "overview-vision-and-goals",
+      "path": "docs/source/overview/vision-and-goals.md",
+      "type": "canonical",
+      "content_hash": "sha256:0a5127565b39f14dde0e3ecc143ceb1cd1af8f81e0a768c2948753dd6c6a2bf3",
+      "sources": [
+        "package.json"
+      ],
+      "related": [
+        "overview-index",
+        "architecture-content-planes"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "security-prompt-injection-defense",
+      "path": "docs/source/security/prompt-injection-defense.md",
+      "type": "canonical",
+      "content_hash": "sha256:462151453dfc79affe3625752b53e1cd17b0dea2db04cf2d66dff9d6860a7f30",
+      "sources": [
+        "scripts/generate_page.py",
+        "scripts/generate_question.py"
+      ],
+      "related": [
+        "security-trust-boundaries",
+        "generation-pipeline-lifecycle"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "security-trust-boundaries",
+      "path": "docs/source/security/trust-boundaries.md",
+      "type": "canonical",
+      "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677",
+      "sources": [
+        "ai/router.py",
+        "scripts/validate_docs.py"
+      ],
+      "related": [
+        "security-prompt-injection-defense",
+        "architecture-ai-generation-plane"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "troubleshooting-generation-failures",
+      "path": "docs/source/troubleshooting/generation-failures.md",
+      "type": "canonical",
+      "content_hash": "sha256:586228f70e26d4877973213df25db2a9e63a2ce44337f7b1aa8c2705ba4fa4e5",
+      "sources": [
+        "ai/router.py",
+        "scripts/generate_page.py"
+      ],
+      "related": [
+        "operations-runbook-stale-views",
+        "architecture-ai-generation-plane"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "validation-drift-detection",
+      "path": "docs/source/validation/drift-detection.md",
+      "type": "canonical",
+      "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db",
+      "sources": [
+        "scripts/detect_changes.py",
+        ".docs-manifest.json"
+      ],
+      "related": [
+        "validation-quality-gates",
+        "operations-runbook-stale-views"
+      ],
+      "derived_pages": [
+        "recruiter",
+        "interview"
+      ]
+    },
+    {
+      "id": "validation-quality-gates",
+      "path": "docs/source/validation/quality-gates.md",
+      "type": "canonical",
+      "content_hash": "sha256:e7067881a731c3e00bd1ad374989480e8536596ed29905b92a0a170e3d8d015a",
+      "sources": [
+        "scripts/validate_docs.py",
+        ".github/workflows/docs-validate.yml"
+      ],
+      "related": [
+        "validation-drift-detection",
+        "generation-pipeline-lifecycle"
+      ],
+      "derived_pages": [
+        "interview"
+      ]
+    },
+    {
+      "id": "interview-architecture-content-planes",
+      "path": "docs/generated/interview/architecture-content-planes.mdx",
+      "type": "generated",
+      "content_hash": "sha256:31b826a3b5ca2765630fabc48c084180a2de2b8853d5fd458ec7eff22227072c",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "architecture-content-planes",
+            "path": "docs/source/architecture/content-planes.md",
+            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "interview-architecture-system-overview",
+      "path": "docs/generated/interview/architecture-system-overview.mdx",
+      "type": "generated",
+      "content_hash": "sha256:85a511350d749dd508665d7337328e20179c83cc7b002835f87d9916888ebf70",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "architecture-system-overview",
+            "path": "docs/source/architecture/system-overview.md",
+            "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60"
+          }
+        ]
+      }
+    },
+    {
+      "id": "interview-security-trust-boundaries",
+      "path": "docs/generated/interview/security-trust-boundaries.mdx",
+      "type": "generated",
+      "content_hash": "sha256:bbbde9983abcbc6f96a0294148a54b62732ae76917ae0c241a16d4456f9b7822",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "security-trust-boundaries",
+            "path": "docs/source/security/trust-boundaries.md",
+            "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677"
+          }
+        ]
+      }
+    },
+    {
+      "id": "interview-validation-drift-detection",
+      "path": "docs/generated/interview/validation-drift-detection.mdx",
+      "type": "generated",
+      "content_hash": "sha256:a7651e43385b8a85f241a094d3e150c579863e28cab9959cddc6af147ff5831e",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "validation-drift-detection",
+            "path": "docs/source/validation/drift-detection.md",
+            "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db"
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-001-canonical-separation",
+      "path": "docs/generated/questions/q-001-canonical-separation.mdx",
+      "type": "generated",
+      "content_hash": "sha256:98dd2031e4648757abdd742878b750e56a036e414576526b9464399ebc42364e",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateQuestionPage",
+        "source_documents": [
+          {
+            "id": "architecture-content-planes",
+            "path": "docs/source/architecture/content-planes.md",
+            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-002-drift-detection",
+      "path": "docs/generated/questions/q-002-drift-detection.mdx",
+      "type": "generated",
+      "content_hash": "sha256:7a9bda0788584776d382e96180a48fb84cf4b6e3ae8402ba8f17bd9313a175b5",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateQuestionPage",
+        "source_documents": [
+          {
+            "id": "validation-drift-detection",
+            "path": "docs/source/validation/drift-detection.md",
+            "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db"
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-003-security-trust-zones",
+      "path": "docs/generated/questions/q-003-security-trust-zones.mdx",
+      "type": "generated",
+      "content_hash": "sha256:292a73a135f9cfcd1884750955536f0cb5b364463edd5c1bf31d4a3b33ef5b12",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateQuestionPage",
+        "source_documents": [
+          {
+            "id": "security-trust-boundaries",
+            "path": "docs/source/security/trust-boundaries.md",
+            "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677"
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-004-docusaurus-selection",
+      "path": "docs/generated/questions/q-004-docusaurus-selection.mdx",
+      "type": "generated",
+      "content_hash": "sha256:957f92ff03a6a1bdbd39303a2da5c6eb5b8d2af39e4e72a39e6a42de7c9e3409",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateQuestionPage",
+        "source_documents": [
+          {
+            "id": "decisions-adr-002-docusaurus-foundation",
+            "path": "docs/source/decisions/adr-002-docusaurus-foundation.md",
+            "content_hash": "sha256:a030baba8df9f5c661f8eabaccf342783f95b2e371b65d09695f62baf6407e6c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-005-private-routing",
+      "path": "docs/generated/questions/q-005-private-routing.mdx",
+      "type": "generated",
+      "content_hash": "sha256:af1a4ea8969b083f57308d865495a04f66873c48242b78d6f35314a39b98d315",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateQuestionPage",
+        "source_documents": [
+          {
+            "id": "decisions-adr-004-provider-abstraction",
+            "path": "docs/source/decisions/adr-004-provider-abstraction.md",
+            "content_hash": "sha256:3a9e29b1112bfcca3ec2a75bebaf5c9e09f90eead21821539a60d66ec4e34bab"
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-006-kubernetes-topology",
+      "path": "docs/generated/questions/q-006-kubernetes-topology.mdx",
+      "type": "generated",
+      "content_hash": "sha256:007a566ffbaeb3da789a5499c8a09d29c7a9e9dd9810b2e7da65ba2efcf188d1",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateQuestionPage",
+        "source_documents": [
+          {
+            "id": "decisions-adr-009-deployment-github-pages",
+            "path": "docs/source/decisions/adr-009-deployment-github-pages.md",
+            "content_hash": "sha256:14a9e6e56e4690aee0cc557af269cf0608c8f885a57a13b94490cf8b9f809f30"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recruiter-project-overview",
+      "path": "docs/generated/recruiter/project-overview.mdx",
+      "type": "generated",
+      "content_hash": "sha256:0dc38b52b6b6da57d6eb05b3c75bb5f66529b856f1d8d3421ecea95d9a6371ef",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateRecruiterPage",
+        "source_documents": [
+          {
+            "id": "overview-index",
+            "path": "docs/source/overview/index.md",
+            "content_hash": "sha256:42b81722440ea5efff869b2a62faf09dc372b4c8c5ca90c3b3aa42ff923d08ed"
+          },
+          {
+            "id": "architecture-system-overview",
+            "path": "docs/source/architecture/system-overview.md",
+            "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60"
+          },
+          {
+            "id": "architecture-content-planes",
+            "path": "docs/source/architecture/content-planes.md",
+            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "architecture-content-planes",
+      "path": "docs/generated/interview/architecture-content-planes.interview.json",
+      "type": "generated-data",
+      "content_hash": "sha256:2fddbfc389832a8a52399532a0f675a204da97d5a1ddbd034a60355237b2269e",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "architecture-content-planes",
+            "path": "docs/source/architecture/content-planes.md",
+            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "architecture-system-overview",
+      "path": "docs/generated/interview/architecture-system-overview.interview.json",
+      "type": "generated-data",
+      "content_hash": "sha256:e22aa22e662d7b92c0faba7e5efb7988108848eec0e069159ff8aa711537fb64",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "architecture-system-overview",
+            "path": "docs/source/architecture/system-overview.md",
+            "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60"
+          }
+        ]
+      }
+    },
+    {
+      "id": "security-trust-boundaries",
+      "path": "docs/generated/interview/security-trust-boundaries.interview.json",
+      "type": "generated-data",
+      "content_hash": "sha256:71460b4c68cc054e2c986718b8c2403bc71ad7316b3ae97b54da076ccca52d41",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "security-trust-boundaries",
+            "path": "docs/source/security/trust-boundaries.md",
+            "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677"
+          }
+        ]
+      }
+    },
+    {
+      "id": "validation-drift-detection",
+      "path": "docs/generated/interview/validation-drift-detection.interview.json",
+      "type": "generated-data",
+      "content_hash": "sha256:f78db89a066b739fa2c82224e80a9043388588e0dd91e104ccebfad2c75eded3",
+      "sources": [],
+      "related": [],
+      "generation": {
+        "contract": "GenerateInterviewPrep",
+        "source_documents": [
+          {
+            "id": "validation-drift-detection",
+            "path": "docs/source/validation/drift-detection.md",
+            "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db"
+          }
+        ]
+      }
+    }
+  ]
+}

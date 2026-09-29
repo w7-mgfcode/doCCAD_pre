@@ -1,0 +1,16 @@
+%% DIAG-111 extracted from outputs/01_products/zensical/SAD_zensical.md
+sequenceDiagram
+  participant A as Author or AI PR
+  participant G as GitHub
+  participant CI as Actions runner
+  participant Z as zensical build
+  participant P as Pages
+  A->>G: push Markdown plus frontmatter
+  G->>CI: workflow trigger on main
+  CI->>Z: pip install zensical, zensical build --clean
+  Z->>Z: parse config - toml or mkdocs yml
+  Z->>Z: zrx streams - render md via Python, validate links
+  Z->>Z: nav, search index, sitemap, templates via MiniJinja
+  Z-->>CI: site dir written, nonzero exit on strict failures
+  CI->>P: upload-pages-artifact, deploy-pages
+  P-->>A: published static site

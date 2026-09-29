@@ -1,0 +1,93 @@
+{
+  "platform": "GitBook",
+  "criteria": {
+    "github_docs_as_code_fit": {
+      "weight": 15,
+      "score": 3,
+      "rationale": "Real bidirectional Git Sync with Markdown + SUMMARY.md + .gitbook.yaml in repo, monorepo support, PR previews, 5000-page capacity. But GitBook's internal block model is the operational source of truth: Markdown is normalized on export, GitBook may create new files instead of reusing existing ones, README duplication is a documented failure mode, GitHub PRs do not become change requests, and app-side merges commit without GitHub review. True Git-as-single-source requires a policy layer (no app edits) plus watchdogs.",
+      "evidence": "gitbook.com/docs/docs-as-code/git-sync.md, .../git-sync/enabling-github-sync.md ('GitBook is the source of truth' vs 'the selected GitHub branch is the source of truth' at initial sync), .../git-sync/troubleshooting.md ('GitBook may create new markdown files instead of using the existing ones'; 'Creating a pull request in GitHub or GitLab doesn't create a change request in GitBook'), .../git-sync/commits.md (GITBOOK-{n} commit format)",
+      "confidence": "HIGH"
+    },
+    "ai_integration_extensibility": {
+      "weight": 15,
+      "score": 4,
+      "rationale": "Best-in-class LLM-readability out of the box: .md endpoint per page, ?ask= endpoint, llms.txt/llms-full.txt, per-site read MCP server, plus authenticated write MCP, REST API and CLI with JSON output for agentic workflows — external AI pipelines integrate cleanly via Git or API. Docked one point: platform AI (Agent/Assistant) is OpenAI-backed with no bring-your-own-model/provider abstraction, and hidden pages leak into llms-full.txt/MCP.",
+      "evidence": "gitbook.com/docs/getting-started/llm-ready-docs.md; docs-as-code/gitbook-mcp.md (mcp.gitbook.com/mcp, OAuth/PAT, change-request drafting); gitbook-agent/overview.md (OpenAI for service delivery); renderer routes llms.ts/llms-full.ts/markdownPage.ts/markdownAsk.ts inspected in GitbookIO/gitbook repo",
+      "confidence": "HIGH"
+    },
+    "architecture_simplicity": {
+      "weight": 12,
+      "score": 4,
+      "rationale": "Zero infrastructure to run — no build, hosting, or upgrades; failure recovery is documented and low-tech. Fits one-engineer operation exceptionally well. Not a 5 because the sync layer is a black box with silent failure modes (no documented failure webhook), and the canonical-Git posture demands added policy/watchdog machinery a pure static pipeline would not need.",
+      "evidence": "gitbook.com/docs/docs-as-code/git-sync/troubleshooting.md (manual re-trigger procedures); absence of sync-failure webhook in docs consulted 2026-08-12",
+      "confidence": "MEDIUM"
+    },
+    "structured_content_ia": {
+      "weight": 10,
+      "score": 4,
+      "rationale": "Strong IA primitives: sites > sections/section groups > variants > page groups > pages; SUMMARY.md-driven TOC with sidebar-title overrides; reusable content; tags with primary tag; OpenAPI 3.1 reference generation with Scalar test panel. Limited by closed frontmatter vocabulary (hidden/tags/description documented) and no custom content types.",
+      "evidence": "gitbook.com/docs/docs-as-code/git-sync/content-configuration.md (SUMMARY.md structure); manage-your-site/site-structure/variants.md; create-content/openapi.md (Swagger 2.0/OpenAPI 3.0/3.1, Scalar-powered test-it); llms-full.txt frontmatter passages (hidden, tags)",
+      "confidence": "HIGH"
+    },
+    "security_governance": {
+      "weight": 10,
+      "score": 4,
+      "rationale": "SOC 2 Type II + ISO/IEC 27001 certified; 7-level role ladder with per-content overrides; SAML SSO (Enterprise); authenticated access via OAuth/OIDC (Ultimate); fork-PR previews disabled by default for domain-abuse prevention; published Git Sync egress IPs for allowlisting. Deductions: user-scoped PATs without documented fine-grained scoping; advanced roles and SSO gated to higher tiers; app-side merge path can bypass GitHub review governance.",
+      "evidence": "www.gitbook.com/blog/gitbook-security-soc2-iso27001 (2023-09-29, SOC 2 Type II + ISO 27001); collaborate/member-management/roles.md; publish/site-audience.md; git-sync/github-pull-request-preview.md (fork preview default-off); pricing page (SAML SSO Enterprise)",
+      "confidence": "HIGH"
+    },
+    "mermaid_diagrams_as_code": {
+      "weight": 8,
+      "score": 4,
+      "rationale": "Native Mermaid blocks that round-trip via Git Sync as fenced ```mermaid code blocks — exactly the diagrams-as-code contract the ecosystem needs; renderer ships current Mermaid 11.x with zenuml and panzoom. Not a 5: no documented site-level Mermaid theme/config control and no server-side rendering guarantee.",
+      "evidence": "gitbook.com/docs/create-content/blocks/mermaid-blocks.md ('GitBook renders code blocks with the mermaid language identifier as native Mermaid blocks'); mermaid@^11.14.0 and @mermaid-js/mermaid-zenuml in packages/gitbook/package.json of GitbookIO/gitbook",
+      "confidence": "HIGH"
+    },
+    "localization_bilingual": {
+      "weight": 8,
+      "score": 4,
+      "rationale": "Language variants with a language picker, localized site/section titles with fallback, monorepo project directories allow en/ and hu/ trees each Git-synced — a workable, Git-native EN/HU model. Deductions: assets not shared across project directories (duplication), AI auto-translation is a paid add-on with unverified Hungarian coverage and OpenAI lock-in, hreflang behavior undocumented.",
+      "evidence": "manage-your-site/site-structure/variants.md; manage-your-site/site-structure/multilingual-sections.md (localized titles); docs-as-code/git-sync/monorepos.md (asset isolation quote); pricing page (translations add-on $25/50k words + $0.20/1k on Premium, included Ultimate)",
+      "confidence": "MEDIUM"
+    },
+    "deployment_self_hosting": {
+      "weight": 7,
+      "score": 1,
+      "rationale": "No self-hosting of the platform exists — editor, content store, sync, search and AI are SaaS-only. The single OSS piece (GPL-3.0 renderer) explicitly renders GitBook's published content by consuming api.gitbook.com, so even a self-deployed renderer keeps the vendor in the serving path. Scored strictly against actual self-host options per brief; the Markdown exit path mitigates lock-in but is not deployment capability.",
+      "evidence": "Official docs and pricing contain no self-host/on-prem offering (checked 2026-08-12); GitbookIO/gitbook README ('open source code used to render GitBook's published content'); packages/gitbook/src/lib/data/api.ts uses @gitbook/api against api.gitbook.com",
+      "confidence": "HIGH"
+    },
+    "dev_author_ux": {
+      "weight": 7,
+      "score": 4,
+      "rationale": "Excellent dual-mode UX: polished block editor, change requests with merge rules, visual version history and rollback for writers; branch/PR/preview-URL workflow, .gitbook.yaml-in-repo, CLI with JSON output and skill.md for AI coding assistants for developers. Deductions: no local offline preview/build of the site, SUMMARY.md registration requirement, and round-trip normalization quirks that punish docs-as-code purists.",
+      "evidence": "docs-as-code/gitbook-cli.md; git-sync/github-pull-request-preview.md; create-content/version-control.md; git-sync/troubleshooting.md ('New repository files only sync if listed in SUMMARY.md')",
+      "confidence": "HIGH"
+    },
+    "search_seo": {
+      "weight": 5,
+      "score": 4,
+      "rationale": "SEO: server-side pre-rendered HTML, automatic sitemaps, canonical URLs, OG tags, auto-301s, global CDN — strong defaults with near-zero config. Search: built-in Quick Find keyword search (AI-independent, satisfying static-first) plus cited AI answers on paid plans. Deductions: search backend not configurable (no BYO index), AI search paywalled at Premium, no documented JSON-LD/hreflang control.",
+      "evidence": "publish/seo.md ('HTML is pre-rendered server-side...', /sitemap-pages.xml); create-content/searching-your-content.md; pricing page (AI search in Premium); flexsearch client-side path in renderer repo",
+      "confidence": "HIGH"
+    },
+    "cost_efficiency": {
+      "weight": 3,
+      "score": 3,
+      "rationale": "Free tier genuinely covers a solo public docs site with Git Sync and LLM optimizations, but a custom domain forces Premium at $65/site/month (+$12/user) — expensive versus $0 static hosting; Ultimate ($249/site/month) is needed for authenticated access/assistant. Per-site pricing penalizes multi-site setups; translations add-on is metered.",
+      "evidence": "www.gitbook.com/pricing accessed 2026-08-12: Free $0; Premium $65/site/mo + $12/user/mo; Ultimate $249/site/mo + $12/user/mo; Enterprise custom; translations $25 first 50k words then $0.20/1k (Premium), included in Ultimate",
+      "confidence": "HIGH"
+    }
+  },
+  "weighted_score": 72.2,
+  "critical_constraints": [
+    "No self-hosting of the platform; the GPLv3 OSS renderer still depends on api.gitbook.com",
+    "GitBook's internal block document model — not your Markdown — is the operational source of truth; export is normalized, not byte-faithful",
+    "Custom frontmatter round-trip behavior is undocumented; only hidden/tags/description are documented fields",
+    "App-side merges commit to the synced branch without GitHub PR review; GitHub PRs do not create GitBook change requests",
+    "Platform AI is OpenAI-backed with no provider abstraction; hidden pages are exposed via llms-full.txt and site MCP",
+    "Custom domain requires Premium ($65/site/month); no author-defined components (no MDX) — native blocks or ContentKit integrations only",
+    "Git Sync limits: 5,000 Markdown pages per section, 100MB per file, one branch per section"
+  ],
+  "verdict_one_liner": "Best-in-class managed, LLM-ready publishing endpoint with a real Markdown exit path — but as a strictly GitHub-canonical foundation it demands a one-way-sync discipline that forfeits its editor, and it can never be self-hosted."
+}

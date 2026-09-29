@@ -1,0 +1,762 @@
+{
+ "project": "PRE-DOCCAD",
+ "generated_at": "2026-08-13T16:25:00Z",
+ "purpose": "AI retrieval/navigation layer over the archive. Human entry: 00_PROJECT_CONTROL/PROJECT_INDEX.md. Answers what/requirements/decisions/research/architecture/tasks/remaining via ids and paths; per-file hashes in PROJECT_MANIFEST.json; chains in TRACEABILITY_MATRIX.md.",
+ "registers": {
+  "requirements": "01_PROJECT_KNOWLEDGE/REQUIREMENTS.md",
+  "tasks": "08_TASKS/TASK_REGISTER.md",
+  "results": "09_RESULTS/RESULT_REGISTER.md",
+  "decisions": "01_PROJECT_KNOWLEDGE/DECISIONS.md",
+  "entities": "00_PROJECT_CONTROL/ENTITY_REGISTER.md",
+  "duplicates": "00_PROJECT_CONTROL/DUPLICATES.md",
+  "mermaid": "07_MERMAID/MERMAID_REGISTER.md"
+ },
+ "artifact_count": 27,
+ "artifacts": [
+  {
+   "id": "PROMPT-001",
+   "title": "Master research & architecture mission",
+   "type": "prompt",
+   "status": "historical",
+   "path": "03_PROMPTS/master/PROMPT-001_research-architecture-mission.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "Founding 43-section mission: research six documentation platforms and design/prototype the GitHub-native AI documentation ecosystem. Near-verbatim transcription.",
+   "topics": [
+    "mission",
+    "requirements",
+    "vision"
+   ],
+   "requirements": [
+    "REQ-001",
+    "REQ-002",
+    "REQ-003",
+    "REQ-004",
+    "REQ-005",
+    "REQ-006",
+    "REQ-007",
+    "REQ-008",
+    "REQ-009",
+    "REQ-010",
+    "REQ-011",
+    "REQ-012",
+    "REQ-013",
+    "REQ-014",
+    "REQ-015",
+    "REQ-016"
+   ],
+   "tasks": [
+    "TASK-001"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [
+    "PROMPT-002"
+   ],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "PROMPT-002",
+   "title": "Archival consolidation mission",
+   "type": "prompt",
+   "status": "historical",
+   "path": "03_PROMPTS/master/PROMPT-002_archival-consolidation-mission.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "23-section archival mission that produced this repository. Near-verbatim transcription.",
+   "topics": [
+    "archival",
+    "provenance"
+   ],
+   "requirements": [],
+   "tasks": [
+    "TASK-014"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "PROMPT-004",
+   "title": "Shared platform analysis brief",
+   "type": "prompt",
+   "status": "historical",
+   "path": "03_PROMPTS/research/PROMPT-004_platform-analysis-brief.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "The written brief all six research analysts followed: evidence rules, deliverable set, scoring anchors.",
+   "topics": [
+    "research-method",
+    "evidence"
+   ],
+   "requirements": [
+    "REQ-001"
+   ],
+   "tasks": [
+    "TASK-001"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "RES-001",
+   "title": "Mintlify research set",
+   "type": "research",
+   "status": "canonical",
+   "path": "02_RESEARCH/documentation-platforms/mintlify/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Complete repository-grounded analysis of mintlify: full SAD with C4 L1-L3 and threat model, 5 adoption ADRs, runbook, roadmap, 11-criterion scores with evidence and confidence, repo health, source log.",
+   "topics": [
+    "platform-research",
+    "mintlify"
+   ],
+   "requirements": [
+    "REQ-001",
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-002"
+   ],
+   "decisions": [
+    "DEC-001"
+   ],
+   "results": [],
+   "related_artifacts": [
+    "RES-007"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "RES-002",
+   "title": "Gitbook research set",
+   "type": "research",
+   "status": "canonical",
+   "path": "02_RESEARCH/documentation-platforms/gitbook/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Complete repository-grounded analysis of gitbook: full SAD with C4 L1-L3 and threat model, 5 adoption ADRs, runbook, roadmap, 11-criterion scores with evidence and confidence, repo health, source log.",
+   "topics": [
+    "platform-research",
+    "gitbook"
+   ],
+   "requirements": [
+    "REQ-001",
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-003"
+   ],
+   "decisions": [
+    "DEC-001"
+   ],
+   "results": [],
+   "related_artifacts": [
+    "RES-007"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "RES-003",
+   "title": "Docusaurus research set",
+   "type": "research",
+   "status": "canonical",
+   "path": "02_RESEARCH/documentation-platforms/docusaurus/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Complete repository-grounded analysis of docusaurus: full SAD with C4 L1-L3 and threat model, 5 adoption ADRs, runbook, roadmap, 11-criterion scores with evidence and confidence, repo health, source log.",
+   "topics": [
+    "platform-research",
+    "docusaurus"
+   ],
+   "requirements": [
+    "REQ-001",
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-004"
+   ],
+   "decisions": [
+    "DEC-001"
+   ],
+   "results": [],
+   "related_artifacts": [
+    "RES-007"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "RES-004",
+   "title": "Mkdocs research set",
+   "type": "research",
+   "status": "canonical",
+   "path": "02_RESEARCH/documentation-platforms/mkdocs/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Complete repository-grounded analysis of mkdocs: full SAD with C4 L1-L3 and threat model, 5 adoption ADRs, runbook, roadmap, 11-criterion scores with evidence and confidence, repo health, source log.",
+   "topics": [
+    "platform-research",
+    "mkdocs"
+   ],
+   "requirements": [
+    "REQ-001",
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-005"
+   ],
+   "decisions": [
+    "DEC-001"
+   ],
+   "results": [],
+   "related_artifacts": [
+    "RES-007"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "RES-005",
+   "title": "Zensical research set",
+   "type": "research",
+   "status": "canonical",
+   "path": "02_RESEARCH/documentation-platforms/zensical/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Complete repository-grounded analysis of zensical: full SAD with C4 L1-L3 and threat model, 5 adoption ADRs, runbook, roadmap, 11-criterion scores with evidence and confidence, repo health, source log.",
+   "topics": [
+    "platform-research",
+    "zensical"
+   ],
+   "requirements": [
+    "REQ-001",
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-006"
+   ],
+   "decisions": [
+    "DEC-001"
+   ],
+   "results": [],
+   "related_artifacts": [
+    "RES-007"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "RES-006",
+   "title": "Hyperbook research set",
+   "type": "research",
+   "status": "canonical",
+   "path": "02_RESEARCH/documentation-platforms/hyperbook/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Complete repository-grounded analysis of hyperbook: full SAD with C4 L1-L3 and threat model, 5 adoption ADRs, runbook, roadmap, 11-criterion scores with evidence and confidence, repo health, source log.",
+   "topics": [
+    "platform-research",
+    "hyperbook"
+   ],
+   "requirements": [
+    "REQ-001",
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-007"
+   ],
+   "decisions": [
+    "DEC-001"
+   ],
+   "results": [],
+   "related_artifacts": [
+    "RES-007"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "RES-007",
+   "title": "Comparison and decision set",
+   "type": "research",
+   "status": "canonical",
+   "path": "02_RESEARCH/documentation-platforms/_comparison/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Master comparison table, raw scorecard, weighted decision matrix with sensitivity analysis. Ranking: Docusaurus 88.6, Mintlify 85.0, MkDocs 83.8, Zensical 76.4, Hyperbook 76.0, GitBook 72.2.",
+   "topics": [
+    "comparison",
+    "decision"
+   ],
+   "requirements": [
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-008"
+   ],
+   "decisions": [
+    "DEC-001"
+   ],
+   "results": [],
+   "related_artifacts": [],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "DEC-001",
+   "title": "Platform selection: Docusaurus",
+   "type": "decision",
+   "status": "canonical",
+   "path": "04_ARCHITECTURE/architecture-decisions/decision_matrix.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Docusaurus selected: raw winner AND only candidate passing all critical constraints (static-first, self-hosting, structural separation, component extensibility, active maintenance). Runner-up analysis for Mintlify and MkDocs included.",
+   "topics": [
+    "decision",
+    "platform"
+   ],
+   "requirements": [
+    "REQ-002"
+   ],
+   "tasks": [
+    "TASK-008"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [
+    "RES-007",
+    "ARCH-002"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "ARCH-001",
+   "title": "Architecture spine",
+   "type": "architecture",
+   "status": "canonical",
+   "path": "04_ARCHITECTURE/SAD/ARCHITECTURE-SPINE.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "15 binding architecture decisions (AD-1..15) fixing the invariants: files-only, Docusaurus, two content planes, AI-in-CI, thin provider abstraction, task contracts, L1 retrieval, hash provenance, PR-only persistence, deterministic validation, build-time views, i18n, local search, static deploy, injection boundary. Plus deferred items and seed.",
+   "topics": [
+    "architecture",
+    "invariants",
+    "bmad"
+   ],
+   "requirements": [
+    "REQ-003",
+    "REQ-004",
+    "REQ-005",
+    "REQ-006"
+   ],
+   "tasks": [
+    "TASK-009"
+   ],
+   "decisions": [
+    "DEC-002",
+    "DEC-003",
+    "DEC-004",
+    "DEC-005",
+    "DEC-006",
+    "DEC-007",
+    "DEC-008",
+    "DEC-009",
+    "DEC-010"
+   ],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "ARCH-002",
+   "title": "Solution architecture (MEGOLDAS)",
+   "type": "architecture",
+   "status": "canonical",
+   "path": "04_ARCHITECTURE/SAD/solution_architecture.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "The 35-section final SAD: information architecture, repo model, canonical/generated models, AI generation, routing, retrieval, recruiter/interview/special-question designs, Mermaid, automation, drift, security, deployment modes A/B/C, CI/CD, cost, risks, roadmap phases, PoC description, migration checklist. EN with Hungarian executive summary and MEGOLDAS sections.",
+   "topics": [
+    "architecture",
+    "solution"
+   ],
+   "requirements": [
+    "REQ-003",
+    "REQ-013"
+   ],
+   "tasks": [
+    "TASK-009"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [
+    "ARCH-001",
+    "ARCH-003",
+    "ARCH-004",
+    "ARCH-005",
+    "ARCH-006"
+   ],
+   "language": "hu+en",
+   "confidence": "high"
+  },
+  {
+   "id": "ARCH-003",
+   "title": "Content architecture",
+   "type": "architecture",
+   "status": "canonical",
+   "path": "05_DOCUMENTATION_DESIGN/information-architecture/content_architecture.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Final taxonomy (docs/source 00-14, generated views, diagrams), critique of the draft structure, naming conventions, full frontmatter metadata schema for canonical and generated pages, link/diagram conventions, EN/HU translation strategy, generated-content policy.",
+   "topics": [
+    "taxonomy",
+    "metadata",
+    "i18n"
+   ],
+   "requirements": [
+    "REQ-004",
+    "REQ-009",
+    "REQ-013"
+   ],
+   "tasks": [
+    "TASK-009"
+   ],
+   "decisions": [
+    "DEC-004"
+   ],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "ARCH-004",
+   "title": "AI architecture",
+   "type": "architecture",
+   "status": "canonical",
+   "path": "06_AI_DOCUMENTATION/model-strategy/ai_architecture.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Generation plane design: 4 ~40-line provider adapters behind one Protocol, YAML policy routing with privacy hard-pin to local, Level-1 deterministic retrieval with explicit L2/L3 escalation boundaries, 9-contract catalog, per-artifact pipeline with single repair retry, failure/degradation modes.",
+   "topics": [
+    "ai",
+    "providers",
+    "retrieval",
+    "contracts"
+   ],
+   "requirements": [
+    "REQ-005",
+    "REQ-006",
+    "REQ-007"
+   ],
+   "tasks": [
+    "TASK-009"
+   ],
+   "decisions": [
+    "DEC-005",
+    "DEC-007"
+   ],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "ARCH-005",
+   "title": "Automation architecture",
+   "type": "architecture",
+   "status": "canonical",
+   "path": "05_DOCUMENTATION_DESIGN/documentation-process/automation_architecture.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "GitHub ingestion (diff, classification, manifest, impact), deterministic hash-based drift detection, four CI/CD workflows with security posture, incremental regeneration rules.",
+   "topics": [
+    "automation",
+    "ci-cd",
+    "drift"
+   ],
+   "requirements": [
+    "REQ-008",
+    "REQ-009"
+   ],
+   "tasks": [
+    "TASK-009"
+   ],
+   "decisions": [
+    "DEC-006"
+   ],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "ARCH-006",
+   "title": "Security architecture",
+   "type": "architecture",
+   "status": "canonical",
+   "path": "04_ARCHITECTURE/SAD/security_architecture.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Six trust zones, 13 modeled threats (prompt injection, MDX execution, Mermaid XSS, pwn-request CI, supply chain, secret leakage, misinformation, cross-provider exposure), least-privilege tokens, provider data-handling stance, incident runbook, per-control simplicity check.",
+   "topics": [
+    "security",
+    "threat-model"
+   ],
+   "requirements": [
+    "REQ-016"
+   ],
+   "tasks": [
+    "TASK-009"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [
+    "ARCH-001"
+   ],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "DOC-001",
+   "title": "Knowledge base wiki",
+   "type": "documentation",
+   "status": "derived",
+   "path": "09_RESULTS/research/knowledge-base/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "33-file cross-linked distillation: 6 foundations, 7 platform pages, 8 patterns, 5 practices, 4 decision frameworks, glossary, INDEX.md and llms.txt entry points, plus the six full SADs under 50-platform-architectures. 0 broken links at build.",
+   "topics": [
+    "knowledge-base",
+    "wiki",
+    "llm-ready"
+   ],
+   "requirements": [],
+   "tasks": [
+    "TASK-013"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [
+    "RES-001",
+    "RES-007",
+    "ARCH-002"
+   ],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "DOC-002",
+   "title": "Validation report Gates A-F",
+   "type": "validation",
+   "status": "canonical",
+   "path": "09_RESULTS/validation/validation_report.md",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "All six gates PASS with the evidence trail; explicit VERIFIED-BY-EXECUTION vs NOT-EXECUTED split; honest skill-usage statement.",
+   "topics": [
+    "validation"
+   ],
+   "requirements": [
+    "REQ-015"
+   ],
+   "tasks": [
+    "TASK-011"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "DOC-003",
+   "title": "Runnable PoC",
+   "type": "implementation",
+   "status": "canonical",
+   "path": "09_RESULTS/implementation/poc/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "Docusaurus 3.10.2 starter proving the five mandated scenarios by execution: dual docs instances, Mermaid, InterviewPrep component, recruiter page with real sha256 provenance, 4 provider adapters + privacy-pinning router, 3 contracts and prompts, 3 pipeline scripts, 2 workflows. node_modules/build excluded from archive; npm install restores.",
+   "topics": [
+    "poc",
+    "docusaurus"
+   ],
+   "requirements": [
+    "REQ-015"
+   ],
+   "tasks": [
+    "TASK-010"
+   ],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [
+    "ARCH-004",
+    "DOC-002"
+   ],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "DIAG-SET",
+   "title": "Validated Mermaid diagram set",
+   "type": "diagram",
+   "status": "canonical",
+   "path": "07_MERMAID/",
+   "source": "session-workspace",
+   "source_reference": "S1 - see SOURCE_REGISTER.md",
+   "summary": "10 standalone compile-validated .mmd (C4 L1-L3, deployment, 5 flows, trust boundaries) organized by type, register, plus 32 embedded diagrams extracted with provenance headers.",
+   "topics": [
+    "mermaid",
+    "c4",
+    "diagrams"
+   ],
+   "requirements": [
+    "REQ-001"
+   ],
+   "tasks": [
+    "TASK-009"
+   ],
+   "decisions": [
+    "DEC-008"
+   ],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "KNOW-VISION",
+   "title": "Project vision",
+   "type": "knowledge",
+   "status": "canonical",
+   "path": "01_PROJECT_KNOWLEDGE/VISION.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "The preserved vision with the explicit line between designed and proven capabilities.",
+   "topics": [
+    "vision"
+   ],
+   "requirements": [],
+   "tasks": [],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [
+    "PROMPT-001"
+   ],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "KNOW-REQU",
+   "title": "Project knowledge: 16 requirements",
+   "type": "knowledge",
+   "status": "canonical",
+   "path": "01_PROJECT_KNOWLEDGE/REQUIREMENTS.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "Conversational-knowledge register: 16 requirements, EXPLICIT/INFERRED labeled.",
+   "topics": [
+    "project-knowledge"
+   ],
+   "requirements": [],
+   "tasks": [],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "KNOW-DECI",
+   "title": "Project knowledge: decision register",
+   "type": "knowledge",
+   "status": "canonical",
+   "path": "01_PROJECT_KNOWLEDGE/DECISIONS.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "Conversational-knowledge register: decision register, EXPLICIT/INFERRED labeled.",
+   "topics": [
+    "project-knowledge"
+   ],
+   "requirements": [],
+   "tasks": [],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "KNOW-CONS",
+   "title": "Project knowledge: user-imposed constraints",
+   "type": "knowledge",
+   "status": "canonical",
+   "path": "01_PROJECT_KNOWLEDGE/CONSTRAINTS.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "Conversational-knowledge register: user-imposed constraints, EXPLICIT/INFERRED labeled.",
+   "topics": [
+    "project-knowledge"
+   ],
+   "requirements": [],
+   "tasks": [],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "KNOW-REJE",
+   "title": "Project knowledge: rejected options with evidence",
+   "type": "knowledge",
+   "status": "canonical",
+   "path": "01_PROJECT_KNOWLEDGE/REJECTED_ALTERNATIVES.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "Conversational-knowledge register: rejected options with evidence, EXPLICIT/INFERRED labeled.",
+   "topics": [
+    "project-knowledge"
+   ],
+   "requirements": [],
+   "tasks": [],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  },
+  {
+   "id": "KNOW-OPEN",
+   "title": "Project knowledge: gaps and deferrals",
+   "type": "knowledge",
+   "status": "canonical",
+   "path": "01_PROJECT_KNOWLEDGE/OPEN_QUESTIONS.md",
+   "source": "conversation",
+   "source_reference": "S2 - see SOURCE_REGISTER.md",
+   "summary": "Conversational-knowledge register: gaps and deferrals, EXPLICIT/INFERRED labeled.",
+   "topics": [
+    "project-knowledge"
+   ],
+   "requirements": [],
+   "tasks": [],
+   "decisions": [],
+   "results": [],
+   "related_artifacts": [],
+   "language": "en",
+   "confidence": "high"
+  }
+ ]
+}

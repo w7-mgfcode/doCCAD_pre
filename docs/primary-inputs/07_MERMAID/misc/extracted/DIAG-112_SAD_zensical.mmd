@@ -1,0 +1,13 @@
+%% DIAG-112 extracted from outputs/01_products/zensical/SAD_zensical.md
+sequenceDiagram
+  participant B as Build time
+  participant R as Rust SearchIndex
+  participant O as site output
+  participant U as Reader browser
+  participant W as Disco worker
+  B->>R: pages stream complete - barrier
+  R->>R: flatten sections, attach nav path and tags
+  R->>O: write search index json
+  U->>O: load page, fetch index
+  U->>W: init web worker with index
+  W-->>U: ranked results, highlighting, no server

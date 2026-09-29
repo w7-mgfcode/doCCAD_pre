@@ -1,0 +1,28 @@
+%% DIAG-105 extracted from outputs/01_products/gitbook/SAD_gitbook.md
+graph TB
+  subgraph Renderer app - packages slash gitbook
+    MW[middleware.ts - URL and site resolution]
+    ROUTES[routes - llms, markdownPage, sitemap, robots, rss, ogimage, openapi-proxy]
+    DOCVIEW[DocumentView - block model renderer]
+    SEARCHC[Search components - flexsearch local plus AI actions]
+    AICHAT[AIChat and Adaptive components]
+    PDFC[PDF export components]
+    AUTH[SiteAuth - authenticated access]
+  end
+  subgraph Workspace packages
+    APICL[gitbook api client]
+    CKIT[react-contentkit - integration blocks]
+    OAPI[react-openapi plus openapi-parser]
+    MATH[react-math]
+    EXPR[expr - adaptive expressions]
+  end
+  MW --> ROUTES
+  ROUTES --> DOCVIEW
+  DOCVIEW --> CKIT
+  DOCVIEW --> OAPI
+  DOCVIEW --> MATH
+  SEARCHC --> APICL
+  AICHAT --> APICL
+  DOCVIEW --> APICL
+  AUTH --> APICL
+  AICHAT --> EXPR

@@ -1,0 +1,23 @@
+%% DIAG-113 extracted from outputs/01_products/docusaurus/SAD_docusaurus.md
+flowchart TB
+  author["Engineer / Author"]
+  ai["AI Layer - Claude, Gemini, OpenAI, local"]
+  reader["Reader - recruiter, interviewer, dev"]
+  subgraph gh["GitHub"]
+    repo["Docs Repo - canonical MD + generated MDX"]
+    actions["GitHub Actions CI"]
+    pr["PR Review Gate"]
+  end
+  site["Docusaurus Static Site"]
+  hosting["Static Hosting - Pages, Netlify, nginx"]
+  algolia["Algolia DocSearch - optional"]
+
+  author -->|"writes canonical docs"| repo
+  ai -->|"generates derived MDX via PR"| pr
+  pr --> repo
+  repo --> actions
+  actions -->|"docusaurus build"| site
+  site --> hosting
+  hosting --> reader
+  hosting -.->|"crawl and index"| algolia
+  reader -.->|"search queries"| algolia

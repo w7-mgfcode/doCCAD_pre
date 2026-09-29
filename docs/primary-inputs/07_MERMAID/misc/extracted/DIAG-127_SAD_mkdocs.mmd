@@ -1,0 +1,16 @@
+%% DIAG-127 extracted from outputs/01_products/mkdocs/SAD_mkdocs.md
+sequenceDiagram
+  participant MK as mkdocs build
+  participant SP as search plugin
+  participant SI as search_index json
+  participant BR as reader browser
+  participant WK as web worker lunr
+
+  MK->>SP: on_page_content html per page
+  SP->>SP: strip html split sections collect text
+  SP->>SI: write search_index json to site dir
+  MK->>SP: on_post_build copy lunr js assets
+  Note over SP: lunr hu js included when language hu
+  BR->>SI: fetch index on first search focus
+  BR->>WK: init lunr with language pipeline
+  WK-->>BR: ranked results client side only

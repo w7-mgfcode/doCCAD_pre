@@ -1,0 +1,19 @@
+%% DIAG-131 extracted from outputs/01_products/mintlify/SAD_mintlify.md
+sequenceDiagram
+  participant E as Engineer
+  participant AI as AI pipeline in GitHub Actions
+  participant GH as GitHub repo
+  participant APP as Mintlify GitHub App
+  participant B as Mintlify build service
+  participant S as Published site
+  E->>GH: push branch with MDX changes
+  AI->>GH: open PR with derived pages
+  GH->>APP: webhook PR opened
+  APP->>B: build preview deployment
+  B-->>GH: preview URL comment plus CI checks
+  E->>GH: review preview approve merge
+  GH->>APP: webhook push to deploy branch
+  APP->>B: clone content run build
+  B->>B: validate render index
+  B->>S: publish new version
+  S-->>E: live site llms.txt updated

@@ -1,0 +1,24 @@
+%% DIAG-103 extracted from outputs/01_products/gitbook/SAD_gitbook.md
+graph TB
+  subgraph People
+    ENG[Solo engineer]
+    READER[Doc readers]
+    AIREADER[AI agents and LLMs]
+  end
+  subgraph GitHub
+    REPO[Docs repo - Markdown, SUMMARY.md, .gitbook.yaml]
+    ACT[GitHub Actions - AI derivation pipeline]
+  end
+  subgraph GitBook SaaS
+    APP[GitBook app - editor and admin]
+    PUB[Published site on CDN]
+    API[GitBook REST API and MCP]
+  end
+  ENG -->|writes canonical docs| REPO
+  ACT -->|generates derived pages via PR| REPO
+  REPO <-->|Git Sync bidirectional| APP
+  APP -->|publishes| PUB
+  READER -->|reads HTML| PUB
+  AIREADER -->|reads llms.txt and md endpoints| PUB
+  ENG -->|automation| API
+  API --> APP

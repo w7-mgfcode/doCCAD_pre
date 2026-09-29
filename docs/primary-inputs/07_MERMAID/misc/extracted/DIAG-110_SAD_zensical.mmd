@@ -1,0 +1,23 @@
+%% DIAG-110 extracted from outputs/01_products/zensical/SAD_zensical.md
+graph TB
+  subgraph Workflow[crates zensical src]
+    M[workflow.rs Main module]
+    C[config - project, theme, plugins, validation, mdx]
+    S1[structure markdown]
+    S2[structure nav]
+    S3[structure search - SearchIndex]
+    S4[structure page and toc and tags]
+    T[template - loader, filters, output]
+    V[python bridge - render callback, anchors, references, issues]
+    K[workflow cached.rs - hash keyed cache]
+    W[watcher - Source stream]
+  end
+  M --> C
+  M --> S1 --> V
+  M --> S2
+  M --> S3
+  M --> T
+  M --> K
+  W --> M
+  V -->|calls python markdown render| PYX[python zensical markdown render.py]
+  PYX --> EXT[extensions - autorefs, mkdocstrings, macros, glightbox, search, links, emoji]
