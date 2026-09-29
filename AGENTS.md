@@ -13,10 +13,10 @@ repository holds two things:
 - `prototype/` — a runnable local DOCCAD prototype: Docusaurus 3.10.2 + React 19 static site, Python
   governance scripts, a provider-agnostic AI router, task contracts and JSON schemas.
 
-The repository is a git repository (initialized 2026-09-29; branch `main`, no commits and no remote
-yet — `docs/primary-inputs/README.md` still says it is uninitialized, which predates this). History is
-empty until the first commit. `.claude/` and `.agents/` are git-ignored, so git does not track the
-agent layer. Read-only git commands (`status`, `diff`, `log`) are fine; do not commit, push, or create
+The repository is a git repository (initialized 2026-09-29; branch `main`, first commit 2026-09-29,
+no remote yet — `docs/primary-inputs/README.md` still says it is uninitialized, which predates this).
+Git history starts at that initial import, so `git log` explains nothing from before it. `.claude/`,
+`.agents/`, `.kb/` and local session notes are git-ignored, so git does not track the agent layer. Read-only git commands (`status`, `diff`, `log`) are fine; do not commit, push, or create
 branches unless asked.
 
 ## Project structure
