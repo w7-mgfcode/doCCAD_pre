@@ -70,11 +70,13 @@ All from `prototype/`.
 | `npm run build:production` | Remove drafts and demo-approved views, then build | **`docs/generated/`** — run `build:demo` afterwards |
 | `npm run clear` | Clear Docusaurus caches | — |
 
-Several commands rewrite tracked files. To look without changing anything, copy the directory first:
+Several commands rewrite tracked files. To look without changing anything, work on a copy. Run this
+from the repository root, and copy `.github/` too, because one test checks the workflows' script calls:
 
 ```bash
-rsync -a --exclude node_modules --exclude build --exclude .docusaurus prototype/ /tmp/doccad/
-ln -s "$PWD/prototype/node_modules" /tmp/doccad/node_modules && cd /tmp/doccad
+mkdir -p /tmp/doccad && rsync -a .github /tmp/doccad/
+rsync -a --exclude node_modules --exclude build --exclude .docusaurus prototype /tmp/doccad/
+ln -s "$PWD/prototype/node_modules" /tmp/doccad/prototype/node_modules && cd /tmp/doccad/prototype
 ```
 
 ## Using the site
@@ -244,7 +246,7 @@ Repository rulesets on `main` must be applied by the repository owner (`@w7-mgfc
 - Generated pages come only from `scripts/` and carry a `generation` block with source hashes.
 - `approved-for-demo` is a simulation. Never present it as human approval.
 - The site never calls a model at runtime.
-- Python code uses the standard library and PyYAML only.
+- Python code uses the standard library, PyYAML, `jsonschema` and `referencing` only (`requirements.txt`).
 - No keys, tokens or `.env` values in the repository.
 
 Contributor and agent conventions: [`../AGENTS.md`](../AGENTS.md).
