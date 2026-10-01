@@ -151,13 +151,13 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
   - [x] Build responsive landing page `/`. *(Page exists and builds; responsiveness NOT verified in a browser.)*
 
 - [ ] **Milestone 7: Automated Verification & Test Suite** — partial
-  - [x] Author comprehensive Python tests under `prototype/tests/`. *(56 tests in 18 test classes, 2026-10-01. All 14 required boundaries pass with zero expected failures.)*
+  - [x] Author comprehensive Python tests under `prototype/tests/`. *(75 tests in 22 test classes, 2026-10-01. All 14 required boundaries pass with zero expected failures.)*
   - [x] Execute `validate_docs.py` and `detect_changes.py`.
-  - [x] Run full test suite covering all 14 required failure boundaries and lifecycle transitions. *(Full suite passes: 56 OK, 0 failures, 0 expected failures).*
+  - [x] Run full test suite covering all 14 required failure boundaries and lifecycle transitions. *(Full suite passes: 75 OK, 0 failures, 0 expected failures).*
   - [x] Execute `npm run typecheck` and `npm run build` (both `en` and `hu` locales).
-  - [x] Verify local search index generation. *(`build/search-index.json`, 361 KB.)*
-  - [ ] Execute headless browser smoke tests and capture mobile/desktop screenshots. *(NOT RUN — no screenshots or browser evidence in the repository.)*
-  - [ ] Compile `prototype/VALIDATION.md`. *(Missing.)*
+  - [x] Verify local search index generation. *(`build/search-index.json` 350 KB, `build/hu/search-index.json` 343 KB).*
+  - [ ] Execute headless browser smoke tests and capture mobile/desktop screenshots. *(NOT RUN — `/browser` is an interactive user-side slash command in Antigravity 2.0 app; automated browser dependency unapproved per E6; full manual procedure documented in VALIDATION.md).*
+  - [x] Compile `prototype/VALIDATION.md`. *(Compiled with PASS/FAIL/NOT RUN status across all gates and D11 Hungarian fallback findings).*
 
 - [ ] **Milestone 8: Delivery & Handoff** — started
   - [ ] Finalize `prototype/README.md`, `prototype/DEMO.md`, and `prototype/LIMITATIONS.md`. *(`README.md` written 2026-09-29, including known issues; `DEMO.md` and `LIMITATIONS.md` do not exist.)*
