@@ -145,7 +145,7 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
 
 - [ ] **Milestone 6: Frontend UX, Search, i18n & Workbenches** — partial
   - [x] Configure Docusaurus dual docs plugin (`/docs` vs `/views`), Mermaid, and `@easyops-cn/docusaurus-search-local`.
-  - [ ] Provide genuine Hungarian translations under `i18n/hu/` for landing page, navigation, overview, and onboarding. *(Partial: overview and onboarding are translated — 4 docs pages. The landing page (`src/pages/index.tsx`) uses no `<Translate>`, and there is no navbar/footer translation file; `i18n/hu/code.json` holds 9 theme strings.)*
+  - [x] Provide genuine Hungarian translations under `i18n/hu/` for landing page, navigation, overview, and onboarding. *(Landing page `src/pages/index.tsx` internationalized with 33 `<Translate>`/`translate()` calls; `i18n/hu/code.json`, `navbar.json`, `footer.json` populated with genuine Hungarian translations; search plugin enabled for `['en', 'hu']`; `build/hu/index.html` and `build/hu/search-index.json` generated successfully).*
   - [x] Implement UI components: `EvidenceLink`, `InterviewPrep`, `ProvenanceBanner`, `QuestionWorkbench`, `DriftInspector`, `KnowledgeExplorer`.
   - [x] Build responsive landing page `/`. *(Page exists and builds; responsiveness NOT verified in a browser.)*
 
