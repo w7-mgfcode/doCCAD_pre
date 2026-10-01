@@ -3,6 +3,7 @@ id: generation-contracts
 slug: /generation/contracts
 title: Task Contracts Catalog
 type: canonical
+visibility: public
 audience: [developer, architect]
 owners: [architecture]
 sources: [contracts/GenerateRecruiterPage.yaml, contracts/GenerateInterviewPrep.yaml, contracts/GenerateQuestionPage.yaml]

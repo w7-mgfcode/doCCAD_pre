@@ -3,6 +3,7 @@ id: q-005-private-routing
 slug: /questions/q-005-private-routing
 title: 'Question: Private Routing and Zero Cloud Fallback'
 type: generated
+visibility: public
 audience:
 - developer
 - architect
@@ -12,20 +13,18 @@ last_validated: '2026-09-21'
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
   - id: decisions-adr-004-provider-abstraction
     path: docs/source/decisions/adr-004-provider-abstraction.md
-    content_hash: sha256:3a9e29b1112bfcca3ec2a75bebaf5c9e09f90eead21821539a60d66ec4e34bab
+    content_hash: sha256:79977252cd936ac91df02b9cb47a5cd4e5fd667811af8abd5590d51acf26b373
   provider: fixture
   model: deterministic-demo-fixture
   generation_mode: demo
   generated_at: '2026-09-21T00:00:00Z'
   approval_status: approved-for-demo
 ---
-
-import EvidenceLink from '@site/src/components/EvidenceLink';
 
 # Question: How does the private routing policy prevent data leakage to cloud model providers?
 

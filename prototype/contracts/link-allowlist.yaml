@@ -1,0 +1,7 @@
+version: 1
+allowed_domains:
+  - github.com
+  - docusaurus.io
+  - nodejs.org
+  - python.org
+  - react.dev

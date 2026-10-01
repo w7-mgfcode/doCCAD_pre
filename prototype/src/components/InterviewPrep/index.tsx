@@ -64,13 +64,40 @@ function Section({title, children}: {title: string; children: ReactNode}) {
   );
 }
 
+declare const require: any;
+
+let interviewMap: Record<string, InterviewData> = {};
+try {
+  const context = require.context('@site/docs/generated/interview', false, /\.interview\.json$/);
+  context.keys().forEach((key: string) => {
+    const d = context(key);
+    const baseId = key.replace(/^\.\//, '').replace(/\.interview\.json$/, '');
+    interviewMap[baseId] = d;
+    if (d && d.id) {
+      interviewMap[d.id] = d;
+    }
+  });
+} catch {
+  // Directory may be stashed during production build or context unavailable
+}
+
 /**
  * InterviewPrep — renders a generated interview-preparation dataset (AD-11:
  * build-time artifact, no runtime AI). Data is committed JSON under
  * docs/generated/interview/, validated against schemas/interview.schema.json in CI.
+ * Can be loaded by id (preferred to eliminate MDX imports) or passed data directly.
  */
-export default function InterviewPrep({data}: {data: InterviewData}): ReactNode {
-  const g = data.generation;
+export default function InterviewPrep({id, data}: {id?: string; data?: InterviewData}): ReactNode {
+  const resolved = data || (id ? interviewMap[id] : undefined);
+  if (!resolved) {
+    return (
+      <div className="poc-provenance-banner">
+        <em>Interview dataset not loaded or currently on hold.</em>
+      </div>
+    );
+  }
+
+  const g = resolved.generation;
   return (
     <div>
       {g && (
@@ -84,16 +111,16 @@ export default function InterviewPrep({data}: {data: InterviewData}): ReactNode 
       )}
 
       <Section title="Elevator pitch (30s)">
-        <p>{data.elevator_pitch}</p>
+        <p>{resolved.elevator_pitch}</p>
       </Section>
 
       <Section title="Technical explanation (2min)">
-        <p>{data.technical_explanation}</p>
+        <p>{resolved.technical_explanation}</p>
       </Section>
 
       <Section title="Key concepts">
         <ul>
-          {data.concepts.map((c) => (
+          {resolved.concepts.map((c) => (
             <li key={c.name}>
               <strong>{c.name}:</strong> {c.explanation}
             </li>
@@ -103,7 +130,7 @@ export default function InterviewPrep({data}: {data: InterviewData}): ReactNode 
 
       <Section title="Design decisions">
         <ul>
-          {data.design_decisions.map((d) => (
+          {resolved.design_decisions.map((d) => (
             <li key={d.decision}>
               <strong>{d.decision}</strong> — {d.rationale}{' '}
               <em>(evidence: {d.evidence})</em>
@@ -114,7 +141,7 @@ export default function InterviewPrep({data}: {data: InterviewData}): ReactNode 
 
       <Section title="Trade-offs">
         <ul>
-          {data.tradeoffs.map((t) => (
+          {resolved.tradeoffs.map((t) => (
             <li key={t.choice}>
               <strong>{t.choice}</strong>: + {t.benefit} / − {t.cost}
             </li>
@@ -124,14 +151,14 @@ export default function InterviewPrep({data}: {data: InterviewData}): ReactNode 
 
       <Section title="Likely questions">
         <ul>
-          {data.likely_questions.map((q) => (
+          {resolved.likely_questions.map((q) => (
             <li key={q}>{q}</li>
           ))}
         </ul>
       </Section>
 
       <Section title="Example answers">
-        {data.example_answers.map((ea) => (
+        {resolved.example_answers.map((ea) => (
           <div key={ea.question} style={{marginBottom: '0.75rem'}}>
             <p>
               <strong>Q:</strong> {ea.question}
@@ -145,7 +172,7 @@ export default function InterviewPrep({data}: {data: InterviewData}): ReactNode 
 
       <Section title="Follow-up topics">
         <ul>
-          {data.follow_ups.map((f) => (
+          {resolved.follow_ups.map((f) => (
             <li key={f}>{f}</li>
           ))}
         </ul>
@@ -153,7 +180,7 @@ export default function InterviewPrep({data}: {data: InterviewData}): ReactNode 
 
       <h2>Evidence</h2>
       <ul>
-        {data.evidence_links.map((e) => (
+        {resolved.evidence_links.map((e) => (
           <li key={e.to}>
             <Link to={e.to} className="poc-evidence-link">
               {e.label}

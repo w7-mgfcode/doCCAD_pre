@@ -3,6 +3,7 @@ id: generation-pipeline-lifecycle
 slug: /generation/pipeline-lifecycle
 title: Generation Pipeline Lifecycle
 type: canonical
+visibility: public
 audience: [developer, architect, operator]
 owners: [architecture]
 sources: [scripts/generate_page.py, scripts/generate_question.py, ai/router.py]

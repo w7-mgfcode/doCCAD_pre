@@ -3,6 +3,7 @@ id: overview-vision-and-goals
 slug: /overview/vision-and-goals
 title: Vision, Tenets & Bilingual Strategy
 type: canonical
+visibility: public
 audience: [developer, architect, recruiter, user]
 owners: [architecture]
 sources: [package.json]

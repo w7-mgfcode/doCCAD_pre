@@ -3,6 +3,7 @@ id: troubleshooting-generation-failures
 slug: /troubleshooting/generation-failures
 title: Troubleshooting Generation Failures & Degradation
 type: canonical
+visibility: public
 audience: [developer, operator]
 owners: [operations]
 sources: [ai/router.py, scripts/generate_page.py]

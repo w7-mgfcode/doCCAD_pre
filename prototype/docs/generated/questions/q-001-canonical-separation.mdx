@@ -3,6 +3,7 @@ id: q-001-canonical-separation
 slug: /questions/q-001-canonical-separation
 title: 'Question: Separation of Canonical and Generated Planes'
 type: generated
+visibility: public
 audience:
 - developer
 - architect
@@ -12,20 +13,18 @@ last_validated: '2026-09-21'
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
   - id: architecture-content-planes
     path: docs/source/architecture/content-planes.md
-    content_hash: sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a
+    content_hash: sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68
   provider: fixture
   model: deterministic-demo-fixture
   generation_mode: demo
   generated_at: '2026-09-21T00:00:00Z'
   approval_status: approved-for-demo
 ---
-
-import EvidenceLink from '@site/src/components/EvidenceLink';
 
 # Question: How does DOCCAD ensure AI-generated content does not pollute canonical documentation?
 

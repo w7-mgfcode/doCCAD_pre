@@ -4,7 +4,7 @@
       "id": "architecture-ai-generation-plane",
       "path": "docs/source/architecture/ai-generation-plane.md",
       "type": "canonical",
-      "content_hash": "sha256:9f667c1ae0df16eaee09fe81a1a92b0973b2790283810f340518275d620dd82b",
+      "content_hash": "sha256:47491b9f907c48a260c0ba7a67d53ba25586578f39089dfb85d06361df7f6377",
       "sources": [
         "ai/provider.py",
         "ai/router.py",
@@ -23,7 +23,7 @@
       "id": "architecture-content-planes",
       "path": "docs/source/architecture/content-planes.md",
       "type": "canonical",
-      "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a",
+      "content_hash": "sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68",
       "sources": [
         "docusaurus.config.ts",
         "sidebars-source.ts",
@@ -42,7 +42,7 @@
       "id": "architecture-platform-research",
       "path": "docs/source/architecture/platform-research.md",
       "type": "canonical",
-      "content_hash": "sha256:8325c9be7127c74b2bbdc3f0666aed594cd1df101b9f98ff8eb01faf78e7a74d",
+      "content_hash": "sha256:039451157bbf0328004259b7906ac2fccba68181949a9d372f9bcd7efe4815c8",
       "sources": [
         "docusaurus.config.ts"
       ],
@@ -59,7 +59,7 @@
       "id": "architecture-system-overview",
       "path": "docs/source/architecture/system-overview.md",
       "type": "canonical",
-      "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60",
+      "content_hash": "sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499",
       "sources": [
         "docusaurus.config.ts",
         "scripts/generate_page.py"
@@ -78,7 +78,7 @@
       "id": "decisions-adr-001-github-source-of-truth",
       "path": "docs/source/decisions/adr-001-github-source-of-truth.md",
       "type": "canonical",
-      "content_hash": "sha256:2fa98329bc12722da2ff9292061dc14dae9bb79c25bb7738911b749a0f35cc50",
+      "content_hash": "sha256:179420f79c29a02d936d8081bcfc975017d2fba7e59010e0a92c6f1acd4472cb",
       "sources": [
         ".github/workflows/",
         ".docs-manifest.json"
@@ -96,7 +96,7 @@
       "id": "decisions-adr-002-docusaurus-foundation",
       "path": "docs/source/decisions/adr-002-docusaurus-foundation.md",
       "type": "canonical",
-      "content_hash": "sha256:a030baba8df9f5c661f8eabaccf342783f95b2e371b65d09695f62baf6407e6c",
+      "content_hash": "sha256:307c44aa5c76c449524df258d447fffb244347c2ba6076fb367e039f5d18e74f",
       "sources": [
         "package.json",
         "docusaurus.config.ts"
@@ -114,7 +114,7 @@
       "id": "decisions-adr-003-canonical-generated-separation",
       "path": "docs/source/decisions/adr-003-canonical-generated-separation.md",
       "type": "canonical",
-      "content_hash": "sha256:daf3958b6400fd40f11295b68be1ecc3b0613ab656095b00cbd9aa568d815055",
+      "content_hash": "sha256:661eaac6831f4c78f4bb2504b7e341d0c29dd47c631690abc72e1c42e23e8d51",
       "sources": [
         "docusaurus.config.ts",
         "sidebars-source.ts",
@@ -133,7 +133,7 @@
       "id": "decisions-adr-004-provider-abstraction",
       "path": "docs/source/decisions/adr-004-provider-abstraction.md",
       "type": "canonical",
-      "content_hash": "sha256:3a9e29b1112bfcca3ec2a75bebaf5c9e09f90eead21821539a60d66ec4e34bab",
+      "content_hash": "sha256:79977252cd936ac91df02b9cb47a5cd4e5fd667811af8abd5590d51acf26b373",
       "sources": [
         "ai/provider.py",
         "ai/router.py",
@@ -152,7 +152,7 @@
       "id": "decisions-adr-005-pr-gated-generation",
       "path": "docs/source/decisions/adr-005-pr-gated-generation.md",
       "type": "canonical",
-      "content_hash": "sha256:ebad540189ebd2200516b3c13504e7d13c107d9840e05df9ffdc0adef7983c16",
+      "content_hash": "sha256:2590351429171c06e648883baa9dd469dc6d4fad2f6aad5df00aff6a8a825848",
       "sources": [
         ".github/workflows/docs-generate.yml"
       ],
@@ -169,7 +169,7 @@
       "id": "decisions-adr-006-retrieval-level1",
       "path": "docs/source/decisions/adr-006-retrieval-level1.md",
       "type": "canonical",
-      "content_hash": "sha256:fb2566b126ec2ac85022faea704359267fd6a1e86828d1bd0d9e134244e65009",
+      "content_hash": "sha256:c80362dbd6f835d548ebe281a2f6837309ca161749551936f2b05152ddaeaae9",
       "sources": [
         "scripts/generate_page.py",
         "scripts/generate_question.py"
@@ -187,7 +187,7 @@
       "id": "decisions-adr-007-mermaid-as-code",
       "path": "docs/source/decisions/adr-007-mermaid-as-code.md",
       "type": "canonical",
-      "content_hash": "sha256:e19941161619e71022f686fbf0e543a04390691e09e12f920ca974d372e58997",
+      "content_hash": "sha256:fe3709e8e5cebdc4c586ed73a73440da514a8dd10c8d1718dba6aea69fbee492",
       "sources": [
         "docs/diagrams/",
         "docusaurus.config.ts"
@@ -204,7 +204,7 @@
       "id": "decisions-adr-008-build-time-ai",
       "path": "docs/source/decisions/adr-008-build-time-ai.md",
       "type": "canonical",
-      "content_hash": "sha256:ccdad5afdad76d3b2ffe71fdd6be0e79969e001bc2a095edd2a442f157cbd547",
+      "content_hash": "sha256:8697bce73bd657162bd59ed8791f45eb83f78c3663eaa49f75b8bd79efdbf8a2",
       "sources": [
         "scripts/generate_page.py",
         "docusaurus.config.ts"
@@ -221,7 +221,7 @@
       "id": "decisions-adr-009-deployment-github-pages",
       "path": "docs/source/decisions/adr-009-deployment-github-pages.md",
       "type": "canonical",
-      "content_hash": "sha256:14a9e6e56e4690aee0cc557af269cf0608c8f885a57a13b94490cf8b9f809f30",
+      "content_hash": "sha256:91421efb11fbc1f1552434bf1cf65766d4f3810c4331a0678fe4e619893e615c",
       "sources": [
         ".github/workflows/docs-publish.yml",
         "docusaurus.config.ts"
@@ -239,7 +239,7 @@
       "id": "development-contracts-and-schemas",
       "path": "docs/source/development/contracts-and-schemas.md",
       "type": "canonical",
-      "content_hash": "sha256:a2aab493daf7fef0f5b986b6a5eb83262a0046eda05cfd493d1bc476566db270",
+      "content_hash": "sha256:9b013ca4b46e98fa89ab8f26efa39befcec58b6dc8702097f1881067f7efc385",
       "sources": [
         "schemas/document.schema.json",
         "schemas/interview.schema.json",
@@ -257,7 +257,7 @@
       "id": "development-setup",
       "path": "docs/source/development/setup.md",
       "type": "canonical",
-      "content_hash": "sha256:6d8747200403c0ff73a1afb90c3bb6b10fc2a10a7f025cbb9019829787ae4793",
+      "content_hash": "sha256:49a8b98e902f5ed466409c2f1323a3c85c536d359038e60aadacdf9375a825d6",
       "sources": [
         "package.json",
         "scripts/validate_docs.py"
@@ -274,7 +274,7 @@
       "id": "generation-contracts",
       "path": "docs/source/generation/contracts.md",
       "type": "canonical",
-      "content_hash": "sha256:bc160faf5c5e268e5f0ae23d4630e3c258452091843f5d67b90785ed0ce573a2",
+      "content_hash": "sha256:f0e8bce7ed735c0fe8f99cde069aa534409fc288a2c6ddd720ae5347b784619f",
       "sources": [
         "contracts/GenerateRecruiterPage.yaml",
         "contracts/GenerateInterviewPrep.yaml",
@@ -292,7 +292,7 @@
       "id": "generation-pipeline-lifecycle",
       "path": "docs/source/generation/pipeline-lifecycle.md",
       "type": "canonical",
-      "content_hash": "sha256:08cb649585444a449b40b4ce1da500762e27fa0cd880dcd516956aca1ee5d699",
+      "content_hash": "sha256:380e3d65d621157f7f0c3355e721c9222bfe4827ec49e589aa3547778c4ecf97",
       "sources": [
         "scripts/generate_page.py",
         "scripts/generate_question.py",
@@ -311,7 +311,7 @@
       "id": "getting-started-installation",
       "path": "docs/source/getting-started/installation.md",
       "type": "canonical",
-      "content_hash": "sha256:13913861bc968354037bee54fd965814dc55db375d10b92dfae3d9a789ee648b",
+      "content_hash": "sha256:98c6629e101a600a0d69e196fdc8a70460cf27779aa56ecd3d5df2971dc8546e",
       "sources": [
         "package.json",
         "tsconfig.json"
@@ -328,7 +328,7 @@
       "id": "getting-started-quickstart",
       "path": "docs/source/getting-started/quickstart.md",
       "type": "canonical",
-      "content_hash": "sha256:9d21bcc1ae435590b588f9563465a6c853f6b694e7c7880a5c76a4fa444b55ce",
+      "content_hash": "sha256:a3db954e3610293435fe42629035bb88b56a08a885e145843df37735fa451ed4",
       "sources": [
         "package.json",
         "scripts/validate_docs.py",
@@ -347,7 +347,7 @@
       "id": "operations-monitoring-and-metrics",
       "path": "docs/source/operations/monitoring-and-metrics.md",
       "type": "canonical",
-      "content_hash": "sha256:dfcebc2c07ea45a5be85f5815e04a31d958e9c61bc173c81a5675b0dee147695",
+      "content_hash": "sha256:051ceb38a0f9a9dc50ac736b8c8fbffaa42fa7c1fb8c421eca74c0cff6348b88",
       "sources": [
         ".docs-manifest.json",
         "impact.json"
@@ -364,7 +364,7 @@
       "id": "operations-runbook-stale-views",
       "path": "docs/source/operations/runbook-stale-views.md",
       "type": "canonical",
-      "content_hash": "sha256:ec199055384711b57a01e5583ac1004bee3ad93deaf2a8f35a6fd5e08f168101",
+      "content_hash": "sha256:0a2315c8c79548eca38908c41889fba39162be501bfd90323ccbd022b7323d75",
       "sources": [
         "scripts/detect_changes.py",
         "scripts/generate_page.py"
@@ -381,7 +381,7 @@
       "id": "overview-glossary",
       "path": "docs/source/overview/glossary.md",
       "type": "canonical",
-      "content_hash": "sha256:f4d5074cea309ca1b88fb5ef3afcf6ecf1298b12f35044ab5aace498e6ff9163",
+      "content_hash": "sha256:1cf356936c1f62f93d74f0d22652426aec4dc4cc5b005596b0aa10d8b83b204c",
       "sources": [
         "schemas/document.schema.json"
       ],
@@ -397,7 +397,7 @@
       "id": "overview-index",
       "path": "docs/source/overview/index.md",
       "type": "canonical",
-      "content_hash": "sha256:42b81722440ea5efff869b2a62faf09dc372b4c8c5ca90c3b3aa42ff923d08ed",
+      "content_hash": "sha256:47b683b76501252e08e144cf1435df28ce7059719d8c276f39d4e2c9e0c24685",
       "sources": [
         "package.json",
         "docusaurus.config.ts"
@@ -416,7 +416,7 @@
       "id": "overview-vision-and-goals",
       "path": "docs/source/overview/vision-and-goals.md",
       "type": "canonical",
-      "content_hash": "sha256:0a5127565b39f14dde0e3ecc143ceb1cd1af8f81e0a768c2948753dd6c6a2bf3",
+      "content_hash": "sha256:83a99421e8de3fe08a2d76484d04a9ae55fabb042b0c31ab7dd478f018ed5c85",
       "sources": [
         "package.json"
       ],
@@ -433,7 +433,7 @@
       "id": "security-prompt-injection-defense",
       "path": "docs/source/security/prompt-injection-defense.md",
       "type": "canonical",
-      "content_hash": "sha256:462151453dfc79affe3625752b53e1cd17b0dea2db04cf2d66dff9d6860a7f30",
+      "content_hash": "sha256:a710a385175ba87dae44d47020e77700f526648dc2ff3b34169743ea7946c205",
       "sources": [
         "scripts/generate_page.py",
         "scripts/generate_question.py"
@@ -450,7 +450,7 @@
       "id": "security-trust-boundaries",
       "path": "docs/source/security/trust-boundaries.md",
       "type": "canonical",
-      "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677",
+      "content_hash": "sha256:4aae38a0a07eb8e77ee1a904be6ededdb0a016c79c45e7b5172470c76a0c3ed7",
       "sources": [
         "ai/router.py",
         "scripts/validate_docs.py"
@@ -467,7 +467,7 @@
       "id": "troubleshooting-generation-failures",
       "path": "docs/source/troubleshooting/generation-failures.md",
       "type": "canonical",
-      "content_hash": "sha256:586228f70e26d4877973213df25db2a9e63a2ce44337f7b1aa8c2705ba4fa4e5",
+      "content_hash": "sha256:c9877cb694f860326fcc8aeb40fab6603a47f648fd00f6bf778c1f871eeb949e",
       "sources": [
         "ai/router.py",
         "scripts/generate_page.py"
@@ -484,7 +484,7 @@
       "id": "validation-drift-detection",
       "path": "docs/source/validation/drift-detection.md",
       "type": "canonical",
-      "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db",
+      "content_hash": "sha256:bae6071a4082bc178994781f8ef4676ce0b3d8fbc8070409720710fe840464d9",
       "sources": [
         "scripts/detect_changes.py",
         ".docs-manifest.json"
@@ -502,7 +502,7 @@
       "id": "validation-quality-gates",
       "path": "docs/source/validation/quality-gates.md",
       "type": "canonical",
-      "content_hash": "sha256:e7067881a731c3e00bd1ad374989480e8536596ed29905b92a0a170e3d8d015a",
+      "content_hash": "sha256:9ed9594b16fd69386ebd749e364cb79c51842b551b9655b3d0da09a5207aa0a9",
       "sources": [
         "scripts/validate_docs.py",
         ".github/workflows/docs-validate.yml"
@@ -519,7 +519,7 @@
       "id": "interview-architecture-content-planes",
       "path": "docs/generated/interview/architecture-content-planes.mdx",
       "type": "generated",
-      "content_hash": "sha256:31b826a3b5ca2765630fabc48c084180a2de2b8853d5fd458ec7eff22227072c",
+      "content_hash": "sha256:554cb5fb98f38fa39f54ac448c9683099f6dc8ada43610931acaef1e0f983c08",
       "sources": [],
       "related": [],
       "generation": {
@@ -528,7 +528,7 @@
           {
             "id": "architecture-content-planes",
             "path": "docs/source/architecture/content-planes.md",
-            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+            "content_hash": "sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68"
           }
         ]
       }
@@ -537,7 +537,7 @@
       "id": "interview-architecture-system-overview",
       "path": "docs/generated/interview/architecture-system-overview.mdx",
       "type": "generated",
-      "content_hash": "sha256:85a511350d749dd508665d7337328e20179c83cc7b002835f87d9916888ebf70",
+      "content_hash": "sha256:6f9ed36fbcc243c13a9dc0fe13cf75f8138ecaec7fdaefed27804105cad5a641",
       "sources": [],
       "related": [],
       "generation": {
@@ -546,7 +546,7 @@
           {
             "id": "architecture-system-overview",
             "path": "docs/source/architecture/system-overview.md",
-            "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60"
+            "content_hash": "sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499"
           }
         ]
       }
@@ -555,7 +555,7 @@
       "id": "interview-security-trust-boundaries",
       "path": "docs/generated/interview/security-trust-boundaries.mdx",
       "type": "generated",
-      "content_hash": "sha256:bbbde9983abcbc6f96a0294148a54b62732ae76917ae0c241a16d4456f9b7822",
+      "content_hash": "sha256:286e5dc4a5528a8f0fa64b24a7bc80e8b78a2df64cd0cefea7b709b66f9995dc",
       "sources": [],
       "related": [],
       "generation": {
@@ -564,7 +564,7 @@
           {
             "id": "security-trust-boundaries",
             "path": "docs/source/security/trust-boundaries.md",
-            "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677"
+            "content_hash": "sha256:4aae38a0a07eb8e77ee1a904be6ededdb0a016c79c45e7b5172470c76a0c3ed7"
           }
         ]
       }
@@ -573,7 +573,7 @@
       "id": "interview-validation-drift-detection",
       "path": "docs/generated/interview/validation-drift-detection.mdx",
       "type": "generated",
-      "content_hash": "sha256:a7651e43385b8a85f241a094d3e150c579863e28cab9959cddc6af147ff5831e",
+      "content_hash": "sha256:83cc548c8cf70b5543d411a0fb7991a373593ccaa6b43f3bd0bbba97c0e0b7c9",
       "sources": [],
       "related": [],
       "generation": {
@@ -582,7 +582,7 @@
           {
             "id": "validation-drift-detection",
             "path": "docs/source/validation/drift-detection.md",
-            "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db"
+            "content_hash": "sha256:bae6071a4082bc178994781f8ef4676ce0b3d8fbc8070409720710fe840464d9"
           }
         ]
       }
@@ -591,7 +591,7 @@
       "id": "q-001-canonical-separation",
       "path": "docs/generated/questions/q-001-canonical-separation.mdx",
       "type": "generated",
-      "content_hash": "sha256:98dd2031e4648757abdd742878b750e56a036e414576526b9464399ebc42364e",
+      "content_hash": "sha256:b2729b99e708aaf0869bb9036b21e69657f3d71fd8c639ea57408307a87adb58",
       "sources": [],
       "related": [],
       "generation": {
@@ -600,7 +600,7 @@
           {
             "id": "architecture-content-planes",
             "path": "docs/source/architecture/content-planes.md",
-            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+            "content_hash": "sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68"
           }
         ]
       }
@@ -609,7 +609,7 @@
       "id": "q-002-drift-detection",
       "path": "docs/generated/questions/q-002-drift-detection.mdx",
       "type": "generated",
-      "content_hash": "sha256:7a9bda0788584776d382e96180a48fb84cf4b6e3ae8402ba8f17bd9313a175b5",
+      "content_hash": "sha256:f130d0ef70d23a0ecbed7cc4a80dd4102d8ada3f8e5d2e7129b6232f8ce32998",
       "sources": [],
       "related": [],
       "generation": {
@@ -618,7 +618,7 @@
           {
             "id": "validation-drift-detection",
             "path": "docs/source/validation/drift-detection.md",
-            "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db"
+            "content_hash": "sha256:bae6071a4082bc178994781f8ef4676ce0b3d8fbc8070409720710fe840464d9"
           }
         ]
       }
@@ -627,7 +627,7 @@
       "id": "q-003-security-trust-zones",
       "path": "docs/generated/questions/q-003-security-trust-zones.mdx",
       "type": "generated",
-      "content_hash": "sha256:292a73a135f9cfcd1884750955536f0cb5b364463edd5c1bf31d4a3b33ef5b12",
+      "content_hash": "sha256:e11e7a54adbe9895d7a6dd249610e38f3a80feec3a0f8b43377c20baccb77cac",
       "sources": [],
       "related": [],
       "generation": {
@@ -636,7 +636,7 @@
           {
             "id": "security-trust-boundaries",
             "path": "docs/source/security/trust-boundaries.md",
-            "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677"
+            "content_hash": "sha256:4aae38a0a07eb8e77ee1a904be6ededdb0a016c79c45e7b5172470c76a0c3ed7"
           }
         ]
       }
@@ -645,7 +645,7 @@
       "id": "q-004-docusaurus-selection",
       "path": "docs/generated/questions/q-004-docusaurus-selection.mdx",
       "type": "generated",
-      "content_hash": "sha256:957f92ff03a6a1bdbd39303a2da5c6eb5b8d2af39e4e72a39e6a42de7c9e3409",
+      "content_hash": "sha256:214a81994a5ca19ec0765e982f64b50aefc1c248e72b453cf619966cdab5a6ce",
       "sources": [],
       "related": [],
       "generation": {
@@ -654,7 +654,7 @@
           {
             "id": "decisions-adr-002-docusaurus-foundation",
             "path": "docs/source/decisions/adr-002-docusaurus-foundation.md",
-            "content_hash": "sha256:a030baba8df9f5c661f8eabaccf342783f95b2e371b65d09695f62baf6407e6c"
+            "content_hash": "sha256:307c44aa5c76c449524df258d447fffb244347c2ba6076fb367e039f5d18e74f"
           }
         ]
       }
@@ -663,7 +663,7 @@
       "id": "q-005-private-routing",
       "path": "docs/generated/questions/q-005-private-routing.mdx",
       "type": "generated",
-      "content_hash": "sha256:af1a4ea8969b083f57308d865495a04f66873c48242b78d6f35314a39b98d315",
+      "content_hash": "sha256:84a7eadd3725f379f5abfc0123cdd43bdefc002e1492c40142f53897a6aaf1fc",
       "sources": [],
       "related": [],
       "generation": {
@@ -672,7 +672,7 @@
           {
             "id": "decisions-adr-004-provider-abstraction",
             "path": "docs/source/decisions/adr-004-provider-abstraction.md",
-            "content_hash": "sha256:3a9e29b1112bfcca3ec2a75bebaf5c9e09f90eead21821539a60d66ec4e34bab"
+            "content_hash": "sha256:79977252cd936ac91df02b9cb47a5cd4e5fd667811af8abd5590d51acf26b373"
           }
         ]
       }
@@ -681,7 +681,7 @@
       "id": "q-006-kubernetes-topology",
       "path": "docs/generated/questions/q-006-kubernetes-topology.mdx",
       "type": "generated",
-      "content_hash": "sha256:007a566ffbaeb3da789a5499c8a09d29c7a9e9dd9810b2e7da65ba2efcf188d1",
+      "content_hash": "sha256:ae7a2033f78e5c0273847b79c6037b4c8a56a02f9ff009d09dd1a024db7c6999",
       "sources": [],
       "related": [],
       "generation": {
@@ -690,7 +690,7 @@
           {
             "id": "decisions-adr-009-deployment-github-pages",
             "path": "docs/source/decisions/adr-009-deployment-github-pages.md",
-            "content_hash": "sha256:14a9e6e56e4690aee0cc557af269cf0608c8f885a57a13b94490cf8b9f809f30"
+            "content_hash": "sha256:91421efb11fbc1f1552434bf1cf65766d4f3810c4331a0678fe4e619893e615c"
           }
         ]
       }
@@ -699,7 +699,7 @@
       "id": "recruiter-project-overview",
       "path": "docs/generated/recruiter/project-overview.mdx",
       "type": "generated",
-      "content_hash": "sha256:0dc38b52b6b6da57d6eb05b3c75bb5f66529b856f1d8d3421ecea95d9a6371ef",
+      "content_hash": "sha256:5c62b10b00f6898bba88d0262a911ff3da5dc2c30a37e0492e21021d8425f50f",
       "sources": [],
       "related": [],
       "generation": {
@@ -708,17 +708,17 @@
           {
             "id": "overview-index",
             "path": "docs/source/overview/index.md",
-            "content_hash": "sha256:42b81722440ea5efff869b2a62faf09dc372b4c8c5ca90c3b3aa42ff923d08ed"
+            "content_hash": "sha256:47b683b76501252e08e144cf1435df28ce7059719d8c276f39d4e2c9e0c24685"
           },
           {
             "id": "architecture-system-overview",
             "path": "docs/source/architecture/system-overview.md",
-            "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60"
+            "content_hash": "sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499"
           },
           {
             "id": "architecture-content-planes",
             "path": "docs/source/architecture/content-planes.md",
-            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+            "content_hash": "sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68"
           }
         ]
       }
@@ -727,7 +727,7 @@
       "id": "architecture-content-planes",
       "path": "docs/generated/interview/architecture-content-planes.interview.json",
       "type": "generated-data",
-      "content_hash": "sha256:2fddbfc389832a8a52399532a0f675a204da97d5a1ddbd034a60355237b2269e",
+      "content_hash": "sha256:6434282d621184788c4ee88356025f63d41b326c2cb8cfc90be97e36bcf2ae1e",
       "sources": [],
       "related": [],
       "generation": {
@@ -736,7 +736,7 @@
           {
             "id": "architecture-content-planes",
             "path": "docs/source/architecture/content-planes.md",
-            "content_hash": "sha256:8db3f04553bab7dc6084680768d215c4ce19922dc5f7d7d3e05c4eea4058989a"
+            "content_hash": "sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68"
           }
         ]
       }
@@ -745,7 +745,7 @@
       "id": "architecture-system-overview",
       "path": "docs/generated/interview/architecture-system-overview.interview.json",
       "type": "generated-data",
-      "content_hash": "sha256:e22aa22e662d7b92c0faba7e5efb7988108848eec0e069159ff8aa711537fb64",
+      "content_hash": "sha256:7c28940f2c9564c0a96d219d50a1e3577314511830c6955f004fcf8f5c3cebb5",
       "sources": [],
       "related": [],
       "generation": {
@@ -754,7 +754,7 @@
           {
             "id": "architecture-system-overview",
             "path": "docs/source/architecture/system-overview.md",
-            "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60"
+            "content_hash": "sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499"
           }
         ]
       }
@@ -763,7 +763,7 @@
       "id": "security-trust-boundaries",
       "path": "docs/generated/interview/security-trust-boundaries.interview.json",
       "type": "generated-data",
-      "content_hash": "sha256:71460b4c68cc054e2c986718b8c2403bc71ad7316b3ae97b54da076ccca52d41",
+      "content_hash": "sha256:562977f705204a484a262ef1db5f23c7af84bbf6991d027a0aedd0fed589b528",
       "sources": [],
       "related": [],
       "generation": {
@@ -772,7 +772,7 @@
           {
             "id": "security-trust-boundaries",
             "path": "docs/source/security/trust-boundaries.md",
-            "content_hash": "sha256:c0cca6dafec52ba6df0f8f477c5d8331eff745562f491a87563006499eff1677"
+            "content_hash": "sha256:4aae38a0a07eb8e77ee1a904be6ededdb0a016c79c45e7b5172470c76a0c3ed7"
           }
         ]
       }
@@ -781,7 +781,7 @@
       "id": "validation-drift-detection",
       "path": "docs/generated/interview/validation-drift-detection.interview.json",
       "type": "generated-data",
-      "content_hash": "sha256:f78db89a066b739fa2c82224e80a9043388588e0dd91e104ccebfad2c75eded3",
+      "content_hash": "sha256:73a431b73780a5402fa16cb2fdccceca079a582fd5909d70490909f0c8019a95",
       "sources": [],
       "related": [],
       "generation": {
@@ -790,7 +790,7 @@
           {
             "id": "validation-drift-detection",
             "path": "docs/source/validation/drift-detection.md",
-            "content_hash": "sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db"
+            "content_hash": "sha256:bae6071a4082bc178994781f8ef4676ce0b3d8fbc8070409720710fe840464d9"
           }
         ]
       }

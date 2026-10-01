@@ -3,6 +3,7 @@ id: decisions-adr-001-github-source-of-truth
 slug: /decisions/adr-001-github-source-of-truth
 title: "ADR-001: Git/GitHub as the Single Source of Truth"
 type: canonical
+visibility: public
 audience: [architect, developer]
 owners: [architecture]
 sources: [.github/workflows/, .docs-manifest.json]

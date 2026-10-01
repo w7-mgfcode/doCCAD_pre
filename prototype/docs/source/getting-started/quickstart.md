@@ -3,6 +3,7 @@ id: getting-started-quickstart
 slug: /getting-started/quickstart
 title: Quickstart Guide — Seed to Serve
 type: canonical
+visibility: public
 audience: [developer, operator, reviewer]
 owners: [core]
 sources: [package.json, scripts/validate_docs.py, scripts/detect_changes.py]

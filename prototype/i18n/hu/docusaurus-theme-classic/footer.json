@@ -1,0 +1,54 @@
+{
+  "link.title.Documentation": {
+    "message": "Dokumentáció",
+    "description": "The title of the footer links column with title=Documentation in the footer"
+  },
+  "link.title.Governed Views": {
+    "message": "Irányított Nézetek",
+    "description": "The title of the footer links column with title=Governed Views in the footer"
+  },
+  "link.title.Workbenches": {
+    "message": "Munkapadok",
+    "description": "The title of the footer links column with title=Workbenches in the footer"
+  },
+  "link.item.label.Canonical Docs": {
+    "message": "Kanonikus Dokumentáció",
+    "description": "The label of footer link with label=Canonical Docs linking to /docs/overview"
+  },
+  "link.item.label.Architecture Spine": {
+    "message": "Rendszerarchitektúra",
+    "description": "The label of footer link with label=Architecture Spine linking to /docs/architecture/system-overview"
+  },
+  "link.item.label.ADRs": {
+    "message": "Döntési Rekordok (ADR-ek)",
+    "description": "The label of footer link with label=ADRs linking to /docs/decisions/adr-001-github-source-of-truth"
+  },
+  "link.item.label.Recruiter Briefing": {
+    "message": "Toborzói Összefoglaló",
+    "description": "The label of footer link with label=Recruiter Briefing linking to /views/recruiter/project-overview"
+  },
+  "link.item.label.Interview Guides": {
+    "message": "Interjú Útmutatók",
+    "description": "The label of footer link with label=Interview Guides linking to /views/interview/architecture-system-overview"
+  },
+  "link.item.label.Question Answers": {
+    "message": "Kérdés Válaszok",
+    "description": "The label of footer link with label=Question Answers linking to /views/questions/q-001-canonical-separation"
+  },
+  "link.item.label.Knowledge Explorer": {
+    "message": "Tudásbázis Böngésző",
+    "description": "The label of footer link with label=Knowledge Explorer linking to /explorer"
+  },
+  "link.item.label.Question Workbench": {
+    "message": "Kérdés Munkapad",
+    "description": "The label of footer link with label=Question Workbench linking to /workbench"
+  },
+  "link.item.label.Drift Inspector": {
+    "message": "Eltérés Ellenőr",
+    "description": "The label of footer link with label=Drift Inspector linking to /inspector"
+  },
+  "copyright": {
+    "message": "DOCCAD Prototípus — A /docs alatti kanonikus tartalom emberi tulajdonban van; a /views alatti származtatott nézetek mesterséges intelligencia által generáltak ellenőrzött PR folyamatokon keresztül.",
+    "description": "The footer copyright"
+  }
+}

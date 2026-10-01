@@ -3,6 +3,7 @@ id: decisions-adr-005-pr-gated-generation
 slug: /decisions/adr-005-pr-gated-generation
 title: "ADR-005: Generated Content Persists Only via Pull Requests"
 type: canonical
+visibility: public
 audience: [architect, developer, operator]
 owners: [architecture]
 sources: [.github/workflows/docs-generate.yml]

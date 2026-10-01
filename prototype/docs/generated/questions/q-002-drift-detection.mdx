@@ -3,6 +3,7 @@ id: q-002-drift-detection
 slug: /questions/q-002-drift-detection
 title: 'Question: Hash-Based Drift Detection Workflow'
 type: generated
+visibility: public
 audience:
 - developer
 - architect
@@ -12,20 +13,18 @@ last_validated: '2026-09-21'
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
   - id: validation-drift-detection
     path: docs/source/validation/drift-detection.md
-    content_hash: sha256:66743e3d517e91ecbc08636c41b4549e1f47811a3e591802f5d1b1c53a0a23db
+    content_hash: sha256:bae6071a4082bc178994781f8ef4676ce0b3d8fbc8070409720710fe840464d9
   provider: fixture
   model: deterministic-demo-fixture
   generation_mode: demo
   generated_at: '2026-09-21T00:00:00Z'
   approval_status: approved-for-demo
 ---
-
-import EvidenceLink from '@site/src/components/EvidenceLink';
 
 # Question: How does DOCCAD detect drift when canonical architecture or code changes?
 

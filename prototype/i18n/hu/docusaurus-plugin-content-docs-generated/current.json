@@ -1,0 +1,18 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.generated.category.interview": {
+    "message": "interview",
+    "description": "The label for category 'interview' in sidebar 'generated'"
+  },
+  "sidebar.generated.category.questions": {
+    "message": "questions",
+    "description": "The label for category 'questions' in sidebar 'generated'"
+  },
+  "sidebar.generated.category.recruiter": {
+    "message": "recruiter",
+    "description": "The label for category 'recruiter' in sidebar 'generated'"
+  }
+}

@@ -3,6 +3,7 @@ id: architecture-platform-research
 slug: /architecture/platform-research
 title: Six-Platform Research & Evaluation
 type: canonical
+visibility: public
 audience: [developer, architect]
 owners: [architecture]
 sources: [docusaurus.config.ts]

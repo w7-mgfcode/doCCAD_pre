@@ -1,7 +1,7 @@
 # Task contract (AD-6): answer a special question as a versioned page with citations.
 contract: GenerateQuestionPage
-version: 1
-prompt_version: question-page.v1
+version: 2
+prompt_version: question-page.v2
 prompt_template: question-page.md
 
 inputs:

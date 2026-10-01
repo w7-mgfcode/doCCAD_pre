@@ -3,6 +3,7 @@ id: architecture-system-overview
 slug: /architecture/system-overview
 title: System Architecture Spine
 type: canonical
+visibility: public
 audience: [developer, architect, operator]
 owners: [architecture]
 sources: [docusaurus.config.ts, scripts/generate_page.py]

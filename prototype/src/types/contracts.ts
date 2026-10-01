@@ -12,7 +12,9 @@ export interface DocumentFrontmatter {
   id: string;
   slug?: string;
   title: string;
-  type: 'canonical' | 'generated';
+  type: 'canonical' | 'generated' | 'stub';
+  stub_version?: number;
+  hold_reason?: string;
   audience: Array<'developer' | 'architect' | 'operator' | 'user' | 'recruiter' | 'interviewer' | 'reviewer'>;
   sources?: string[];
   owners: string[];
@@ -86,7 +88,7 @@ export interface DependencyManifest {
   pages: Array<{
     id: string;
     path: string;
-    type: 'canonical' | 'generated' | 'generated-data';
+    type: 'canonical' | 'generated' | 'generated-data' | 'stub';
     content_hash: string;
     sources: string[];
     related: string[];

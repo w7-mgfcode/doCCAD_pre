@@ -3,6 +3,7 @@ id: operations-runbook-stale-views
 slug: /operations/runbook-stale-views
 title: "Runbook: Detecting & Resolving Stale Views"
 type: canonical
+visibility: public
 audience: [operator, developer]
 owners: [operations]
 sources: [scripts/detect_changes.py, scripts/generate_page.py]

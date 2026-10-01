@@ -30,8 +30,10 @@ from __future__ import annotations
 import datetime
 import hashlib
 import json
+import os
 import re
 import sys
+import urllib.parse
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -40,18 +42,36 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 SCHEMAS = ROOT / "schemas"
+LINK_ALLOWLIST_FILE = ROOT / "contracts" / "link-allowlist.yaml"
 
 FRONTMATTER_RE = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n", re.DOTALL)
 UNSAFE_PATTERNS = [
     re.compile(r"<script\b", re.IGNORECASE),
     re.compile(r"javascript:\s*", re.IGNORECASE),
     re.compile(r"\beval\s*\(", re.IGNORECASE),
+    re.compile(r"<\s*(?:iframe|object)\b", re.IGNORECASE),
+    re.compile(r"\bon[a-z]+\s*=", re.IGNORECASE),
+    re.compile(r"\bdata:[^\s'\">]+", re.IGNORECASE),
 ]
+IMPORT_EXPORT_RE = re.compile(r"^\s*(?:import|export)\s+", re.MULTILINE)
+ALLOWED_JSX_COMPONENTS = {"EvidenceLink", "InterviewPrep"}
+JSX_COMPONENT_RE = re.compile(r"<([A-Z][a-zA-Z0-9_]*)")
+EXTERNAL_LINK_RE = re.compile(r"\]\((https?://[^)\s]+)(?:\s+\"[^\"]*\")?\)|href=[\"'](https?://[^\"']+)[\"']")
 PLANE_BASES = {"source": "/docs", "generated": "/views"}
 MD_LINK_RE = re.compile(r"\]\((/(?:docs|views)(?:/[^)\s]*)?)(?:\s+\"[^\"]*\")?\)")
 EVIDENCE_LINK_RE = re.compile(r"<EvidenceLink\b[^>]*?\bto=[\"']([^\"']*)[\"']")
 CODE_FENCE_RE = re.compile(r"^(```|~~~).*?^\1[^\n]*$", re.DOTALL | re.MULTILINE)
 INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
+
+
+def load_link_allowlist() -> set[str]:
+    if LINK_ALLOWLIST_FILE.is_file():
+        try:
+            data = yaml.safe_load(LINK_ALLOWLIST_FILE.read_text(encoding="utf-8")) or {}
+            return set(data.get("allowed_domains", []))
+        except Exception:
+            pass
+    return set()
 
 
 def _normalize(obj: Any) -> Any:
@@ -117,6 +137,10 @@ def make_validator():
 
         return validate
     except ImportError:
+        if os.environ.get("DOCCAD_REQUIRE_JSONSCHEMA") == "1":
+            sys.stderr.write("ERROR: jsonschema (and referencing) required by DOCCAD_REQUIRE_JSONSCHEMA=1 but not installed\n")
+            sys.exit(1)
+        sys.stderr.write("WARNING: jsonschema not installed — minimal fallback\n")
         # Minimal fallback
         def fallback_validate(instance: Any, which: str) -> List[str]:
             errs = []
@@ -126,6 +150,10 @@ def make_validator():
                         errs.append(f"missing required '{req}'")
                 if instance.get("type") == "generated":
                     for req in ["generated", "generation"]:
+                        if req not in instance:
+                            errs.append(f"missing required '{req}'")
+                elif instance.get("type") == "stub":
+                    for req in ["stub_version", "audience", "owners", "hold_reason"]:
                         if req not in instance:
                             errs.append(f"missing required '{req}'")
             return errs
@@ -179,6 +207,7 @@ def main() -> int:
         return 1
 
     hash_checks: List[Tuple[Path, Dict[str, Any]]] = []
+    allowed_domains = load_link_allowlist()
 
     # First pass: collect the route of every page, for citation resolution
     for page in pages:
@@ -217,22 +246,37 @@ def main() -> int:
             seen_ids[doc_id] = rel
 
         in_generated = "docs/generated/" in rel_posix
-        if fm.get("type") == "generated" and not in_generated:
-            problems.append(f"{rel}: type=generated but file is outside docs/generated/")
+        if fm.get("type") in ("generated", "stub") and not in_generated:
+            problems.append(f"{rel}: type={fm.get('type')} but file is outside docs/generated/")
         if fm.get("type") == "canonical" and in_generated:
             problems.append(f"{rel}: type=canonical inside docs/generated/ (forbidden)")
-        if in_generated and fm.get("type") != "generated":
-            problems.append(f"{rel}: files under docs/generated/ must declare type: generated")
+        if in_generated and fm.get("type") not in ("generated", "stub"):
+            problems.append(f"{rel}: files under docs/generated/ must declare type: generated or stub")
 
         body = get_body_text(page)
         prose = INLINE_CODE_RE.sub("", CODE_FENCE_RE.sub("", body))  # code samples are not citations
         check_citations(rel, MD_LINK_RE.findall(prose) + EVIDENCE_LINK_RE.findall(prose))
 
-        # Security check on generated files (AD-15)
+        # Security check on generated files (AD-15, T3, T4)
         if in_generated:
             for pattern in UNSAFE_PATTERNS:
                 if pattern.search(body):
                     problems.append(f"{rel}: SECURITY: Unsafe executable pattern matched in generated MDX: {pattern.pattern}")
+
+            if IMPORT_EXPORT_RE.search(prose):
+                problems.append(f"{rel}: SECURITY: import/export statement forbidden in generated MDX (T3)")
+
+            for m in JSX_COMPONENT_RE.finditer(prose):
+                tag = m.group(1)
+                if tag not in ALLOWED_JSX_COMPONENTS:
+                    problems.append(f"{rel}: SECURITY: Unallowlisted JSX component <{tag}> forbidden in generated MDX (T3)")
+
+            for m in EXTERNAL_LINK_RE.finditer(prose):
+                url = m.group(1) or m.group(2)
+                parsed = urllib.parse.urlparse(url)
+                hostname = (parsed.hostname or "").lower()
+                if hostname and hostname not in allowed_domains:
+                    problems.append(f"{rel}: SECURITY: External link domain '{hostname}' not in contracts/link-allowlist.yaml (T4)")
 
         if isinstance(fm.get("generation"), dict):
             hash_checks.append((rel, fm["generation"]))

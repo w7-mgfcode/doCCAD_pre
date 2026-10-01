@@ -19,7 +19,7 @@ from typing import Any, Dict, Iterable, List
 
 import yaml
 
-from .provider import Provider, ProviderError
+from .provider import Provider, ProviderError, ProviderTransportError, ProviderContentError
 from .anthropic_provider import AnthropicProvider
 from .gemini_provider import GeminiProvider
 from .openai_provider import OpenAIProvider
@@ -45,6 +45,46 @@ class PrivacyRoutingError(RoutingError):
     """A privacy-pinned task could not be routed to the local provider."""
 
 
+class PrivacyRoutingConfigError(RoutingError):
+    """A routing rule for privacy: private violates T12 by including non-local providers."""
+
+
+class SecretScanViolation(RuntimeError):
+    """A secret or credential pattern was detected in the prompt context (T6)."""
+
+
+SECRET_PATTERNS = [
+    re.compile(r"\bsk-[a-zA-Z0-9_\-]{20,}\b"),
+    re.compile(r"\bAIza[0-9A-Za-z\-_]{30,}\b"),
+    re.compile(r"\bghp_[a-zA-Z0-9]{36}\b"),
+    re.compile(r"-----BEGIN (?:[A-Z ]+ )?PRIVATE KEY-----"),
+    re.compile(r"\b(?:bearer|token)\s+[a-zA-Z0-9_\-\.]{20,}\b", re.IGNORECASE),
+]
+
+
+def scan_for_secrets(payload: str) -> None:
+    """Scan prompt payload for credentials and secret patterns (T6). Abort on match."""
+    for pattern in SECRET_PATTERNS:
+        if pattern.search(payload):
+            raise SecretScanViolation(
+                f"Security Gate T6: Secret detected in context payload matching pattern: {pattern.pattern}"
+            )
+
+
+def validate_routing_config(cfg: Dict[str, Any]) -> None:
+    """Check that every routing chain matching privacy: private contains only ['local'] (T12-config)."""
+    routing_rules = cfg.get("routing", [])
+    for idx, rule in enumerate(routing_rules):
+        match = rule.get("match", {})
+        if match.get("privacy") == "private":
+            chain = rule.get("chain", [])
+            if chain != ["local"]:
+                raise PrivacyRoutingConfigError(
+                    f"Routing rule {idx} matches 'privacy: private' but defines chain {chain}. "
+                    f"Per T12, private chains must strictly contain only ['local']."
+                )
+
+
 def _resolve_env_ref(value: Any) -> Any:
     """Turn '${AI_MODEL_X}' into the env value (or None if unset)."""
     if isinstance(value, str):
@@ -58,6 +98,7 @@ class Router:
     def __init__(self, config_path: str | Path = "ai.config.yaml"):
         raw = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
         self.cfg: Dict[str, Any] = raw["ai"]
+        validate_routing_config(self.cfg)
         self.providers_cfg: Dict[str, Dict[str, Any]] = self.cfg["providers"]
         self.rules: List[Dict[str, Any]] = self.cfg.get("routing", [])
 
@@ -129,6 +170,9 @@ class Router:
     def run_with_fallback(self, task_meta: Dict[str, Any],
                           messages: List[Dict[str, str]],
                           opts: Dict[str, Any] | None = None) -> Dict[str, Any]:
+        for msg in messages:
+            if isinstance(msg, dict) and "content" in msg:
+                scan_for_secrets(str(msg["content"]))
         errors: List[str] = []
         chain_names = self.select_chain_names(task_meta)
         privacy_pinned = task_meta.get("privacy") == "private"
@@ -136,14 +180,18 @@ class Router:
             try:
                 provider = self.instantiate(name)
                 return provider.complete(task_meta, messages, opts)
-            except (ProviderError, Exception) as e:
+            except Exception as e:
                 errors.append(f"{name}: {e}")
                 if privacy_pinned:
                     raise PrivacyRoutingError(
                         f"Privacy-pinned task failed on local provider and MUST NOT "
                         f"fall back to cloud. Cause: {e}"
                     ) from e
-        raise ProviderError(
+                if isinstance(e, ProviderTransportError):
+                    continue
+                # Fail immediately on content errors or other non-transport errors
+                raise
+        raise ProviderTransportError(
             "All providers in chain failed:\n  " + "\n  ".join(errors)
         )
 

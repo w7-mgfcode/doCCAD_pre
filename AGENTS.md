@@ -36,9 +36,9 @@ branches unless asked.
 
 ## Setup
 
-- Node >= 20 (`prototype/package.json:38`) and Python 3 with PyYAML. From `prototype/`: `npm ci`.
-- Optional but needed for full schema validation: `jsonschema` (with `referencing`). Without it,
-  `validate_docs.py` silently falls back to a minimal frontmatter check (`scripts/validate_docs.py:84-123`).
+- Node >= 24.14 (`prototype/package.json:38`, `prototype/.nvmrc`) and Python 3 with dependencies declared in `prototype/requirements.txt` (`pip install -r prototype/requirements.txt`: PyYAML, jsonschema, referencing). From `prototype/`: `npm ci`.
+- Full schema validation requires `jsonschema` (with `referencing`). Without it,
+  `validate_docs.py` warns and falls back to a minimal frontmatter check (`scripts/validate_docs.py`), or exits with code 1 if `DOCCAD_REQUIRE_JSONSCHEMA=1` is set.
 - No API keys are needed. `prototype/.env.example` lists optional provider keys and `AI_MODEL_*`
   variables for live generation only; never create or commit a real `.env`.
 

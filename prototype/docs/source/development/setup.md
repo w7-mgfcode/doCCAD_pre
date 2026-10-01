@@ -3,6 +3,7 @@ id: development-setup
 slug: /development/setup
 title: Local Development & Contribution Workflow
 type: canonical
+visibility: public
 audience: [developer]
 owners: [core]
 sources: [package.json, scripts/validate_docs.py]

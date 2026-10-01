@@ -3,6 +3,7 @@ id: decisions-adr-003-canonical-generated-separation
 slug: /decisions/adr-003-canonical-generated-separation
 title: "ADR-003: Structural Separation of Canonical and Generated Knowledge"
 type: canonical
+visibility: public
 audience: [architect, developer]
 owners: [architecture]
 sources: [docusaurus.config.ts, sidebars-source.ts, sidebars-generated.ts]

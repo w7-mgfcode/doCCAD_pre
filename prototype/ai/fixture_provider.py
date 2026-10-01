@@ -30,7 +30,7 @@ class FixtureProvider:
         prompt = messages[-1]["content"] if messages else ""
         
         if task == "GenerateRecruiterPage":
-            text = self._generate_recruiter(prompt)
+            text = self._generate_recruiter(prompt, task_meta.get("target_id", ""))
         elif task == "GenerateInterviewPrep":
             text = self._generate_interview(prompt, task_meta.get("target_id", ""))
         elif task == "GenerateQuestionPage":
@@ -49,9 +49,13 @@ class FixtureProvider:
             "generation_mode": "demo",
         }
 
-    def _generate_recruiter(self, prompt: str) -> str:
-        return """---
-id: recruiter-project-overview
+    def _generate_recruiter(self, prompt: str, target_id: str = "") -> str:
+        tid = target_id or "project-overview"
+        recruiter_id = "recruiter-project-overview" if tid == "project-overview" else f"recruiter-{tid}"
+        slug = f"/recruiter/{tid}"
+        return f"""---
+id: {recruiter_id}
+slug: {slug}
 title: DOCCAD — Project Overview & Architecture (Recruiter View)
 type: generated
 audience: [recruiter, architect]
@@ -111,46 +115,53 @@ Readers access a static site generated via `docusaurus build`. External search, 
 """
 
     def _generate_interview(self, prompt: str, target_id: str) -> str:
-        return """{
-  "id": "architecture-system-overview",
-  "target_page_id": "architecture-system-overview",
+        tid = target_id or "architecture-system-overview"
+        return f"""{{
+  "id": "{tid}",
   "elevator_pitch": "DOCCAD is a GitHub-native, docs-as-code documentation platform where canonical knowledge lives in Git and AI generates derived views in CI with full provenance and PR governance.",
   "technical_explanation": "DOCCAD decouples canonical human-written documentation from derived AI views using two Docusaurus docs-plugin instances. AI runs only in CLI/CI pipelines via a thin provider router, stamping every output with sha256 source hashes for mechanical drift detection. The published site is purely static with zero runtime AI dependencies.",
   "concepts": [
-    "Docs-as-code and version-controlled single source of truth",
-    "Two-plane structural content separation (/docs vs /views)",
-    "Level-1 deterministic context retrieval",
-    "sha256 hash-based drift detection and targeted regeneration",
-    "AI-in-CI with human review gates"
+    {{
+      "name": "Docs-as-code and version-controlled single source of truth",
+      "explanation": "Version-controlled files in Git represent the primary ground truth. No external database or CMS is permitted in the serving path."
+    }},
+    {{
+      "name": "Two-Plane Structural Separation",
+      "explanation": "Canonical documentation (/docs) and AI-generated views (/views) run in separate Docusaurus plugin instances, physically isolating human truth from bot drafts."
+    }},
+    {{
+      "name": "Mechanical Drift Detection",
+      "explanation": "Derived pages record sha256 digests of their input sources. When source bytes change, CI detects drift and schedules targeted regeneration."
+    }}
   ],
   "design_decisions": [
-    {
+    {{
       "decision": "Docusaurus 3.x selected as publishing foundation",
       "rationale": "Scored 88.6/100 on weighted evaluation; offers full offline build, local search, React MDX flexibility, and multi-instance docs plugin support.",
-      "citing_doc": "adr-002-docusaurus-foundation"
-    },
-    {
+      "evidence": "adr-002-docusaurus-foundation"
+    }},
+    {{
       "decision": "Git repository as sole source of truth with no runtime datastore",
       "rationale": "Prevents split-brain state between documentation and external databases; eliminates database infrastructure and operational cost.",
-      "citing_doc": "adr-001-github-source-of-truth"
-    },
-    {
+      "evidence": "adr-001-github-source-of-truth"
+    }},
+    {{
       "decision": "Structural content plane separation (/docs vs /views)",
       "rationale": "Two independent docs-plugin instances guarantee that unreviewed or bot-generated content cannot be served under canonical routes.",
-      "citing_doc": "adr-003-canonical-generated-separation"
-    }
+      "evidence": "adr-003-canonical-generated-separation"
+    }}
   ],
   "tradeoffs": [
-    {
-      "chosen": "Level-1 deterministic retrieval (file paths + frontmatter closure)",
-      "alternative": "Vector database with embeddings (RAG)",
-      "tradeoff_rationale": "At corpus sizes under 1,500 documents, file-based grep and manifest closures are 100% reproducible, auditable in PRs, and avoid external vector infrastructure."
-    },
-    {
-      "chosen": "Static site generation with build-time local search",
-      "alternative": "Dynamic SSR documentation server with SaaS search",
-      "tradeoff_rationale": "Eliminates server maintenance, runtime CVEs, and vendor subscription lock-in; ensures 100% read uptime even during complete cloud outages."
-    }
+    {{
+      "choice": "Level-1 deterministic retrieval (file paths + frontmatter closure)",
+      "benefit": "At corpus sizes under 1,500 documents, file-based grep and manifest closures are 100% reproducible and auditable in PRs.",
+      "cost": "Avoids external vector infrastructure but requires frontmatter discipline."
+    }},
+    {{
+      "choice": "Static site generation with build-time local search",
+      "benefit": "Eliminates server maintenance, runtime CVEs, and vendor subscription lock-in.",
+      "cost": "Ensures 100% read uptime even during complete cloud outages without runtime personalization."
+    }}
   ],
   "likely_questions": [
     "How do you prevent AI-generated hallucinated content from contaminating human-authored documentation?",
@@ -158,29 +169,38 @@ Readers access a static site generated via `docusaurus build`. External search, 
     "Why not use an agent swarm or LangChain for documentation generation?"
   ],
   "example_answers": [
-    "We enforce a physical separation using two Docusaurus docs-plugin instances: /docs for canonical human files and /views for generated views. Generated files can cite canonical docs, but canonical docs never import generated content. Furthermore, generated pages only persist through human-reviewed PRs.",
-    "Every generated artifact stores the sha256 content hashes of all canonical files used to create it. When CI runs detect_changes.py, it compares disk hashes against recorded provenance hashes; any mismatch flags that specific derived page as STALE, scheduling targeted regeneration.",
-    "A single capable engineer operates DOCCAD. Multi-agent frameworks introduce hundreds of untracked dependencies, non-deterministic loops, and complex failure states without improving documentation grounding. A thin, 40-line provider adapter executing declarative YAML contracts is easier to audit and maintain."
+    {{
+      "question": "How do you prevent AI-generated hallucinated content from contaminating human-authored documentation?",
+      "answer": "We enforce a physical separation using two Docusaurus docs-plugin instances: /docs for canonical human files and /views for generated views. Generated files can cite canonical docs, but canonical docs never import generated content. Furthermore, generated pages only persist through human-reviewed PRs."
+    }},
+    {{
+      "question": "How does the system know when a derived view is out of date after an architectural change?",
+      "answer": "Every generated artifact stores the sha256 content hashes of all canonical files used to create it. When CI runs detect_changes.py, it compares disk hashes against recorded provenance hashes; any mismatch flags that specific derived page as STALE, scheduling targeted regeneration."
+    }},
+    {{
+      "question": "Why not use an agent swarm or LangChain for documentation generation?",
+      "answer": "A single capable engineer operates DOCCAD. Multi-agent frameworks introduce hundreds of untracked dependencies, non-deterministic loops, and complex failure states without improving documentation grounding. A thin, 40-line provider adapter executing declarative YAML contracts is easier to audit and maintain."
+    }}
   ],
   "follow_ups": [
     "When would you cross the threshold to introduce a vector database?",
     "How does private routing prevent intellectual property leakage to third-party LLMs?"
   ],
   "evidence_links": [
-    {
+    {{
       "label": "System Architecture Overview",
-      "path": "/docs/architecture/system-overview"
-    },
-    {
+      "to": "/docs/architecture/system-overview"
+    }},
+    {{
       "label": "ADR-003: Content Plane Separation",
-      "path": "/docs/decisions/adr-003-canonical-generated-separation"
-    },
-    {
+      "to": "/docs/decisions/adr-003-canonical-generated-separation"
+    }},
+    {{
       "label": "ADR-006: Level-1 Retrieval Boundary",
-      "path": "/docs/decisions/adr-006-retrieval-level1"
-    }
+      "to": "/docs/decisions/adr-006-retrieval-level1"
+    }}
   ]
-}"""
+}}"""
 
     def _generate_question(self, prompt: str, task_meta: Dict[str, Any]) -> str:
         q = task_meta.get("question", "").lower()
@@ -202,8 +222,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
     - id: decisions-adr-009-deployment-github-pages
       path: docs/source/decisions/adr-009-deployment-github-pages.md
@@ -245,8 +265,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
     - id: architecture-content-planes
       path: docs/source/architecture/content-planes.md
@@ -300,8 +320,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
     - id: validation-drift-detection
       path: docs/source/validation/drift-detection.md
@@ -359,8 +379,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
     - id: security-trust-boundaries
       path: docs/source/security/trust-boundaries.md
@@ -385,7 +405,7 @@ DOCCAD enforces a **6-Zone Trust Boundary Model** with a strict rule: repository
 1. **Explicit Data Delimiters**: Evidence files enter prompt templates wrapped in `<<<EVIDENCE-DATA` and `EVIDENCE-DATA>>>` tokens. Templates instruct the model to treat text between delimiters purely as inert documentation facts.
 2. **Context Secret Scan**: Before any prompt payload is passed to a provider, an automated regex scan checks for accidental tokens or credentials.
 3. **Structured Output Validation**: Model responses must conform to schema contracts (`schemas/document.schema.json`). Executable JavaScript/MDX constructs (`script tags`, dynamic code evaluation, dangerous React imports) are rejected by deterministic static analysis before compilation.
-4. **Link Allowlist**: External hyperlinks in generated content must match `config/link-allowlist.yaml`; unknown domains trigger automated review flags.
+4. **Link Allowlist**: External hyperlinks in generated content must match `contracts/link-allowlist.yaml`; non-allowlisted domains trigger security rejection.
 5. **No Serving Backend**: The published documentation is a static website. There is no runtime prompt endpoint, eliminating real-time jailbreaking of the reading audience.
 
 ## Supporting Canonical Evidence
@@ -405,8 +425,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
     - id: decisions-adr-002-docusaurus-foundation
       path: docs/source/decisions/adr-002-docusaurus-foundation.md
@@ -454,8 +474,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
     - id: decisions-adr-004-provider-abstraction
       path: docs/source/decisions/adr-004-provider-abstraction.md

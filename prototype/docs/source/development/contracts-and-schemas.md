@@ -3,6 +3,7 @@ id: development-contracts-and-schemas
 slug: /development/contracts-and-schemas
 title: Contract & Schema Authoring Guide
 type: canonical
+visibility: public
 audience: [developer, architect]
 owners: [architecture]
 sources: [schemas/document.schema.json, schemas/interview.schema.json, contracts/GenerateRecruiterPage.yaml]

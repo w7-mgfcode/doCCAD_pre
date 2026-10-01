@@ -3,6 +3,7 @@ id: overview-index
 slug: /overview
 title: DOCCAD System Overview
 type: canonical
+visibility: public
 audience: [developer, architect, operator, user, recruiter, interviewer]
 owners: [architecture]
 sources: [package.json, docusaurus.config.ts]

@@ -3,6 +3,7 @@ id: decisions-adr-002-docusaurus-foundation
 slug: /decisions/adr-002-docusaurus-foundation
 title: "ADR-002: Docusaurus 3.x as the Publishing Foundation"
 type: canonical
+visibility: public
 audience: [architect, developer]
 owners: [architecture]
 sources: [package.json, docusaurus.config.ts]

@@ -3,6 +3,7 @@ id: architecture-ai-generation-plane
 slug: /architecture/ai-generation-plane
 title: AI Generation Plane & Provider Abstraction
 type: canonical
+visibility: public
 audience: [developer, architect]
 owners: [architecture]
 sources: [ai/provider.py, ai/router.py, ai.config.yaml]

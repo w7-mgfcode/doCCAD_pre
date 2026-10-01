@@ -7,9 +7,11 @@ const config: Config = {
   url: 'https://doccad.local',
   baseUrl: '/',
   favicon: undefined,
+  trailingSlash: false,
 
   // AD-10: broken internal links are a merge-blocking failure.
   onBrokenLinks: 'throw',
+  onBrokenAnchors: 'throw',
 
   i18n: {
     defaultLocale: 'en',
@@ -26,6 +28,10 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+      onBrokenMarkdownImages: 'throw',
+    },
   },
 
   plugins: [
@@ -68,7 +74,7 @@ const config: Config = {
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         hashed: true,
-        language: ['en'],
+        language: ['en', 'hu'],
         indexDocs: true,
         indexPages: true,
         docsRouteBasePath: ['docs', 'views'],
@@ -79,6 +85,11 @@ const config: Config = {
   ],
 
   themeConfig: {
+    mermaid: {
+      options: {
+        securityLevel: 'strict',
+      },
+    },
     navbar: {
       title: 'DOCCAD',
       items: [

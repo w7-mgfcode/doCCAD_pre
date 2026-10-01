@@ -33,11 +33,10 @@ Verified on 2026-09-29 (Node 24.19, Python 3.14, on a copy of this directory):
 
 ## Requirements
 
-- Node.js >= 20 and npm
-- Python 3 with PyYAML
-- Recommended: `jsonschema` (with `referencing`). Without it, `validate_docs.py` silently falls back to a
-  minimal frontmatter check instead of full schema validation, and `generate_page.py` uses the same
-  minimal check (none at all for interview JSON), so it can write output that the schemas reject.
+- Node.js >= 24.14 and npm (see `.nvmrc`)
+- Python 3 with dependencies declared in `requirements.txt` (`pip install -r requirements.txt`: PyYAML, jsonschema, referencing).
+- Full schema validation requires `jsonschema` (with `referencing`). Without it, `validate_docs.py` warns and falls back to a
+  minimal frontmatter check, or exits with code 1 if `DOCCAD_REQUIRE_JSONSCHEMA=1` is set in CI/production.
 
 No API keys, database or network access are needed.
 
