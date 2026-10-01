@@ -13,13 +13,28 @@ repository holds two things:
 - `prototype/` — a runnable local DOCCAD prototype: Docusaurus 3.10.2 + React 19 static site, Python
   governance scripts, a provider-agnostic AI router, task contracts and JSON schemas.
 
-The repository is a git repository (initialized 2026-09-29; `docs/primary-inputs/README.md` still
-says it is uninitialized, which predates this). Remote `origin` is the public
-`https://github.com/w7-mgfcode/doCCAD_pre` (since 2026-10-01). Active work happens on `next-version`;
-`main` holds the initial import. Git history starts at that import, so `git log` explains nothing from
-before it. Code is MIT (`LICENSE`); docs are CC BY 4.0 (`LICENSE-docs`). `.claude/`,
-`.agents/`, `.kb/` and local session notes are git-ignored, so git does not track the agent layer. Read-only git commands (`status`, `diff`, `log`) are fine; do not commit, push, or create
-branches unless asked.
+Code is MIT (`LICENSE`); documentation is CC BY 4.0 (`LICENSE-docs`).
+
+## Git and GitHub
+
+This section is the single statement of the repository's git state; other agent files point here
+instead of repeating it.
+
+- **History.** Initialized 2026-09-29; `git log` starts at that day's initial import and explains
+  nothing older. (`docs/primary-inputs/README.md` still calls the repo uninitialized — it predates git.)
+- **Remote.** `origin` = public `https://github.com/w7-mgfcode/doCCAD_pre`; default branch `main`.
+- **Branch flow.** Work happens on `next-version` (or a topic branch) and reaches `main` only through a
+  pull request. Ruleset `main-protection` requires a PR, a code-owner review (`.github/CODEOWNERS`) and
+  the `validate-and-build` check, and blocks force-push and deletion. The sole owner cannot approve
+  their own PR, so admins merge through a PR-only bypass.
+- **Automation** (`.github/workflows/`). `ci.yml` (`validate-and-build`, on PRs and pushes to `main`);
+  `publish.yml` (push to `main` → production filter → GitHub Pages at
+  `https://w7-mgfcode.github.io/doCCAD_pre/`); `generate.yml` (manual, pushes a `docs-gen/*` branch);
+  `drift.yml` (weekly); `dependabot.yml`.
+- **Not tracked.** `.claude/`, `.agents/`, `.kb/` and local session notes are git-ignored, so git never
+  shows agent-layer changes.
+- **Agents** may run read-only git (`status`, `diff`, `log`); do not commit, push, create branches or
+  open pull requests unless asked. A push to `main` publishes the site.
 
 ## Project structure
 
@@ -35,6 +50,8 @@ branches unless asked.
 | `prototype/src/` | Site components and pages (workbench, inspector, explorer) |
 | `prototype/tests/` | `unittest` suite |
 | `prototype/planning/` | `CONCEPT.md`, `ACCEPTANCE.md` (REQ-001…016), `PROGRESS.md` |
+| `docs/next-phase/` | Plan, acceptance (NV-REQ) and research for the next-version run (phases 0–3) |
+| `.github/` | Workflows, `CODEOWNERS`, `dependabot.yml`, README banner assets |
 
 ## Setup
 
@@ -66,11 +83,23 @@ From `prototype/`:
 3. `npm run test` — `python3 -m unittest discover tests -v`.
 4. For site changes: `npm run typecheck` and `npm run build`.
 
+CI (`validate-and-build`) runs the same gates with `DOCCAD_REQUIRE_JSONSCHEMA=1`, fails on any stale
+generated page, and checks the production-filter round-trip.
+
 Several commands rewrite state: `detect` (`.docs-manifest.json`, `impact.json`), review and
 generation scripts (`.work/`), `build:production` (`docs/generated/`), and the test suite, which
 exercises the production filter on the live `docs/generated/` tree and restores it in `tearDown` —
-an interrupted run can leave it stashed; `npm run build:demo` restores. For a read-only health check, copy `prototype/` (without `node_modules/`, `build/`, `.docusaurus/`) to a
-scratch directory and run them there.
+an interrupted run can leave it stashed; `npm run build:demo` restores.
+
+For a read-only health check, copy **both** `.github/` and `prototype/` into a scratch directory,
+keeping the layout — `TestWorkflowScriptInvocations` reads `../.github/workflows/` relative to
+`prototype/`, so a copy of `prototype/` alone fails that test falsely:
+
+```bash
+S=<scratch>/doccad && mkdir -p "$S" && rsync -a .github "$S/" && \
+  rsync -a --exclude node_modules --exclude build --exclude .docusaurus prototype "$S/" && \
+  ln -sfn "$PWD/prototype/node_modules" "$S/prototype/node_modules" && cd "$S/prototype"
+```
 
 ## Safety rules and conventions
 
@@ -87,7 +116,8 @@ scratch directory and run them there.
 - **AI layer.** `fixture` stays the deterministic default; `privacy: private` routes only to the
   local provider and must fail rather than fall back to cloud; model IDs only via `${AI_MODEL_*}`.
 - **Static site.** No runtime model calls from the site.
-- **Dependencies.** Python: standard library + PyYAML only. Do not add packages without asking.
+- **Dependencies.** Python: standard library + PyYAML, plus `jsonschema` and `referencing` (owner
+  decision E6, declared in `prototype/requirements.txt`). Do not add packages without asking.
 - **Secrets.** Never write keys, tokens or `.env` values anywhere.
 - Never edit generated output: `prototype/build/`, `prototype/.docusaurus/`, `node_modules/`.
 
