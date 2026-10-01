@@ -15,8 +15,12 @@ Checks, in order:
   6. Path containment: no paths contain path traversal sequences or escape ROOT.
   7. Safe MDX & component safety: generated files must not contain raw <script> tags,
      untrusted eval, or unsafe imports.
-  8. Citation & link resolution: internal links [text](/docs/...) and <EvidenceLink to="...">
-     must target known document paths.
+  8. Citation & link resolution: internal links [text](/docs/...) or (/views/...),
+     <EvidenceLink to="..."> and interview evidence_links[].to must target a known page route.
+     Routes follow Docusaurus: plugin base (/docs, /views) + slug, else directory + id.
+     Links inside code fences and inline code are ignored. Docusaurus' slug-less conventions
+     (foo/foo.md category index, numeric prefixes, _-prefixed files) are not modelled; every
+     current page sets an explicit slug, and the build's onBrokenLinks: 'throw' is the backstop.
 
 Exit code 0 = all green; 1 = violations found.
 """
@@ -43,6 +47,11 @@ UNSAFE_PATTERNS = [
     re.compile(r"javascript:\s*", re.IGNORECASE),
     re.compile(r"\beval\s*\(", re.IGNORECASE),
 ]
+PLANE_BASES = {"source": "/docs", "generated": "/views"}
+MD_LINK_RE = re.compile(r"\]\((/(?:docs|views)(?:/[^)\s]*)?)(?:\s+\"[^\"]*\")?\)")
+EVIDENCE_LINK_RE = re.compile(r"<EvidenceLink\b[^>]*?\bto=[\"']([^\"']*)[\"']")
+CODE_FENCE_RE = re.compile(r"^(```|~~~).*?^\1[^\n]*$", re.DOTALL | re.MULTILINE)
+INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 
 
 def _normalize(obj: Any) -> Any:
@@ -123,6 +132,25 @@ def make_validator():
         return fallback_validate
 
 
+def page_route(page: Path, fm: Dict[str, Any]) -> str:
+    """Site route Docusaurus serves a page at: plugin base + slug, else directory + id/stem."""
+    plane, *rest = page.relative_to(DOCS).parts
+    rel_dir = Path(*rest).parent.as_posix() if rest else "."
+    slug = fm.get("slug")
+    if isinstance(slug, str) and slug:
+        route = slug if slug.startswith("/") else f"{rel_dir}/{slug}"
+    elif not fm.get("id") and page.stem in ("index", "README"):
+        route = rel_dir
+    else:
+        route = f"{rel_dir}/{fm.get('id') or page.stem}"
+    parts = [p for p in route.split("/") if p not in ("", ".")]
+    return "/".join([PLANE_BASES.get(plane, "/" + plane), *parts])
+
+
+def normalize_route(target: str) -> str:
+    return target.split("#", 1)[0].split("?", 1)[0].rstrip("/") or "/"
+
+
 def check_path_containment(path_str: str) -> bool:
     """Return True if path stays strictly within ROOT and contains no traversal escapes."""
     if ".." in path_str.split("/") or "\\" in path_str:
@@ -139,7 +167,7 @@ def main() -> int:
     validate = make_validator()
     problems: List[str] = []
     seen_ids: Dict[str, Path] = {}
-    known_doc_slugs: set[str] = set()
+    known_routes: set[str] = set()
 
     pages = sorted(
         p for plane in ("source", "generated")
@@ -152,19 +180,18 @@ def main() -> int:
 
     hash_checks: List[Tuple[Path, Dict[str, Any]]] = []
 
-    # First pass: collect IDs and slugs
+    # First pass: collect the route of every page, for citation resolution
     for page in pages:
         fm = parse_frontmatter(page)
         if fm:
-            doc_id = fm.get("id")
-            if doc_id:
-                known_doc_slugs.add(doc_id)
-            # Add relative route path without extension
-            rel = page.relative_to(DOCS).as_posix()
-            stem = str(Path(rel).with_suffix(""))
-            if stem.endswith("/index"):
-                stem = stem[:-6]
-            known_doc_slugs.add(stem)
+            known_routes.add(page_route(page, fm))
+
+    def check_citations(rel: Path, targets: List[Any]) -> None:
+        for target in targets:
+            if not isinstance(target, str) or not target:
+                continue  # a missing or non-string target is a schema error, reported there
+            if normalize_route(target) not in known_routes:
+                problems.append(f"{rel}: broken citation: {target} matches no page route")
 
     for page in pages:
         rel = page.relative_to(ROOT)
@@ -197,9 +224,12 @@ def main() -> int:
         if in_generated and fm.get("type") != "generated":
             problems.append(f"{rel}: files under docs/generated/ must declare type: generated")
 
+        body = get_body_text(page)
+        prose = INLINE_CODE_RE.sub("", CODE_FENCE_RE.sub("", body))  # code samples are not citations
+        check_citations(rel, MD_LINK_RE.findall(prose) + EVIDENCE_LINK_RE.findall(prose))
+
         # Security check on generated files (AD-15)
         if in_generated:
-            body = get_body_text(page)
             for pattern in UNSAFE_PATTERNS:
                 if pattern.search(body):
                     problems.append(f"{rel}: SECURITY: Unsafe executable pattern matched in generated MDX: {pattern.pattern}")
@@ -217,6 +247,8 @@ def main() -> int:
             continue
         for err in validate(data, "interview"):
             problems.append(f"{rel}: interview schema: {err}")
+        check_citations(rel, [link.get("to", "") for link in data.get("evidence_links", [])
+                              if isinstance(link, dict)])
         if isinstance(data.get("generation"), dict):
             hash_checks.append((rel, data["generation"]))
 

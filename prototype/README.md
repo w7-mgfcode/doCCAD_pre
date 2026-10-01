@@ -132,7 +132,9 @@ python3 scripts/review_governance.py list
 python3 scripts/review_governance.py check-production --artifact q-002-drift-detection   # BLOCKED, exit 1
 ```
 
-States: `draft` → `in-review` → `approved-for-demo` or `rejected`. The ledger is
+States: `draft` → `in-review` → `approved-for-demo` or `rejected`. Other moves are refused (exit 1):
+a new artifact starts at `draft` or `in-review`, approval needs `in-review` first, `rejected` and
+`approved-for-demo` go back through `draft`, and repeating the current state is refused. The ledger is
 `.work/demo_reviews.json`. `check-production` always blocks simulated approval, since production
 publication requires a real, human-approved pull request.
 

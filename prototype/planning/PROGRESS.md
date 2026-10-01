@@ -1,12 +1,12 @@
 # DOCCAD Prototype Implementation Progress Log
 
 Status: In Progress — Milestones 1–5 complete; 6 and 7 partial; 8 started  
-Timestamp: 2026-09-29 (previous: 2026-09-21)  
+Timestamp: 2026-10-01 (previous: 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
 Items are ticked only where the artifact exists on disk and, for checks, where the command was re-run
-on 2026-09-29 (on a scratch copy of `prototype/`, so no state files were rewritten). Anything not
-re-run is marked NOT RUN, not assumed.
+on 2026-09-29 (on a scratch copy of `prototype/`, so no state files were rewritten); the M7 test additions
+were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NOT RUN, not assumed.
 
 ---
 
@@ -52,9 +52,9 @@ re-run is marked NOT RUN, not assumed.
   - [x] Build responsive landing page `/`. *(Page exists and builds; responsiveness NOT verified in a browser.)*
 
 - [ ] **Milestone 7: Automated Verification & Test Suite** — partial
-  - [ ] Author comprehensive Python tests under `prototype/tests/`. *(Partial: 19 tests in 10 classes. See §2 for the 4 required boundaries without a test.)*
+  - [ ] Author comprehensive Python tests under `prototype/tests/`. *(36 tests in 12 test classes, 2026-10-01. 13 of the 14 required boundaries pass; private-content exclusion is an expected-failure test because the behaviour is not implemented — see §2.)*
   - [x] Execute `validate_docs.py` and `detect_changes.py`.
-  - [ ] Run full test suite covering all 14 required failure boundaries and lifecycle transitions. *(Suite passes 19/19; 10 of the 14 boundaries are covered.)*
+  - [ ] Run full test suite covering all 14 required failure boundaries and lifecycle transitions. *(Suite passes: 32 OK + 1 expected failure. Private-content exclusion remains open.)*
   - [x] Execute `npm run typecheck` and `npm run build` (both `en` and `hu` locales).
   - [x] Verify local search index generation. *(`build/search-index.json`, 361 KB.)*
   - [ ] Execute headless browser smoke tests and capture mobile/desktop screenshots. *(NOT RUN — no screenshots or browser evidence in the repository.)*
@@ -75,7 +75,7 @@ with `jsonschema` installed (so `validate` ran the full schema check, not its fa
 |---|---|---|
 | Frontmatter, planes, provenance, security | `python3 scripts/validate_docs.py` | PASS — 40 pages, 4 interview datasets, 17 provenance hashes |
 | Drift | `python3 scripts/detect_changes.py --all` | PASS — 0 stale generated pages (the command always exits 0; result read from output) |
-| Unit tests | `python3 -m unittest discover tests` | PASS — 19/19 |
+| Unit tests | `python3 -m unittest discover tests` | PASS — 19/19 (re-run 2026-10-01 after M7 additions and review fixes: 36 tests, OK with 1 expected failure) |
 | Types | `npx tsc` | PASS — exit 0 |
 | Static build, both locales | `npx docusaurus build` | PASS — `en` and `hu` generated; only warning: no `blog/` directory |
 | Local search index | build output | PASS — `build/search-index.json` |
@@ -92,22 +92,22 @@ Required automated boundaries (from `docs/prototype-planning/ANTIGRAVITY_PROMPT.
 | Supported-question generation | `TestDeterministicRetrievalAndGeneration` |
 | Unsupported-question handling | `test_question_generation_cli_unsupported` |
 | UI/CLI request round-trip | `TestUiCliJsonRoundtrip` |
-| Invalid state transitions | **No test** — `test_state_transitions` exercises valid transitions only |
+| Invalid state transitions | `test_invalid_transitions_rejected`, `test_unknown_state_rejected`, `test_cli_rejects_invalid_transition` (enforcement added 2026-09-30: `ALLOWED_TRANSITIONS` in `review_governance.py`) |
 | Draft and simulated-approval exclusion from publication | `TestBuildFilterExclusion`, `test_check_production_blocks_simulated_approval` |
 | Drift and targeted regeneration | `TestHashDriftAndRegeneration` |
 | Source deletion | `TestSourceDeletionDetection` |
 | Private routing without cloud fallback | `TestPrivateRoutingPolicy` |
-| Private-content exclusion | **No test** |
-| Invalid provenance | **No test** (hash drift is tested; a tampered or malformed provenance block is not) |
+| Private-content exclusion | **Not implemented** — `test_private_content_excluded_from_production` is `expectedFailure`; pages have no privacy field and `build_filter.py` ignores privacy |
+| Invalid provenance | `TestInvalidProvenance` (tampered, malformed, missing, traversal, incomplete block) |
 | Blocked traversal | `TestPathTraversalSecurity` |
 | Unsafe MDX | `TestUnsafeMdxRejection` |
-| Broken citations | **No test** (`validate_docs.py` checks citations; nothing asserts it rejects a broken one) |
+| Broken citations | `TestBrokenCitations` (check 8 in `validate_docs.py` was documented but not implemented; added 2026-09-30) |
 
 ---
 
 ## 3. Current Activity
 
-- Close Milestone 7: add tests for the 4 uncovered boundaries, run browser smoke tests (or record the
-  exact gap), and write `prototype/VALIDATION.md` from §2.
+- Close Milestone 7: decide and implement private-content exclusion (then drop the `expectedFailure`),
+  run browser smoke tests (or record the exact gap), and write `prototype/VALIDATION.md` from §2.
 - Finish Milestone 6: translate the landing page and navigation into Hungarian.
 - Then Milestone 8: `DEMO.md`, `LIMITATIONS.md`, and the walkthrough.

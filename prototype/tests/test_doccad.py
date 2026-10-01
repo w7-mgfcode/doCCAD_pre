@@ -4,26 +4,33 @@ Covers:
   1. Plane separation & isolation (canonical vs generated views).
   2. Level-1 deterministic retrieval & question generation (supported + unsupported).
   3. UI / CLI JSON round-trip (QuestionRequest, GenerationRun, ReviewRecord).
-  4. Review governance state transitions & simulation vs production boundaries.
+  4. Review governance state transitions (valid and invalid) & simulation vs production boundaries.
   5. Publication build exclusion of unapproved drafts and simulated approvals.
   6. Content-hash drift detection and targeted regeneration.
   7. Source document deletion detection.
   8. Private routing policy hard-pinning (never upgrade private tasks to cloud).
   9. Path traversal prevention.
   10. Unsafe MDX rejection (script tags, eval constructs).
+  11. Invalid provenance (tampered, malformed, missing or escaping source hashes).
+  12. Broken citations (Markdown links, EvidenceLink, interview evidence_links).
+  13. Private-content exclusion from publication (expected failure: not implemented yet).
 """
 
 from __future__ import annotations
 
 import copy
+import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 # Set paths
 TESTS_DIR = Path(__file__).resolve().parent
@@ -41,8 +48,10 @@ from scripts.validate_docs import (
     sha256_of,
     UNSAFE_PATTERNS,
 )
+import scripts.validate_docs as validate_docs
 from scripts.detect_changes import build_manifest, compute_impact
 from scripts.review_governance import (
+    InvalidTransitionError,
     load_reviews,
     save_reviews,
     set_review_status,
@@ -253,8 +262,53 @@ class TestReviewGovernanceStateTransitions(unittest.TestCase):
         self.assertEqual(r4["approval_state"], "rejected")
         self.assertFalse(r4["eligible_for_production"])
 
+    def test_invalid_transitions_rejected(self):
+        # (setup path, forbidden decision): approval must come from in-review; rejected must re-draft
+        cases = [
+            ([], "approved-for-demo"),
+            ([], "rejected"),
+            (["draft"], "approved-for-demo"),
+            (["in-review", "rejected"], "approved-for-demo"),
+            (["in-review", "rejected"], "in-review"),
+            (["in-review", "approved-for-demo"], "in-review"),
+        ]
+        for i, (path, decision) in enumerate(cases):
+            art_id = f"test-doc-invalid-{i}"
+            with self.subTest(path=path, decision=decision):
+                for state in path:
+                    set_review_status(art_id, state, reviewer="bot")
+                before = load_reviews()["reviews"].get(art_id)
+                with self.assertRaises(InvalidTransitionError):
+                    set_review_status(art_id, decision, reviewer="bot")
+                self.assertEqual(load_reviews()["reviews"].get(art_id), before,
+                                 "A rejected transition must leave the ledger unchanged")
+
+    def test_unknown_state_rejected(self):
+        # Production approval is not a state the simulated review CLI can set.
+        with self.assertRaises(ValueError):
+            set_review_status("test-doc-unknown", "approved", reviewer="bot")
+
+    def test_cli_rejects_invalid_transition(self):
+        script = str(PROTOTYPE_ROOT / "scripts" / "review_governance.py")
+        res = subprocess.run(
+            [sys.executable, script, "review", "--artifact", "test-doc-cli-skip",
+             "--decision", "approved-for-demo"],
+            cwd=PROTOTYPE_ROOT, capture_output=True, text=True,
+        )
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("Invalid transition", res.stderr)
+        self.assertNotIn("test-doc-cli-skip", load_reviews()["reviews"])
+
+        res = subprocess.run(
+            [sys.executable, script, "review", "--artifact", "test-doc-cli-skip",
+             "--decision", "approved"],
+            cwd=PROTOTYPE_ROOT, capture_output=True, text=True,
+        )
+        self.assertNotEqual(res.returncode, 0, "CLI must not accept production approval")
+
     def test_check_production_blocks_simulated_approval(self):
         art_id = "test-doc-simulated"
+        set_review_status(art_id, "in-review", reviewer="evaluator")
         set_review_status(art_id, "approved-for-demo", reviewer="evaluator")
 
         cmd = [
@@ -323,6 +377,51 @@ class TestBuildFilterExclusion(unittest.TestCase):
             if test_draft.is_file():
                 test_draft.unlink()
             restore_stashed()
+
+    # Required boundary (ANTIGRAVITY_PROMPT.txt §7: "Keep private fixtures out of public publication
+    # output and its search index"), not implemented: pages carry no privacy field and
+    # build_filter.py never looks for one. The top-level `privacy: private` key below is a
+    # proposal, not an existing contract. Remove the decorator once exclusion is implemented.
+    @unittest.expectedFailure
+    def test_private_content_excluded_from_production(self):
+        private_page = GENERATED / "questions" / "test-private-approved.mdx"
+        private_page.write_text(
+            "---\n"
+            "id: test-private-approved\n"
+            "title: Test Private Page\n"
+            "type: generated\n"
+            "privacy: private\n"
+            "audience:\n  - developer\n"
+            "owners:\n  - dev\n"
+            "last_validated: 2026-09-21\n"
+            "generated: true\n"
+            "generation:\n"
+            "  contract: GenerateQuestionPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: question-page.v1\n"
+            "  source_documents: []\n"
+            "  provider: local\n"
+            "  model: local-model\n"
+            "  generation_mode: production\n"
+            "  generated_at: '2026-09-21T07:00:00Z'\n"
+            "  approval_status: approved\n"
+            "---\n\n"
+            "Private content that must NOT appear in a public publication build.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production()
+            self.assertTrue((STASH / "questions" / "test-private-approved.mdx").is_file(),
+                            "Private page must be stashed out of the production build")
+            if private_page.is_file():
+                self.assertNotIn("Private content", private_page.read_text(encoding="utf-8"))
+        finally:
+            if private_page.is_file():
+                private_page.unlink()
+            restore_stashed()
+            leftover = GENERATED / "questions" / "test-private-approved.mdx"
+            if leftover.is_file():
+                leftover.unlink()
 
 
 class TestHashDriftAndRegeneration(unittest.TestCase):
@@ -437,6 +536,148 @@ class TestUnsafeMdxRejection(unittest.TestCase):
             "```\n"
         )
         self.assertFalse(any(p.search(safe_mdx) for p in UNSAFE_PATTERNS))
+
+
+def _has_jsonschema() -> bool:
+    try:
+        import jsonschema  # noqa: F401
+        import referencing  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+class _ValidatorOnCopy(unittest.TestCase):
+    """Runs validate_docs.main() against a scratch copy of docs/ and schemas/ — never the live tree."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp()).resolve()  # resolved: containment checks compare resolved paths
+        shutil.copytree(DOCS, self.tmp / "docs")
+        shutil.copytree(SCHEMAS, self.tmp / "schemas")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def edit(self, rel: str, old: str, new: str, count: int = 1) -> None:
+        path = self.tmp / rel
+        text = path.read_text(encoding="utf-8")
+        self.assertIn(old, text, f"test fixture drifted: {old!r} not in {rel}")
+        path.write_text(text.replace(old, new, count), encoding="utf-8")
+
+    def run_validator(self) -> tuple[int, str]:
+        out = io.StringIO()
+        with mock.patch.multiple(validate_docs, ROOT=self.tmp, DOCS=self.tmp / "docs",
+                                 SCHEMAS=self.tmp / "schemas"), \
+                redirect_stdout(out), redirect_stderr(out):
+            code = validate_docs.main()
+        return code, out.getvalue()
+
+    def assertRejected(self, needle: str) -> None:
+        code, output = self.run_validator()
+        self.assertEqual(code, 1, f"validator accepted the mutation:\n{output}")
+        self.assertIn(needle, output)
+
+
+class TestInvalidProvenance(_ValidatorOnCopy):
+    """A generated page whose provenance block is tampered, malformed or escaping must fail validation."""
+
+    def setUp(self):
+        super().setUp()
+        # Fixtures come from the content, so re-seeding or renaming generated views cannot break the tests.
+        for page in sorted((self.tmp / "docs" / "generated").rglob("*.mdx")):
+            sources = ((parse_frontmatter(page) or {}).get("generation") or {}).get("source_documents") or []
+            if sources:
+                self.PAGE = page.relative_to(self.tmp).as_posix()
+                self.HASH = sources[0]["content_hash"]
+                self.SRC = f"path: {sources[0]['path']}"
+                break
+        else:
+            self.fail("no generated page with source_documents to use as a fixture")
+
+    def test_unmodified_copy_passes(self):
+        code, output = self.run_validator()
+        self.assertEqual(code, 0, output)
+
+    def test_tampered_hash_rejected(self):
+        self.edit(self.PAGE, self.HASH, "sha256:" + "0" * 64)
+        self.assertRejected("STALE")
+
+    def test_malformed_hash_rejected(self):
+        # Caught by the schema pattern when jsonschema is present, by the hash comparison otherwise.
+        self.edit(self.PAGE, self.HASH, "md5:66743e3d")
+        self.assertRejected(self.PAGE)
+
+    def test_missing_source_rejected(self):
+        self.edit(self.PAGE, self.SRC, "path: docs/source/validation/deleted-page.md")
+        self.assertRejected("source document missing")
+
+    def test_traversal_source_path_rejected(self):
+        self.edit(self.PAGE, self.SRC, "path: ../../etc/passwd")
+        self.assertRejected("Source document path attempts traversal")
+
+    @unittest.skipUnless(_has_jsonschema(), "required-field check needs jsonschema + referencing")
+    def test_incomplete_generation_block_rejected(self):
+        page = self.tmp / self.PAGE
+        text = page.read_text(encoding="utf-8")
+        stripped = re.sub(r"(?m)^  provider: .*\n", "", text, count=1)
+        self.assertNotEqual(text, stripped, "fixture page has no generation.provider line")
+        page.write_text(stripped, encoding="utf-8")
+        self.assertRejected("schema:")
+
+
+class TestBrokenCitations(_ValidatorOnCopy):
+    """Citations to routes that no page serves must fail validation (validate_docs.py check 8)."""
+
+    def setUp(self):
+        super().setUp()
+        docs = self.tmp / "docs"
+        cited = set()
+        for page in docs.joinpath("generated").rglob("*.mdx"):
+            for src in ((parse_frontmatter(page) or {}).get("generation") or {}).get("source_documents") or []:
+                cited.add(src["path"])
+        # A canonical page that is no provenance source, so editing it causes no hash drift.
+        self.CANONICAL = next(p.relative_to(self.tmp).as_posix() for p in sorted(docs.joinpath("source").rglob("*.md"))
+                              if f"docs/{p.relative_to(docs).as_posix()}" not in cited)
+        self.GENERATED = next(p.relative_to(self.tmp).as_posix() for p in sorted(docs.joinpath("generated").rglob("*.mdx")))
+        self.INTERVIEW = sorted(docs.joinpath("generated").rglob("*.interview.json"))[0]
+
+    def append(self, rel: str, text: str) -> None:
+        with (self.tmp / rel).open("a", encoding="utf-8") as f:
+            f.write(text)
+
+    def test_broken_markdown_link_rejected(self):
+        self.append(self.CANONICAL, "\nSee [drift](/docs/validation/no-such-page).\n")
+        self.assertRejected("broken citation: /docs/validation/no-such-page")
+
+    def test_broken_markdown_link_with_title_rejected(self):
+        self.append(self.CANONICAL, '\nSee [drift](/docs/validation/no-such-page "Drift").\n')
+        self.assertRejected("broken citation: /docs/validation/no-such-page")
+
+    def test_broken_evidence_link_rejected(self):
+        self.append(self.GENERATED, '\n<EvidenceLink to="/docs/architecture/removed-page">x</EvidenceLink>\n')
+        self.assertRejected("broken citation: /docs/architecture/removed-page")
+
+    def test_single_quoted_evidence_link_rejected(self):
+        self.append(self.GENERATED, "\n<EvidenceLink title='t' to='/docs/architecture/removed-page'>x</EvidenceLink>\n")
+        self.assertRejected("broken citation: /docs/architecture/removed-page")
+
+    def test_broken_interview_evidence_link_rejected(self):
+        data = json.loads(self.INTERVIEW.read_text(encoding="utf-8"))
+        data["evidence_links"][0]["to"] = "/docs/architecture/gone"
+        self.INTERVIEW.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        self.assertRejected("broken citation: /docs/architecture/gone")
+
+    def test_anchor_and_trailing_slash_resolve(self):
+        self.append(self.CANONICAL, "\nSee [drift](/docs/validation/drift-detection/#hash-comparison)"
+                                    " and [overview](/docs/overview/).\n")
+        code, output = self.run_validator()
+        self.assertEqual(code, 0, output)
+
+    def test_links_in_code_are_not_citations(self):
+        self.append(self.CANONICAL, "\n```md\n[example](/docs/placeholder-page)\n```\n\n"
+                                    "Inline: `<EvidenceLink to=\"/docs/placeholder\" />`.\n")
+        code, output = self.run_validator()
+        self.assertEqual(code, 0, output)
 
 
 if __name__ == "__main__":

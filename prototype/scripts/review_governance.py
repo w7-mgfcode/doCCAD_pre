@@ -10,6 +10,9 @@ Tracks review lifecycle for generated artifacts:
 Enforces the critical boundary:
   Simulated approvals set approved-for-demo, but NEVER set production approval_status: approved.
   Production eligibility requires verified human PR approval.
+
+Transitions are checked against ALLOWED_TRANSITIONS: approved-for-demo is reachable only
+from in-review, so no artifact skips review; a rejected artifact must be re-drafted first.
 """
 
 from __future__ import annotations
@@ -24,6 +27,21 @@ from typing import Any, Dict, List
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 REVIEWS_FILE = ROOT / ".work" / "demo_reviews.json"
+
+STATES = ("draft", "in-review", "approved-for-demo", "rejected")
+# None = no ledger record yet. A generated page is already a draft on disk, so review may start
+# at in-review directly (the README's CLI walkthrough does).
+ALLOWED_TRANSITIONS: Dict[str | None, set[str]] = {
+    None: {"draft", "in-review"},
+    "draft": {"in-review", "rejected"},
+    "in-review": {"approved-for-demo", "rejected", "draft"},
+    "approved-for-demo": {"rejected", "draft"},  # revoke, or re-draft after regeneration
+    "rejected": {"draft"},
+}
+
+
+class InvalidTransitionError(ValueError):
+    """A review decision that the lifecycle does not allow from the current state."""
 
 
 def load_reviews() -> Dict[str, Any]:
@@ -47,10 +65,15 @@ def set_review_status(
     notes: str = "",
     path: str = "",
 ) -> Dict[str, Any]:
-    if decision not in ("draft", "in-review", "approved-for-demo", "rejected"):
+    if decision not in STATES:
         raise ValueError(f"Invalid decision state: {decision}")
 
     reviews = load_reviews()
+    current = reviews["reviews"].get(artifact_id, {}).get("approval_state")
+    if decision not in ALLOWED_TRANSITIONS.get(current, set()):
+        raise InvalidTransitionError(
+            f"Invalid transition for {artifact_id}: {current or '(no record)'} -> {decision}"
+        )
     is_simulated = decision == "approved-for-demo"
     eligible_for_prod = False  # Simulated approval is never eligible for production
 
@@ -79,7 +102,7 @@ def main() -> int:
     # review
     p_rev = sub.add_parser("review", help="Record a review decision")
     p_rev.add_argument("--artifact", required=True, help="Artifact ID")
-    p_rev.add_argument("--decision", required=True, choices=["draft", "in-review", "approved-for-demo", "rejected"])
+    p_rev.add_argument("--decision", required=True, choices=STATES)
     p_rev.add_argument("--reviewer", default="local-evaluator")
     p_rev.add_argument("--notes", default="")
     p_rev.add_argument("--path", default="")
@@ -102,7 +125,11 @@ def main() -> int:
         return 0
 
     if args.action == "review":
-        rec = set_review_status(args.artifact, args.decision, args.reviewer, args.notes, args.path)
+        try:
+            rec = set_review_status(args.artifact, args.decision, args.reviewer, args.notes, args.path)
+        except InvalidTransitionError as e:
+            print(f"REJECTED: {e}", file=sys.stderr)
+            return 1
         print(f"Updated review status for {args.artifact}:")
         print(f"  State:                   {rec['approval_state']}")
         print(f"  Simulated Approval:      {rec['is_simulated']}")
