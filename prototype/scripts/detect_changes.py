@@ -112,27 +112,47 @@ def compute_impact(manifest: Dict[str, Any], changed: List[str],
             stale_generated.append({
                 "id": page["id"], "path": page["path"],
                 "contract": page["generation"]["contract"],
+                "source_documents": page["generation"].get("source_documents", []),
                 "stale_sources": stale_srcs,
             })
+
+    regenerate: List[Dict[str, Any]] = []
+    seen = set()
+    for s in stale_generated:
+        contract = s["contract"]
+        src_docs = s.get("source_documents", [])
+        canonical_target = src_docs[0]["id"] if src_docs and "id" in src_docs[0] else s["id"]
+        key = (contract, canonical_target)
+        if key not in seen:
+            seen.add(key)
+            item = {"contract": contract, "target": canonical_target}
+            if s.get("path", "").startswith("docs/generated/questions/"):
+                item["tool"] = "generate_question.py"
+            else:
+                item["tool"] = "generate_page.py"
+            regenerate.append(item)
 
     return {
         "mode": "full-scan" if full_scan else "git-range",
         "changed_paths": changed,
         "affected_canonical": affected_canonical,
         "stale_generated": stale_generated,
-        "regenerate": [
-            {"contract": s["contract"], "target": s["id"]} for s in stale_generated
-        ],
+        "regenerate": regenerate,
     }
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--all", action="store_true",
                       help="full scan without git (works in a non-git directory)")
     mode.add_argument("--range", metavar="GIT_RANGE",
                       help="git range, e.g. origin/main...HEAD")
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     manifest = build_manifest()
@@ -155,7 +175,10 @@ def main() -> int:
     if impact["regenerate"]:
         print("  regeneration plan:")
         for r in impact["regenerate"]:
-            print(f"    - {r['contract']} --target {r['target']}")
+            if r.get("tool") == "generate_question.py":
+                print(f"    - {r['contract']} --target {r['target']} (generate_question.py)")
+            else:
+                print(f"    - {r['contract']} --target {r['target']}")
     else:
         print("  nothing to regenerate — all provenance hashes current.")
     return 0

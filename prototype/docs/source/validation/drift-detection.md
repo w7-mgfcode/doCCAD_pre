@@ -3,6 +3,7 @@ id: validation-drift-detection
 slug: /validation/drift-detection
 title: Hash-Based Drift Detection & Targeted Regeneration
 type: canonical
+visibility: public
 audience: [developer, architect, operator]
 owners: [architecture]
 sources: [scripts/detect_changes.py, .docs-manifest.json]

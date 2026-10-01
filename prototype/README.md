@@ -19,25 +19,24 @@ Design intent: [`planning/CONCEPT.md`](planning/CONCEPT.md). Requirements mappin
 
 ## Status
 
-Verified on 2026-09-29 (Node 24.19, Python 3.14, on a copy of this directory):
+Verified on 2026-10-01 (Node 24.19, Python 3.14, branch `next-version`):
 
 | Area | Works today | Not yet |
 | --- | --- | --- |
-| Static site | Builds in `en` and `hu`; every page, view, workbench, inspector, explorer and local search | Hungarian covers 4 docs pages; the landing page, navbar and footer are English only |
-| Checks | `validate`, `detect`, 19 unit tests, `typecheck`, `build` all pass | 4 required failure cases have no test (see `PROGRESS.md` §2) |
-| Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip | — |
-| Page pipeline | `generate_page.py --dry-run` for all contracts | Live runs fail validation — see [Known issues](#known-issues) |
-| Regeneration | `seed_generated_views.py` rebuilds every derived view with fresh hashes | Targeted per-view regeneration through `generate_page.py` |
-| Review | Simulated review ledger; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (no remote or CI yet) |
-| Cloud / local models | Adapters and routing exist | Never run with real keys or a local endpoint |
+| Static site | Builds in `en` and `hu`; landing page, navbar, footer, and search index localized; all 29 canonical and 11 generated pages | Untranslated canonical docs fall back to English source (D11 verified) |
+| Checks | `validate`, `detect`, 75 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
+| Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip, forced draft | — |
+| Page pipeline | `generate_page.py` live pipeline verified with date normalization and strict schema adherence (`TestLivePagePipeline`) | — |
+| Regeneration | Targeted deduplicated regeneration through `generate_page.py` and `generate_question.py`; `seed_generated_views.py` | — |
+| Review | Simulated review ledger with strict state machine; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (Phase 1 P1-05) |
+| Cloud / local models | Secret scanning (T6), transport vs content error fallback semantics, privacy hard-pinning (T12) | Real cloud provider calls deferred to Phase 2 with owner API keys |
 
 ## Requirements
 
-- Node.js >= 20 and npm
-- Python 3 with PyYAML
-- Recommended: `jsonschema` (with `referencing`). Without it, `validate_docs.py` silently falls back to a
-  minimal frontmatter check instead of full schema validation, and `generate_page.py` uses the same
-  minimal check (none at all for interview JSON), so it can write output that the schemas reject.
+- Node.js >= 24.14 and npm (see `.nvmrc`)
+- Python 3 with dependencies declared in `requirements.txt` (`pip install -r requirements.txt`: PyYAML, jsonschema, referencing).
+- Full schema validation requires `jsonschema` (with `referencing`). Without it, `validate_docs.py` warns and falls back to a
+  minimal frontmatter check, or exits with code 1 if `DOCCAD_REQUIRE_JSONSCHEMA=1` is set in CI/production.
 
 No API keys, database or network access are needed.
 
@@ -46,7 +45,7 @@ No API keys, database or network access are needed.
 ```bash
 cd prototype
 npm ci
-npm run validate      # → "Validated 40 pages, 4 interview datasets, 17 provenance hashes." + OK
+npm run validate      # → "Validated 40 pages, 4 interview datasets, 37 provenance hashes." + OK
 npm run build         # → [SUCCESS] for en, then for build/hu
 npm run serve         # → http://localhost:3000
 ```
@@ -132,7 +131,9 @@ python3 scripts/review_governance.py list
 python3 scripts/review_governance.py check-production --artifact q-002-drift-detection   # BLOCKED, exit 1
 ```
 
-States: `draft` → `in-review` → `approved-for-demo` or `rejected`. The ledger is
+States: `draft` → `in-review` → `approved-for-demo` or `rejected`. Other moves are refused (exit 1):
+a new artifact starts at `draft` or `in-review`, approval needs `in-review` first, `rejected` and
+`approved-for-demo` go back through `draft`, and repeating the current state is refused. The ledger is
 `.work/demo_reviews.json`. `check-production` always blocks simulated approval, since production
 publication requires a real, human-approved pull request.
 
@@ -198,6 +199,45 @@ an OpenAI-compatible endpoint (for example Ollama) at `http://localhost:11434/v1
 | `.docs-manifest.json`, `impact.json` | Dependency manifest and last drift report (rewritten by `detect`) |
 | `.work/` | Drafts, review ledger, stashed views (git-ignored) |
 
+## Governance
+
+DOCCAD enforces a strict two-step governance model to guarantee that AI-derived documentation cannot reach production without verified human code-owner review (AD-9, ADR-005, E3):
+
+1. **Review Claim (`review_governance.py approve`)**:
+   A human reviewer on a pull request branch runs:
+   ```bash
+   python3 scripts/review_governance.py approve --artifact <id> --pr <pr-number> --reviewer <github-login>
+   ```
+   This verifies the artifact is currently in `in-review`, computes `approved_hash` (sha256 of the markdown body), and stamps an `approval_record` into the document frontmatter. If the body is modified afterwards, the hash mismatch immediately invalidates the approval and returns the view to `in-review`.
+
+2. **Publish Verification Gate (`build_filter.py --mode production` / `publish.yml`)**:
+   The CLI stamp is a claim; the production publication gate is the GitHub API check during the `publish` workflow on `main`. For every page claiming `approval_status: approved`, the gate verifies via the GitHub REST API:
+   - The pull request `pr` is merged into `main`.
+   - The pull request was reviewed and approved by an authorized CODEOWNER (from `.github/CODEOWNERS`) matching `approved_by`.
+   - The pull request touched the specific file.
+   - Current content hash matches `approved_hash`.
+   Any verification negative excludes the page from publication, replacing it with an audited production hold stub. Infrastructure/API/permission errors fail the build job immediately to prevent deploying unverified documentation.
+
+   > [!IMPORTANT]
+   > **Sole CODEOWNER and Bot-Authored PRs (Blocked on E8)**:
+   > GitHub branch protection rules prohibit PR authors from approving their own pull requests. Because `@w7-mgfcode` is the sole CODEOWNER, any PR authored directly by `@w7-mgfcode` cannot receive a CODEOWNER approval from `@w7-mgfcode`.
+   > While the generation workflow (`generate.yml`) pushes a `docs-gen/*` branch that the repository owner manually opens as a pull request, the owner is recorded as the PR author and cannot self-approve. Therefore, **real E3 production approval cannot pass while the owner opens docs-gen PRs**.
+   > End-to-end automated E3 production approval remains **BLOCKED on decision E8** (configuring a GitHub App bot token so that pull requests are opened directly by the bot, allowing `@w7-mgfcode` to act independently as the approving CODEOWNER).
+
+### GitHub Repository Ruleset Configuration
+
+Repository rulesets on `main` must be applied by the repository owner (`@w7-mgfcode`) via GitHub repository settings (H-8):
+- **Target branch**: `main`
+- **Require a pull request before merging**: enabled
+  - Require approvals: `1`
+  - Require review from Code Owners: enabled
+  - Dismiss stale pull request approvals when new commits are pushed: enabled
+- **Require status checks to pass before merging**: enabled
+  - Required check: `validate-and-build` (from workflow `ci.yml`)
+  - Require branches to be up to date before merging: enabled
+- **Block force pushes**: enabled
+- **Bypass list**: Repository admin / owner bypass permitted for "Pull Requests only" to satisfy ruleset while unblocking bot PR merges.
+
 ## Rules
 
 - Canonical pages never import or cite generated pages.
@@ -211,15 +251,6 @@ Contributor and agent conventions: [`../AGENTS.md`](../AGENTS.md).
 
 ## Known issues
 
-- **`generate_page.py` live runs fail.** Recruiter pages fail post-generation validation with
-  `last_validated: datetime.date(...) is not of type 'string'` (YAML parses the date). Interview prep fails
-  because the fixture's JSON uses plain strings for `concepts` and `example_answers`, and omits
-  `evidence`, `choice`/`benefit`/`cost` and `to` fields that `schemas/interview.schema.json` requires.
-  Use `seed_generated_views.py` to regenerate those views.
-- **`detect`'s regeneration plan** names `GenerateRecruiterPage` and `GenerateInterviewPrep` targets
-  that the failure above cannot run, and it lists some interview targets twice under different IDs.
-- **`detect_changes.py --range`** needs git history; until the repository has commits, use `--all`.
-- **The test suite works on the live `docs/generated/` tree.** An interrupted run can leave views
-  stashed; `npm run build:demo` restores them.
-- **Not verified:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a browser,
-  and any real provider call.
+- **`detect_changes.py --range`** needs git history; until the repository has remote commits, use `--all` for a full-workspace scan.
+- **The test suite exercises the production filter.** An interrupted test run can leave unapproved views stashed in `.work/stashed_unapproved/`; `npm run build:demo` restores them.
+- **Not verified in CI:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a live browser (interactive `/browser` available in Antigravity 2.0 app), and live cloud provider calls with real API keys (deferred to Phase 2).

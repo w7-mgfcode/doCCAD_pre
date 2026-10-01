@@ -3,6 +3,7 @@ id: decisions-adr-009-deployment-github-pages
 slug: /decisions/adr-009-deployment-github-pages
 title: "ADR-009: Static Deployment via GitHub Pages"
 type: canonical
+visibility: public
 audience: [architect, operator]
 owners: [architecture]
 sources: [.github/workflows/docs-publish.yml, docusaurus.config.ts]

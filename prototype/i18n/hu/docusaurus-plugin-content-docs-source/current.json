@@ -1,0 +1,46 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.source.category.architecture": {
+    "message": "architecture",
+    "description": "The label for category 'architecture' in sidebar 'source'"
+  },
+  "sidebar.source.category.decisions": {
+    "message": "decisions",
+    "description": "The label for category 'decisions' in sidebar 'source'"
+  },
+  "sidebar.source.category.development": {
+    "message": "development",
+    "description": "The label for category 'development' in sidebar 'source'"
+  },
+  "sidebar.source.category.generation": {
+    "message": "generation",
+    "description": "The label for category 'generation' in sidebar 'source'"
+  },
+  "sidebar.source.category.getting-started": {
+    "message": "getting-started",
+    "description": "The label for category 'getting-started' in sidebar 'source'"
+  },
+  "sidebar.source.category.operations": {
+    "message": "operations",
+    "description": "The label for category 'operations' in sidebar 'source'"
+  },
+  "sidebar.source.category.DOCCAD Rendszeráttekintés": {
+    "message": "DOCCAD Rendszeráttekintés",
+    "description": "The label for category 'DOCCAD Rendszeráttekintés' in sidebar 'source'"
+  },
+  "sidebar.source.category.security": {
+    "message": "security",
+    "description": "The label for category 'security' in sidebar 'source'"
+  },
+  "sidebar.source.category.troubleshooting": {
+    "message": "troubleshooting",
+    "description": "The label for category 'troubleshooting' in sidebar 'source'"
+  },
+  "sidebar.source.category.validation": {
+    "message": "validation",
+    "description": "The label for category 'validation' in sidebar 'source'"
+  }
+}

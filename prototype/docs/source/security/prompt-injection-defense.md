@@ -3,6 +3,7 @@ id: security-prompt-injection-defense
 slug: /security/prompt-injection-defense
 title: Prompt Injection Defenses & Data Demarcation
 type: canonical
+visibility: public
 audience: [developer, architect, reviewer]
 owners: [security]
 sources: [scripts/generate_page.py, scripts/generate_question.py]
@@ -42,4 +43,4 @@ Model output is never written directly to static assets without validation. Resp
 Generated MDX files are parsed for executable JavaScript patterns before compilation. Any instance of `<script>`, `javascript:`, raw `eval()`, or unallowlisted React imports fails validation.
 
 ### 5. Link Domain Allowlists
-Hyperlinks emitted in generated markdown must match the allowlisted domains in `config/link-allowlist.yaml`. Unknown external links trigger security review warnings.
+Hyperlinks emitted in generated markdown must match the allowlisted domains in `contracts/link-allowlist.yaml`. Non-allowlisted external links trigger security rejection.

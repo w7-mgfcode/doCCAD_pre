@@ -1,0 +1,26 @@
+{
+  "title": {
+    "message": "DOCCAD",
+    "description": "The title in the navbar"
+  },
+  "item.label.Docs (Canonical)": {
+    "message": "Dokumentáció (Kanonikus)",
+    "description": "Navbar item with label Docs (Canonical)"
+  },
+  "item.label.Recruiter View": {
+    "message": "Toborzói Nézet",
+    "description": "Navbar item with label Recruiter View"
+  },
+  "item.label.Knowledge Explorer": {
+    "message": "Tudásbázis Böngésző",
+    "description": "Navbar item with label Knowledge Explorer"
+  },
+  "item.label.Question Workbench": {
+    "message": "Kérdés Munkapad",
+    "description": "Navbar item with label Question Workbench"
+  },
+  "item.label.Drift Inspector": {
+    "message": "Eltérés Ellenőr",
+    "description": "Navbar item with label Drift Inspector"
+  }
+}

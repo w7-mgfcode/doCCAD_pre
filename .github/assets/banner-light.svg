@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc">
+  <title id="title">DOCCAD</title>
+  <desc id="desc">Canonical documentation in git; governed AI views derived from it, with sha256 provenance.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f6f8fa"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="1"/><stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="flow" gradientUnits="userSpaceOnUse" x1="0" y1="158" x2="0" y2="202">
+      <stop offset="0" stop-color="#1a7f37"/><stop offset="1" stop-color="#8250df"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="360" fill="url(#bg)"/>
+  <g stroke="#eaeef2" stroke-width="1" opacity="0.7"><path d="M0 0V360" /><path d="M40 0V360" /><path d="M80 0V360" /><path d="M120 0V360" /><path d="M160 0V360" /><path d="M200 0V360" /><path d="M240 0V360" /><path d="M280 0V360" /><path d="M320 0V360" /><path d="M360 0V360" /><path d="M400 0V360" /><path d="M440 0V360" /><path d="M480 0V360" /><path d="M520 0V360" /><path d="M560 0V360" /><path d="M600 0V360" /><path d="M640 0V360" /><path d="M680 0V360" /><path d="M720 0V360" /><path d="M760 0V360" /><path d="M800 0V360" /><path d="M840 0V360" /><path d="M880 0V360" /><path d="M920 0V360" /><path d="M960 0V360" /><path d="M1000 0V360" /><path d="M1040 0V360" /><path d="M1080 0V360" /><path d="M1120 0V360" /><path d="M1160 0V360" /><path d="M1200 0V360" /><path d="M1240 0V360" /><path d="M1280 0V360" /><path d="M0 0H1280" /><path d="M0 40H1280" /><path d="M0 80H1280" /><path d="M0 120H1280" /><path d="M0 160H1280" /><path d="M0 200H1280" /><path d="M0 240H1280" /><path d="M0 280H1280" /><path d="M0 320H1280" /><path d="M0 360H1280" /></g>
+  <rect width="1280" height="360" fill="url(#fade)"/>
+
+  <text x="72" y="78" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="15" letter-spacing="2" fill="#0969da">PRE-DOCCAD · RESEARCH ARCHIVE + PROTOTYPE</text>
+  <text x="68" y="164" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="92" font-weight="800" letter-spacing="-3" fill="#1f2328">DOCCAD</text>
+  <text x="72" y="212" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="27" font-weight="600" fill="#1f2328">Canonical docs in git. Governed AI views on top.</text>
+  <text x="72" y="252" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="18" fill="#59636e">Humans own the source. AI derives the views.</text>
+  <text x="72" y="278" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="18" fill="#59636e">Every view cites its sources by hash.</text>
+  <g font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#59636e">
+    <rect x="72" y="314" width="120" height="28" rx="14" fill="#0969da14" stroke="#d1d9e0"/>
+    <text x="132" y="333" text-anchor="middle">docs-as-code</text>
+    <rect x="202" y="314" width="160" height="28" rx="14" fill="#0969da14" stroke="#d1d9e0"/>
+    <text x="282" y="333" text-anchor="middle">sha256 provenance</text>
+    <rect x="372" y="314" width="144" height="28" rx="14" fill="#0969da14" stroke="#d1d9e0"/>
+    <text x="444" y="333" text-anchor="middle">zero runtime AI</text>
+  </g>
+
+  <g>
+    <rect x="760" y="40" width="440" height="116" rx="14" fill="#ffffff" stroke="#d1d9e0"/>
+    <rect x="759" y="58" width="4" height="80" rx="2" fill="#1a7f37"/>
+    <circle cx="790" cy="70" r="5" fill="#1a7f37"/>
+    <text x="804" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.6" fill="#1a7f37">CANONICAL</text>
+    <text x="784" y="98" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#59636e">docs/source/ · human-owned</text>
+    <rect x="784" y="110" width="300" height="6" rx="3" fill="#eaeef2"/><rect x="784" y="126" width="220" height="6" rx="3" fill="#eaeef2"/><rect x="784" y="142" width="260" height="6" rx="3" fill="#eaeef2"/>
+  </g>
+
+  <g>
+    <rect x="760" y="204" width="440" height="116" rx="14" fill="#ffffff" stroke="#d1d9e0"/>
+    <rect x="759" y="222" width="4" height="80" rx="2" fill="#8250df"/>
+    <circle cx="790" cy="234" r="5" fill="#8250df"/>
+    <text x="804" y="239" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.6" fill="#8250df">GENERATED</text>
+    <text x="784" y="262" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#59636e">docs/generated/ · AI-derived, reviewed</text>
+    <rect x="784" y="274" width="260" height="6" rx="3" fill="#eaeef2"/><rect x="784" y="290" width="300" height="6" rx="3" fill="#eaeef2"/><rect x="784" y="306" width="180" height="6" rx="3" fill="#eaeef2"/>
+  </g>
+  <path d="M980 158 V202" stroke="url(#flow)" stroke-width="3" stroke-dasharray="2 6" stroke-linecap="round"/>
+  <path d="M973 194 L980 203 L987 194" fill="none" stroke="#8250df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="1006" y="166" width="160" height="28" rx="14" fill="#ffffff" stroke="#0969da"/>
+  <text x="1086" y="185" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#0969da">contract · sha256</text>
+</svg>

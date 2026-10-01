@@ -68,7 +68,7 @@
       {
         "id": "architecture-system-overview",
         "path": "docs/source/architecture/system-overview.md",
-        "content_hash": "sha256:a402ec84c03131afc336b9958b850f8be0e5b4860fc456673f3631cf97adbe60"
+        "content_hash": "sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499"
       }
     ],
     "provider": "fixture",

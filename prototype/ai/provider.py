@@ -22,6 +22,14 @@ class ProviderError(RuntimeError):
     """Base error for provider failures (transport, HTTP, malformed response)."""
 
 
+class ProviderTransportError(ProviderError):
+    """Raised on 5xx, timeouts, or network transport failures that qualify for fallback."""
+
+
+class ProviderContentError(ProviderError):
+    """Raised on content grounds (e.g. prompt rejection, safety refusal) — must NOT trigger fallback."""
+
+
 class MissingKeyError(ProviderError):
     """Raised when the provider's API key env var is absent or empty."""
 

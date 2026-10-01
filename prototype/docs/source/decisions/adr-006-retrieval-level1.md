@@ -3,6 +3,7 @@ id: decisions-adr-006-retrieval-level1
 slug: /decisions/adr-006-retrieval-level1
 title: "ADR-006: Level-1 Deterministic Retrieval"
 type: canonical
+visibility: public
 audience: [architect, developer]
 owners: [architecture]
 sources: [scripts/generate_page.py, scripts/generate_question.py]

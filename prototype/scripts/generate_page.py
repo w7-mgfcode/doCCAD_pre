@@ -21,8 +21,9 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator  # noqa: E402
-from ai.router import Router, PrivacyRoutingError  # noqa: E402
+from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, _normalize  # noqa: E402
+from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
+from review_governance import reset_to_draft  # noqa: E402
 
 CONTRACTS = ROOT / "contracts"
 PROMPTS = ROOT / "prompts"
@@ -136,6 +137,7 @@ def stamp_provenance(fm: Dict[str, Any], contract: Dict[str, Any],
         "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "approval_status": "draft",
     }
+    fm.get("generation", {}).pop("approval_record", None)
     return fm
 
 
@@ -144,15 +146,20 @@ def split_model_output(text: str) -> tuple[Dict[str, Any], str]:
                  text.strip(), re.DOTALL)
     if not m:
         raise ContractViolation("Model output has no frontmatter block — rejected.")
-    return yaml.safe_load(m.group(1)), m.group(2).rstrip("`\n ")
+    return _normalize(yaml.safe_load(m.group(1))), m.group(2).rstrip("`\n ")
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--contract", required=True)
     ap.add_argument("--target", required=True, help="canonical doc id")
     ap.add_argument("--privacy", choices=["public", "private"], default="public")
     ap.add_argument("--dry-run", action="store_true")
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     contract = load_contract(args.contract)
@@ -172,8 +179,17 @@ def main() -> int:
         print(f"  - {f.relative_to(ROOT)}")
 
     prompt = render_prompt(contract, args.target, evidence)
+    scan_for_secrets(prompt)
 
-    task_meta = {"task": contract["contract"], "target_id": args.target, "privacy": args.privacy,
+    privacy = args.privacy
+    for f in evidence:
+        if f.suffix in (".md", ".mdx"):
+            efm = parse_frontmatter(f) or {}
+            if efm.get("visibility") == "private" or efm.get("privacy") == "private":
+                privacy = "private"
+                break
+
+    task_meta = {"task": contract["contract"], "target_id": args.target, "privacy": privacy,
                  "context_tokens": len(prompt) // 4}
     router = Router(ROOT / "ai.config.yaml")
     chain = router.select_chain_names(task_meta)
@@ -189,55 +205,107 @@ def main() -> int:
               f"and push branch: {branch}")
         return 0
 
-    # Execute generation
-    result = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}],
-                                      {"max_tokens": contract.get("max_tokens", 4096)})
+    # Execute generation with exactly one repair retry
+    messages = [{"role": "user", "content": prompt}]
     validate = make_validator()
+    max_retries = 1
+    attempts = 0
 
-    if contract["output"]["format"] == "json":
-        # Structured JSON output (e.g. InterviewPrep)
-        data = json.loads(result["text"])
-        data["generation"] = {
-            "contract": contract["contract"],
-            "contract_version": contract["version"],
-            "prompt_version": contract["prompt_version"],
-            "source_documents": [
-                {"id": (parse_frontmatter(p) or {}).get("id", p.stem),
-                 "path": p.relative_to(ROOT).as_posix(),
-                 "content_hash": sha256_of(p)}
-                for p in evidence if p.suffix in (".md", ".mdx")
-            ],
-            "provider": result["provider"],
-            "model": result["model"],
-            "generation_mode": result.get("generation_mode", "demo"),
-            "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "approval_status": "draft",
-        }
-        val_errors = validate(data, "interview")
-        if val_errors:
-            raise ContractViolation(f"Interview schema validation failed: {val_errors}")
-        out_dir = DOCS / "generated" / contract["output"]["dir"]
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / f"{args.target}.interview.json"
-        out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-        print(f"Wrote {out_path.relative_to(ROOT)}")
-        return 0
+    while True:
+        attempts += 1
+        result = router.run_with_fallback(task_meta, messages,
+                                          {"max_tokens": contract.get("max_tokens", 4096)})
 
-    fm, body = split_model_output(result["text"])
-    fm = stamp_provenance(fm, contract, evidence, result["provider"], result["model"],
-                          mode=result.get("generation_mode", "demo"))
-    errors = validate(fm, "document")
-    if errors:
-        raise ContractViolation("Output invalid after generation:\n" + "\n".join(errors))
+        if contract["output"]["format"] == "json":
+            # Structured JSON output (e.g. InterviewPrep)
+            parse_errors = []
+            data = None
+            try:
+                data = json.loads(result["text"])
+            except Exception as e:
+                parse_errors.append(f"JSON parse error: {e}")
 
-    out_dir = DOCS / "generated" / contract["output"]["dir"]
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"{args.target}.mdx"
-    front = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
-    out_path.write_text(f"---\n{front}\n---\n\n{body}\n", encoding="utf-8")
-    print(f"Wrote {out_path.relative_to(ROOT)}")
-    print(f"PR branch (persistence: {contract['persistence']}): {branch}")
-    return 0
+            if not parse_errors and isinstance(data, dict):
+                provider_name = result.get("provider", "fixture")
+                gen_mode = "demo" if provider_name == "fixture" else "production"
+                data["generation"] = {
+                    "contract": contract["contract"],
+                    "contract_version": contract["version"],
+                    "prompt_version": contract["prompt_version"],
+                    "source_documents": [
+                        {"id": (parse_frontmatter(p) or {}).get("id", p.stem),
+                         "path": p.relative_to(ROOT).as_posix(),
+                         "content_hash": sha256_of(p)}
+                        for p in evidence if p.suffix in (".md", ".mdx")
+                    ],
+                    "provider": provider_name,
+                    "model": result.get("model", ""),
+                    "generation_mode": gen_mode,
+                    "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "approval_status": "draft",
+                }
+                val_errors = validate(data, "interview")
+            else:
+                val_errors = parse_errors
+
+            if val_errors:
+                if attempts <= max_retries:
+                    messages.append({"role": "assistant", "content": result["text"]})
+                    messages.append({
+                        "role": "user",
+                        "content": "The previous output had validation errors:\n"
+                                   + "\n".join(val_errors)
+                                   + "\nPlease correct the JSON output according to the schema."
+                    })
+                    continue
+                raise ContractViolation(f"Interview schema validation failed after repair retry: {val_errors}")
+
+            out_dir = DOCS / "generated" / contract["output"]["dir"]
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{args.target}.interview.json"
+            out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+            reset_to_draft(args.target, out_path.relative_to(ROOT).as_posix())
+            print(f"Wrote {out_path.relative_to(ROOT)}")
+            return 0
+
+        else:
+            parse_errors = []
+            fm, body = None, None
+            try:
+                fm, body = split_model_output(result["text"])
+            except Exception as e:
+                parse_errors.append(str(e))
+
+            if not parse_errors and isinstance(fm, dict):
+                provider_name = result.get("provider", "fixture")
+                gen_mode = "demo" if provider_name == "fixture" else "production"
+                fm = stamp_provenance(fm, contract, evidence, provider_name, result.get("model", ""),
+                                      mode=gen_mode)
+                errors = validate(fm, "document")
+            else:
+                errors = parse_errors
+
+            if errors:
+                if attempts <= max_retries:
+                    messages.append({"role": "assistant", "content": result["text"]})
+                    messages.append({
+                        "role": "user",
+                        "content": "The previous output had validation errors:\n"
+                                   + "\n".join(errors)
+                                   + "\nPlease correct the output to ensure valid frontmatter and content."
+                    })
+                    continue
+                raise ContractViolation("Output invalid after generation (repair retry failed):\n" + "\n".join(errors))
+
+            out_dir = DOCS / "generated" / contract["output"]["dir"]
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{args.target}.mdx"
+            front = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
+            out_path.write_text(f"---\n{front}\n---\n\n{body}\n", encoding="utf-8")
+            reset_to_draft(fm.get("id", args.target), out_path.relative_to(ROOT).as_posix())
+            print(f"Wrote {out_path.relative_to(ROOT)}")
+            print(f"PR branch (persistence: {contract['persistence']}): {branch}")
+            return 0
 
 
 if __name__ == "__main__":

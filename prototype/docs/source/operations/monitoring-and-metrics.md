@@ -3,6 +3,7 @@ id: operations-monitoring-and-metrics
 slug: /operations/monitoring-and-metrics
 title: Operational Freshness & Drift Metrics
 type: canonical
+visibility: public
 audience: [operator, architect]
 owners: [operations]
 sources: [.docs-manifest.json, impact.json]

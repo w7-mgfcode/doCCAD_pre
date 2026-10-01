@@ -3,6 +3,7 @@ id: decisions-adr-007-mermaid-as-code
 slug: /decisions/adr-007-mermaid-as-code
 title: "ADR-007: Mermaid-as-Code with CI Compilation Gate"
 type: canonical
+visibility: public
 audience: [architect, developer]
 owners: [architecture]
 sources: [docs/diagrams/, docusaurus.config.ts]
@@ -27,5 +28,5 @@ Architecture diagrams stored as binary images (PNG, JPEG, draw.io XML) cannot be
 All system diagrams in DOCCAD are authored as **Mermaid-as-code**:
 - Shared diagrams reside as `.mmd` files in `docs/diagrams/**`.
 - One-off illustrations are authored as fenced ` ```mermaid ` code blocks directly in Markdown/MDX.
-- CI validates diagrams using `@docusaurus/theme-mermaid` and `mermaid-cli` compilation gates.
+- In the prototype, diagrams are rendered and syntax-checked at static build time via `@docusaurus/theme-mermaid` with `securityLevel: 'strict'`; standalone headless `mermaid-cli` verification in CI is planned (P1-08).
 - AI modifications to diagrams occur strictly through `UpdateMermaidDiagram` task contracts.

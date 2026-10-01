@@ -3,6 +3,7 @@ id: decisions-adr-004-provider-abstraction
 slug: /decisions/adr-004-provider-abstraction
 title: "ADR-004: Thin Provider Abstraction & Routing"
 type: canonical
+visibility: public
 audience: [architect, developer]
 owners: [architecture]
 sources: [ai/provider.py, ai/router.py, ai.config.yaml]

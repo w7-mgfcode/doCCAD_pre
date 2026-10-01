@@ -3,6 +3,7 @@ id: getting-started-installation
 slug: /getting-started/installation
 title: Installation & Toolchain Prerequisites
 type: canonical
+visibility: public
 audience: [developer, operator]
 owners: [core]
 sources: [package.json, tsconfig.json]

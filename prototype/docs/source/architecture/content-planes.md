@@ -3,6 +3,7 @@ id: architecture-content-planes
 slug: /architecture/content-planes
 title: Two Content Planes — Canonical vs Generated
 type: canonical
+visibility: public
 audience: [developer, architect]
 owners: [architecture]
 sources: [docusaurus.config.ts, sidebars-source.ts, sidebars-generated.ts]

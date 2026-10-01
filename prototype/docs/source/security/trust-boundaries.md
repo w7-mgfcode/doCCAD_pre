@@ -3,6 +3,7 @@ id: security-trust-boundaries
 slug: /security/trust-boundaries
 title: Security Architecture & Trust Boundaries
 type: canonical
+visibility: public
 audience: [architect, operator, developer]
 owners: [security]
 sources: [ai/router.py, scripts/validate_docs.py]

@@ -12,7 +12,27 @@
     },
     "slug": {"type": "string"},
     "title": {"type": "string", "minLength": 1},
-    "type": {"enum": ["canonical", "generated"]},
+    "type": {"enum": ["canonical", "generated", "stub"]},
+    "stub_version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Version of the hold stub contract."
+    },
+    "hold_reason": {
+      "type": "string",
+      "description": "Reason the view is held from publication."
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["public", "private"],
+      "default": "private",
+      "description": "Content classification (T12). Default private when omitted."
+    },
+    "privacy": {
+      "type": "string",
+      "enum": ["public", "private"],
+      "description": "Synonym for visibility (AD-12)."
+    },
     "audience": {
       "type": "array",
       "minItems": 1,
@@ -60,6 +80,15 @@
         "required": ["generated", "generation", "audience", "owners"],
         "properties": {"generated": {"const": true}}
       }
+    },
+    {
+      "if": {"properties": {"type": {"const": "stub"}}, "required": ["type"]},
+      "then": {
+        "required": ["stub_version", "audience", "owners", "hold_reason"],
+        "not": {
+          "required": ["generation"]
+        }
+      }
     }
   ],
   "$defs": {
@@ -100,8 +129,34 @@
         "model": {"type": "string", "minLength": 1},
         "generation_mode": {"enum": ["production", "demo"]},
         "generated_at": {"type": "string"},
-        "approval_status": {"enum": ["draft", "in-review", "approved", "approved-for-demo", "rejected"]}
-      }
+        "approval_status": {"enum": ["draft", "in-review", "approved", "approved-for-demo", "rejected"]},
+        "approval_record": {"$ref": "#/$defs/approval_record"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"approval_status": {"const": "approved"}},
+            "required": ["approval_status"]
+          },
+          "then": {
+            "required": ["approval_record"]
+          }
+        }
+      ]
+    },
+    "approval_record": {
+      "type": "object",
+      "required": ["pr", "approved_by", "approved_at", "approved_hash"],
+      "properties": {
+        "pr": {"type": "integer", "minimum": 1},
+        "approved_by": {"type": "string", "minLength": 1},
+        "approved_at": {"type": "string"},
+        "approved_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

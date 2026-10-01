@@ -3,6 +3,7 @@ id: q-006-kubernetes-topology
 slug: /questions/q-006-kubernetes-topology
 title: 'Question: Kubernetes Deployment Topology (Insufficient Evidence)'
 type: generated
+visibility: public
 audience:
 - developer
 - architect
@@ -12,20 +13,18 @@ last_validated: '2026-09-21'
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 1
-  prompt_version: question-page.v1
+  contract_version: 2
+  prompt_version: question-page.v2
   source_documents:
   - id: decisions-adr-009-deployment-github-pages
     path: docs/source/decisions/adr-009-deployment-github-pages.md
-    content_hash: sha256:14a9e6e56e4690aee0cc557af269cf0608c8f885a57a13b94490cf8b9f809f30
+    content_hash: sha256:91421efb11fbc1f1552434bf1cf65766d4f3810c4331a0678fe4e619893e615c
   provider: fixture
   model: deterministic-demo-fixture
   generation_mode: demo
   generated_at: '2026-09-21T00:00:00Z'
   approval_status: approved-for-demo
 ---
-
-import EvidenceLink from '@site/src/components/EvidenceLink';
 
 # Question: What is DOCCAD's multi-cluster Kubernetes deployment topology for high-frequency trading?
 

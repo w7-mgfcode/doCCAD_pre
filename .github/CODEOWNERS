@@ -1,0 +1,13 @@
+# DOCCAD CODEOWNERS (DEC-006 / ADR-005, T1, M1.1)
+# Governed generated views, generation contracts, prompt templates, schemas, scripts,
+# AI layer router/adapters, and GitHub workflows strictly require code-owner review.
+
+/prototype/docs/generated/** @w7-mgfcode
+/prototype/contracts/** @w7-mgfcode
+/prototype/prompts/** @w7-mgfcode
+/prototype/schemas/** @w7-mgfcode
+/prototype/scripts/** @w7-mgfcode
+/prototype/ai/** @w7-mgfcode
+/prototype/ai.config.yaml @w7-mgfcode
+/.github/** @w7-mgfcode
+/.github/CODEOWNERS @w7-mgfcode

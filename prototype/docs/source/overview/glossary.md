@@ -3,6 +3,7 @@ id: overview-glossary
 slug: /overview/glossary
 title: DOCCAD Architectural Glossary
 type: canonical
+visibility: public
 audience: [developer, architect, recruiter, user]
 owners: [architecture]
 sources: [schemas/document.schema.json]

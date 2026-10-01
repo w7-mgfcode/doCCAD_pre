@@ -3,6 +3,7 @@ id: decisions-adr-008-build-time-ai
 slug: /decisions/adr-008-build-time-ai
 title: "ADR-008: Build-Time/CI-Time AI over Runtime AI"
 type: canonical
+visibility: public
 audience: [architect, developer, operator]
 owners: [architecture]
 sources: [scripts/generate_page.py, docusaurus.config.ts]

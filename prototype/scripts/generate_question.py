@@ -25,7 +25,8 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, check_path_containment, _normalize  # noqa: E402
-from ai.router import Router, PrivacyRoutingError  # noqa: E402
+from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
+from review_governance import reset_to_draft  # noqa: E402
 
 CONTRACTS = ROOT / "contracts"
 PROMPTS = ROOT / "prompts"
@@ -33,6 +34,10 @@ WORK_DIR = ROOT / ".work" / "drafts"
 
 EVIDENCE_OPEN = "<<<EVIDENCE-DATA"
 EVIDENCE_CLOSE = "EVIDENCE-DATA>>>"
+
+
+class ContractViolation(RuntimeError):
+    pass
 
 
 def load_contract(name: str = "GenerateQuestionPage") -> Dict[str, Any]:
@@ -150,6 +155,9 @@ User Question: {{question}}
         .replace("{{prohibited}}", "\n".join(f"- {p}" for p in contract.get("prohibited", [])))
         .replace("{{evidence}}", evidence_block)
     )
+    unresolved = re.findall(r"\{\{[a-z_]+\}\}", rendered)
+    if unresolved:
+        raise ContractViolation(f"Unresolved prompt placeholders: {unresolved}")
     return rendered
 
 
@@ -174,7 +182,7 @@ def split_output(text: str) -> Tuple[Dict[str, Any], str]:
     return yaml.safe_load(m.group(1)), m.group(2).rstrip("`\n ")
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--request", help="Path to QuestionRequest JSON file")
     ap.add_argument("--question", help="Question text")
@@ -183,6 +191,11 @@ def main() -> int:
     ap.add_argument("--target", help="Canonical doc id")
     ap.add_argument("--persist", action="store_true", help="Write directly to docs/generated/questions/")
     ap.add_argument("--export-run", help="Output path for GenerationRun JSON")
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     if args.request:
@@ -221,7 +234,15 @@ def main() -> int:
         for r in rejected_files[:5]:
             print(f"  - {r}")
 
+    for f in included_files:
+        if f.suffix in (".md", ".mdx"):
+            efm = parse_frontmatter(f) or {}
+            if efm.get("visibility") == "private" or efm.get("privacy") == "private":
+                privacy = "private"
+                break
+
     prompt = render_prompt(contract, question, audience, privacy, included_files)
+    scan_for_secrets(prompt)
 
     task_meta = {
         "task": contract["contract"],
@@ -258,31 +279,37 @@ def main() -> int:
                 "content_hash": sha256_of(f),
             })
 
+    provider_name = call_res.get("provider", "fixture")
+    gen_mode = "demo" if provider_name == "fixture" else "production"
+    model_name = call_res.get("model", "deterministic-demo-fixture" if provider_name == "fixture" else "")
+
     fm["type"] = "generated"
     fm["generated"] = True
     fm["generation"] = {
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 1),
-        "prompt_version": contract.get("prompt_version", "question-page.v1"),
+        "contract_version": contract.get("version", 2),
+        "prompt_version": contract.get("prompt_version", "question-page.v2"),
         "source_documents": source_docs,
         "repo_evidence": [
             f.relative_to(ROOT).as_posix()
             for f in included_files
             if f.suffix not in (".md", ".mdx")
         ],
-        "provider": call_res.get("provider", "fixture"),
-        "model": call_res.get("model", "deterministic-demo-fixture"),
-        "generation_mode": call_res.get("generation_mode", "demo"),
+        "provider": provider_name,
+        "model": model_name,
+        "generation_mode": gen_mode,
         "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "approval_status": "draft",
     }
+    fm.get("generation", {}).pop("approval_record", None)
 
     # Validate output schema
     validate = make_validator()
     fm = _normalize(fm)
     val_errors = validate(fm, "document")
     if val_errors:
-        print(f"[WARNING] Generated frontmatter validation issues: {val_errors}", file=sys.stderr)
+        print(f"[ERROR] Generated frontmatter validation failed: {val_errors}", file=sys.stderr)
+        return 1
 
     doc_id = fm.get("id", f"q-{abs(hash(question)) % 1000:03d}")
     front_str = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
@@ -296,6 +323,7 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{doc_id}.mdx"
     out_path.write_text(full_output, encoding="utf-8")
+    reset_to_draft(doc_id, out_path.relative_to(ROOT).as_posix())
 
     status = "insufficient_evidence" if "insufficient" in body.lower() else "success"
     print(f"\nWrote candidate artifact ({status}): {out_path.relative_to(ROOT)}")
@@ -304,11 +332,11 @@ def main() -> int:
     run_record = {
         "run_id": f"run-{int(datetime.datetime.now().timestamp())}",
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 1),
-        "prompt_version": contract.get("prompt_version", "question-page.v1"),
-        "provider": call_res.get("provider", "fixture"),
-        "model": call_res.get("model", "deterministic-demo-fixture"),
-        "mode": call_res.get("generation_mode", "demo"),
+        "contract_version": contract.get("version", 2),
+        "prompt_version": contract.get("prompt_version", "question-page.v2"),
+        "provider": provider_name,
+        "model": model_name,
+        "mode": gen_mode,
         "target_id": target_id,
         "evidence_files": source_docs,
         "rejected_files": rejected_files,

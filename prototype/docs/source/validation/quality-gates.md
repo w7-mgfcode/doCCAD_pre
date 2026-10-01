@@ -3,6 +3,7 @@ id: validation-quality-gates
 slug: /validation/quality-gates
 title: Deterministic CI Quality Gates
 type: canonical
+visibility: public
 audience: [developer, operator, architect]
 owners: [core]
 sources: [scripts/validate_docs.py, .github/workflows/docs-validate.yml]
