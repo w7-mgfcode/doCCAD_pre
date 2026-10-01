@@ -1,0 +1,90 @@
+# Scheduled drift detection workflow (AD-8, T9, M2.2)
+# Scans for drift against canonical sources and reports stale views.
+name: drift
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Weekly on Monday at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: prototype
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: prototype/package-lock.json
+
+      - name: Setup Python 3.14
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          npm ci
+
+      - name: Detect drift
+        run: npm run detect
+
+      - name: File drift issue if stale views found
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, subprocess, sys
+
+          imp = json.load(open("impact.json", encoding="utf-8"))
+          stale = imp.get("stale_generated", [])
+          if not stale:
+              print("No stale views detected; drift check green.")
+              sys.exit(0)
+
+          print(f"Detected {len(stale)} stale generated view(s).")
+          body_lines = [
+              "## ⚠️ DOCCAD Drift Alert",
+              "",
+              "Scheduled drift detection identified stale generated views:",
+              ""
+          ]
+          for s in stale:
+              body_lines.append(f"- **{s.get('id')}** (`{s.get('path')}`)")
+              for src in s.get("stale_sources", []):
+                  body_lines.append(f"  - Stale source: `{src.get('path')}`")
+          body_lines.extend([
+              "",
+              "Run `npm run detect` and regenerate stale views."
+          ])
+          issue_body = "\n".join(body_lines)
+
+          # Check if open drift issue already exists
+          existing = subprocess.check_output(
+              ["gh", "issue", "list", "--state", "open", "--search", "DOCCAD Drift Alert in:title", "--json", "number"],
+              text=True
+          )
+          issues = json.loads(existing)
+          if issues:
+              print(f"Drift tracking issue already open: #{issues[0]['number']}")
+          else:
+              subprocess.run(
+                  ["gh", "issue", "create", "--title", "⚠️ DOCCAD Drift Alert: Stale generated views detected", "--body", issue_body],
+                  check=True
+              )
+          EOF

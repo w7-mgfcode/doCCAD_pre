@@ -56,7 +56,17 @@ from scripts.review_governance import (
     load_reviews,
     save_reviews,
     set_review_status,
+    approve_artifact,
+    reset_to_draft,
     REVIEWS_FILE,
+)
+from github_approval import (
+    ApprovalVerifier,
+    MockGitHubApiClient,
+    ApiPermissionError,
+    VerificationNegative,
+    compute_body_hash,
+    compute_file_body_hash,
 )
 from scripts.build_filter import (
     filter_for_production,
@@ -1378,5 +1388,466 @@ class TestPrivateChainConfig(unittest.TestCase):
         self.assertIsNotNone(router)
 
 
+class TestApprovalRecord(unittest.TestCase):
+    """P1-05 / E3: Real approval replaces simulated approval for production."""
+
+    def setUp(self):
+        self.validator = make_validator()
+        self.tmpdir = tempfile.mkdtemp(prefix="doccad-test-approval-")
+        self.addCleanup(lambda: shutil.rmtree(self.tmpdir, ignore_errors=True))
+
+    def test_schema_requires_approval_record_when_approved(self):
+        doc = {
+            "id": "test-view",
+            "title": "Test View",
+            "type": "generated",
+            "generated": True,
+            "audience": ["developer"],
+            "owners": ["developer"],
+            "generation": {
+                "contract": "GenerateRecruiterPage",
+                "contract_version": 1,
+                "prompt_version": "recruiter.v1",
+                "source_documents": [
+                    {"id": "doc-1", "path": "docs/source/overview/index.md", "content_hash": "sha256:" + "0"*64}
+                ],
+                "provider": "fixture",
+                "model": "fixture",
+                "generated_at": "2026-10-01T00:00:00Z",
+                "approval_status": "approved",
+            }
+        }
+        # Without approval_record: must fail schema validation
+        errs = self.validator(doc, "document")
+        self.assertTrue(any("approval_record" in e for e in errs), f"Expected approval_record error, got: {errs}")
+
+        # With complete approval_record: passes
+        doc["generation"]["approval_record"] = {
+            "pr": 42,
+            "approved_by": "w7-mgfcode",
+            "approved_at": "2026-10-01T12:00:00Z",
+            "approved_hash": "sha256:" + "a"*64
+        }
+        errs = self.validator(doc, "document")
+        self.assertEqual(errs, [])
+
+    def test_schema_rejects_incomplete_approval_record(self):
+        base_record = {
+            "pr": 42,
+            "approved_by": "w7-mgfcode",
+            "approved_at": "2026-10-01T12:00:00Z",
+            "approved_hash": "sha256:" + "a"*64
+        }
+        for missing_field in ["pr", "approved_by", "approved_at", "approved_hash"]:
+            bad_rec = dict(base_record)
+            del bad_rec[missing_field]
+            doc = {
+                "id": "test-view",
+                "title": "Test View",
+                "type": "generated",
+                "generated": True,
+                "audience": ["developer"],
+                "owners": ["developer"],
+                "generation": {
+                    "contract": "GenerateRecruiterPage",
+                    "contract_version": 1,
+                    "prompt_version": "recruiter.v1",
+                    "source_documents": [
+                        {"id": "doc-1", "path": "docs/source/overview/index.md", "content_hash": "sha256:" + "0"*64}
+                    ],
+                    "provider": "fixture",
+                    "model": "fixture",
+                    "generated_at": "2026-10-01T00:00:00Z",
+                    "approval_status": "approved",
+                    "approval_record": bad_rec,
+                }
+            }
+            errs = self.validator(doc, "document")
+            self.assertTrue(len(errs) > 0, f"Expected error for missing {missing_field}")
+
+    def test_schema_rejects_malformed_approved_hash(self):
+        doc = {
+            "id": "test-view",
+            "title": "Test View",
+            "type": "generated",
+            "generated": True,
+            "audience": ["developer"],
+            "owners": ["developer"],
+            "generation": {
+                "contract": "GenerateRecruiterPage",
+                "contract_version": 1,
+                "prompt_version": "recruiter.v1",
+                "source_documents": [
+                    {"id": "doc-1", "path": "docs/source/overview/index.md", "content_hash": "sha256:" + "0"*64}
+                ],
+                "provider": "fixture",
+                "model": "fixture",
+                "generated_at": "2026-10-01T00:00:00Z",
+                "approval_status": "approved",
+                "approval_record": {
+                    "pr": 42,
+                    "approved_by": "w7-mgfcode",
+                    "approved_at": "2026-10-01T12:00:00Z",
+                    "approved_hash": "md5:notasha256"
+                },
+            }
+        }
+        errs = self.validator(doc, "document")
+        self.assertTrue(len(errs) > 0)
+
+    def test_cli_approve_requires_in_review_state(self):
+        test_file = Path(self.tmpdir) / "test-doc.mdx"
+        test_file.write_text(
+            "---\n"
+            "id: test-doc\n"
+            "title: Test Doc\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: draft\n"
+            "---\n\n"
+            "# Content\n",
+            encoding="utf-8"
+        )
+        with self.assertRaises(InvalidTransitionError):
+            approve_artifact("test-doc", pr=42, reviewer="w7-mgfcode", path=str(test_file))
+
+    def test_cli_approve_stamps_frontmatter_and_body_hash(self):
+        test_file = Path(self.tmpdir) / "test-doc-review.mdx"
+        body = "# Content\nSome body text\n"
+        test_file.write_text(
+            "---\n"
+            "id: test-doc-review\n"
+            "title: Test Doc Review\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  source_documents:\n"
+            "    - id: doc-1\n"
+            "      path: docs/source/overview/index.md\n"
+            "      content_hash: sha256:" + "0"*64 + "\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: in-review\n"
+            "---\n\n"
+            f"{body}",
+            encoding="utf-8"
+        )
+        rec = approve_artifact("test-doc-review", pr=101, reviewer="w7-mgfcode", path=str(test_file))
+        self.assertEqual(rec["approval_state"], "approved")
+        self.assertEqual(rec["pr"], 101)
+        self.assertEqual(rec["reviewed_by"], "w7-mgfcode")
+        self.assertTrue(rec["approved_hash"].startswith("sha256:"))
+
+        # Check file on disk
+        fm = parse_frontmatter(test_file)
+        gen = fm["generation"]
+        self.assertEqual(gen["approval_status"], "approved")
+        self.assertEqual(gen["approval_record"]["pr"], 101)
+        self.assertEqual(gen["approval_record"]["approved_by"], "w7-mgfcode")
+        self.assertEqual(gen["approval_record"]["approved_hash"], compute_file_body_hash(test_file))
+
+    def test_body_tamper_after_approval_fails_hash_verification(self):
+        test_file = Path(self.tmpdir) / "test-tamper.mdx"
+        content = (
+            "---\n"
+            "id: test-tamper\n"
+            "title: Tamper Test\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  source_documents:\n"
+            "    - id: doc-1\n"
+            "      path: docs/source/overview/index.md\n"
+            "      content_hash: sha256:" + "0"*64 + "\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: in-review\n"
+            "---\n\n"
+            "# Original Content\n"
+        )
+        test_file.write_text(content, encoding="utf-8")
+        approve_artifact("test-tamper", pr=102, reviewer="w7-mgfcode", path=str(test_file))
+
+        # Tamper body text
+        tampered_content = test_file.read_text(encoding="utf-8") + "\nExtra modified line!\n"
+        test_file.write_text(tampered_content, encoding="utf-8")
+
+        verifier = ApprovalVerifier()
+        fm = parse_frontmatter(test_file)
+        with self.assertRaises(VerificationNegative) as ctx:
+            verifier.verify(test_file, fm, require_api_gate=False)
+        self.assertIn("Hash mismatch", str(ctx.exception))
+
+    def test_github_api_gate_valid_approval_passes(self):
+        test_file = Path(self.tmpdir) / "test-gate-pass.mdx"
+        body = "# Valid Pass\n"
+        content = (
+            "---\n"
+            "id: test-gate-pass\n"
+            "title: Valid Pass\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: in-review\n"
+            "---\n\n"
+            f"{body}"
+        )
+        test_file.write_text(content, encoding="utf-8")
+        approve_artifact("test-gate-pass", pr=42, reviewer="w7-mgfcode", path=str(test_file))
+        fm = parse_frontmatter(test_file)
+
+        mock_responses = {
+            "repos/w7-mgfcode/doCCAD_pre/pulls/42": {"merged": True, "state": "closed"},
+            "repos/w7-mgfcode/doCCAD_pre/pulls/42/reviews": [
+                {"user": {"login": "w7-mgfcode"}, "state": "APPROVED", "submitted_at": "2026-10-01T12:00:00Z"}
+            ],
+            "repos/w7-mgfcode/doCCAD_pre/pulls/42/files": [
+                {"filename": test_file.as_posix()}
+            ],
+        }
+        client = MockGitHubApiClient(responses=mock_responses)
+        codeowners_tmp = Path(self.tmpdir) / "CODEOWNERS"
+        codeowners_tmp.write_text(f"{test_file.as_posix()} @w7-mgfcode\n", encoding="utf-8")
+
+        verifier = ApprovalVerifier(client=client, codeowners_file=codeowners_tmp)
+        valid, msg = verifier.verify(test_file, fm, require_api_gate=True)
+        self.assertTrue(valid)
+        self.assertIn("Verified", msg)
+
+    def test_github_api_gate_unmerged_pr_raises_verification_negative(self):
+        test_file = Path(self.tmpdir) / "test-unmerged.mdx"
+        test_file.write_text(
+            "---\n"
+            "id: test-unmerged\n"
+            "title: Unmerged\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: in-review\n"
+            "---\n\n"
+            "# Unmerged PR\n",
+            encoding="utf-8"
+        )
+        approve_artifact("test-unmerged", pr=43, reviewer="w7-mgfcode", path=str(test_file))
+        fm = parse_frontmatter(test_file)
+
+        mock_responses = {
+            "repos/w7-mgfcode/doCCAD_pre/pulls/43": {"merged": False, "state": "open"},
+        }
+        client = MockGitHubApiClient(responses=mock_responses)
+        codeowners_tmp = Path(self.tmpdir) / "CODEOWNERS"
+        codeowners_tmp.write_text(f"{test_file.as_posix()} @w7-mgfcode\n", encoding="utf-8")
+
+        verifier = ApprovalVerifier(client=client, codeowners_file=codeowners_tmp)
+        with self.assertRaises(VerificationNegative) as ctx:
+            verifier.verify(test_file, fm, require_api_gate=True)
+        self.assertIn("not merged", str(ctx.exception))
+
+    def test_github_api_gate_missing_codeowner_review_raises_verification_negative(self):
+        test_file = Path(self.tmpdir) / "test-missing-review.mdx"
+        test_file.write_text(
+            "---\n"
+            "id: test-missing-review\n"
+            "title: Missing Review\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: in-review\n"
+            "---\n\n"
+            "# Missing Review\n",
+            encoding="utf-8"
+        )
+        approve_artifact("test-missing-review", pr=44, reviewer="w7-mgfcode", path=str(test_file))
+        fm = parse_frontmatter(test_file)
+
+        mock_responses = {
+            "repos/w7-mgfcode/doCCAD_pre/pulls/44": {"merged": True, "state": "closed"},
+            "repos/w7-mgfcode/doCCAD_pre/pulls/44/reviews": [
+                {"user": {"login": "random-contributor"}, "state": "APPROVED", "submitted_at": "2026-10-01T12:00:00Z"}
+            ],
+            "repos/w7-mgfcode/doCCAD_pre/pulls/44/files": [{"filename": test_file.as_posix()}],
+        }
+        client = MockGitHubApiClient(responses=mock_responses)
+        codeowners_tmp = Path(self.tmpdir) / "CODEOWNERS"
+        codeowners_tmp.write_text(f"{test_file.as_posix()} @w7-mgfcode\n", encoding="utf-8")
+
+        verifier = ApprovalVerifier(client=client, codeowners_file=codeowners_tmp)
+        with self.assertRaises(VerificationNegative) as ctx:
+            verifier.verify(test_file, fm, require_api_gate=True)
+        self.assertIn("no APPROVED review", str(ctx.exception))
+
+    def test_github_api_gate_file_not_in_pr_raises_verification_negative(self):
+        test_file = Path(self.tmpdir) / "test-not-in-pr.mdx"
+        test_file.write_text(
+            "---\n"
+            "id: test-not-in-pr\n"
+            "title: Not In PR\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: in-review\n"
+            "---\n\n"
+            "# File Not In PR\n",
+            encoding="utf-8"
+        )
+        approve_artifact("test-not-in-pr", pr=45, reviewer="w7-mgfcode", path=str(test_file))
+        fm = parse_frontmatter(test_file)
+
+        mock_responses = {
+            "repos/w7-mgfcode/doCCAD_pre/pulls/45": {"merged": True, "state": "closed"},
+            "repos/w7-mgfcode/doCCAD_pre/pulls/45/reviews": [
+                {"user": {"login": "w7-mgfcode"}, "state": "APPROVED", "submitted_at": "2026-10-01T12:00:00Z"}
+            ],
+            "repos/w7-mgfcode/doCCAD_pre/pulls/45/files": [
+                {"filename": "other/unrelated/file.txt"}
+            ],
+        }
+        client = MockGitHubApiClient(responses=mock_responses)
+        codeowners_tmp = Path(self.tmpdir) / "CODEOWNERS"
+        codeowners_tmp.write_text(f"{test_file.as_posix()} @w7-mgfcode\n", encoding="utf-8")
+
+        verifier = ApprovalVerifier(client=client, codeowners_file=codeowners_tmp)
+        with self.assertRaises(VerificationNegative) as ctx:
+            verifier.verify(test_file, fm, require_api_gate=True)
+        self.assertIn("did not modify", str(ctx.exception))
+
+    def test_github_api_gate_api_error_raises_api_permission_error(self):
+        test_file = Path(self.tmpdir) / "test-api-err.mdx"
+        test_file.write_text(
+            "---\n"
+            "id: test-api-err\n"
+            "title: API Error\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: in-review\n"
+            "---\n\n"
+            "# API Error\n",
+            encoding="utf-8"
+        )
+        approve_artifact("test-api-err", pr=46, reviewer="w7-mgfcode", path=str(test_file))
+        fm = parse_frontmatter(test_file)
+
+        mock_errors = {
+            "repos/w7-mgfcode/doCCAD_pre/pulls/46": ApiPermissionError("403 Resource rate limit exceeded")
+        }
+        client = MockGitHubApiClient(errors=mock_errors)
+        codeowners_tmp = Path(self.tmpdir) / "CODEOWNERS"
+        codeowners_tmp.write_text(f"{test_file.as_posix()} @w7-mgfcode\n", encoding="utf-8")
+
+        verifier = ApprovalVerifier(client=client, codeowners_file=codeowners_tmp)
+        with self.assertRaises(ApiPermissionError) as ctx:
+            verifier.verify(test_file, fm, require_api_gate=True)
+        self.assertIn("rate limit", str(ctx.exception))
+
+    def test_regeneration_resets_approval_to_draft(self):
+        save_reviews({"reviews": {
+            "test-regen-artifact": {
+                "artifact_id": "test-regen-artifact",
+                "approval_state": "approved",
+                "is_simulated": False,
+                "eligible_for_production": True,
+            }
+        }})
+        reset_to_draft("test-regen-artifact", "path/to/test.mdx")
+        rev = load_reviews()["reviews"]["test-regen-artifact"]
+        self.assertEqual(rev["approval_state"], "draft")
+        self.assertFalse(rev["eligible_for_production"])
+
+    def test_build_filter_fails_on_api_permission_error(self):
+        # Create a mock verifier that raises ApiPermissionError on an approved view
+        class FailingVerifier(ApprovalVerifier):
+            def verify(self, doc_path, frontmatter, require_api_gate=True):
+                raise ApiPermissionError("403 Forbidden: Bad GITHUB_TOKEN")
+
+        # Temporarily place a test approved file in docs/generated/
+        test_gen = GENERATED / "test-approved-api-fail.mdx"
+        test_gen.write_text(
+            "---\n"
+            "id: test-approved-api-fail\n"
+            "title: Approved Fail\n"
+            "type: generated\n"
+            "generated: true\n"
+            "audience: [developer]\n"
+            "owners: [developer]\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: recruiter.v1\n"
+            "  provider: fixture\n"
+            "  model: fixture\n"
+            "  approval_status: approved\n"
+            "  approval_record:\n"
+            "    pr: 99\n"
+            "    approved_by: w7-mgfcode\n"
+            "    approved_at: '2026-10-01T12:00:00Z'\n"
+            "    approved_hash: 'sha256:" + "0"*64 + "'\n"
+            "---\n\n"
+            "# Body\n",
+            encoding="utf-8"
+        )
+        try:
+            with self.assertRaises(ApiPermissionError):
+                filter_for_production(verifier=FailingVerifier(), require_api=True)
+        finally:
+            if test_gen.is_file():
+                test_gen.unlink()
+            restore_stashed()
+
+
 if __name__ == "__main__":
     unittest.main()
+

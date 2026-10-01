@@ -9,12 +9,14 @@
 
 ## 1. Executive Summary
 
-This document records the definitive validation results for the DOCCAD prototype at the conclusion of Phase 0. Every check is categorized as **PASS**, **FAIL**, or **NOT RUN**. No assumed or historical test results are reported; every passing entry represents a command executed in this run with exit code 0.
+This document records the definitive validation results for the DOCCAD prototype at the conclusion of Phase 1 (Deployable & Governed GitHub Automation). Every check is categorized as **PASS**, **FAIL**, or **NOT RUN**. No assumed or historical test results are reported; every passing entry represents a command executed in this run with exit code 0.
 
-- **Total Automated Python Unit Tests**: 75 tests across 22 test classes (**75 PASS, 0 FAIL, 0 EXPECTED FAILURES**).
-- **Core Governance Scripts**: `validate_docs.py`, `detect_changes.py`, `generate_page.py`, `generate_question.py`, `review_governance.py`, `build_filter.py` all verified.
+- **Total Automated Python Unit Tests**: 88 tests across 23 test classes (**88 PASS, 0 FAIL, 0 EXPECTED FAILURES**).
+- **Core Governance Scripts**: `validate_docs.py`, `detect_changes.py`, `generate_page.py`, `generate_question.py`, `review_governance.py`, `build_filter.py`, `github_approval.py` all verified.
+- **GitHub Automation & Workflows**: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, and `dependabot.yml` statically validated, action pins pinned to full commit SHAs, zero `pull_request_target`.
+- **Governance & CODEOWNERS (E3)**: Real human approval replaces simulated approval for production: `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation.
 - **Frontend & Static Build**: TypeScript compilation (`tsc`) and Docusaurus dual-locale build (`en`, `hu`) exit 0 with search index generation.
-- **Security & Quality Gates (T1–T6, T12)**: AST safety, link allowlisting, secret scanning, strict Mermaid rendering, private routing hard-pinning, and private content isolation verified.
+- **Security & Quality Gates (T1–T6, T12, T14)**: AST safety, link allowlisting, secret scanning, strict Mermaid rendering, private routing hard-pinning, private content isolation, and CODEOWNER approval verification verified.
 - **Browser Testing**: Marked **NOT RUN** per run rules (interactive `/browser` slash command in Antigravity 2.0 app and unapproved Playwright dependency per decision E6).
 
 ---
@@ -23,20 +25,23 @@ This document records the definitive validation results for the DOCCAD prototype
 
 | Gate ID | Check Description | Exact Command | Exit Code | Date | Result | Evidence / Output Note |
 |---|---|---|---|---|---|---|
-| **GATE-VAL** | Schema, plane, hash, link & AST validation | `npm run validate` | 0 | 2026-10-01 | **PASS** | `OK — frontmatter schemas valid, planes intact, IDs unique, 17 provenance hashes verified, link/security checks passed.` |
+| **GATE-VAL** | Schema, plane, hash, link & AST validation | `npm run validate` | 0 | 2026-10-01 | **PASS** | `OK — frontmatter schemas valid, planes intact, IDs unique, 37 provenance hashes verified, link/security checks passed.` |
 | **GATE-DRIFT** | Change impact & drift detection | `npm run detect` | 0 | 2026-10-01 | **PASS** | `stale generated: 0; nothing to regenerate — all provenance hashes current.` |
-| **GATE-TEST** | Comprehensive Python unit test suite | `npm run test` | 0 | 2026-10-01 | **PASS** | `Ran 75 tests in 3.939s ... OK (0 failures, 0 errors, 0 expected failures)` |
+| **GATE-TEST** | Comprehensive Python unit test suite | `npm run test` | 0 | 2026-10-01 | **PASS** | `Ran 88 tests in 4.500s ... OK (0 failures, 0 errors, 0 expected failures)` |
 | **GATE-TYPE** | TypeScript static type verification | `npm run typecheck` | 0 | 2026-10-01 | **PASS** | `tsc --noEmit` exits 0 cleanly. |
 | **GATE-BUILD** | Dual-locale static production build | `npm run build` | 0 | 2026-10-01 | **PASS** | `Generated static files in "build"` and `Generated static files in "build/hu"`. |
+| **GATE-PROD-ROUND** | Production build filter & demo restoration | `npm run build:production && npm run build:demo` | 0 | 2026-10-01 | **PASS** | Production filter stashes unapproved files with hold stubs; demo build cleanly restores. |
+| **GATE-WORKFLOW-VAL** | Workflow YAML syntax & action SHA pin checks | `python3 -c "import yaml,sys;[yaml.safe_load(open(f)) for f in sys.argv[1:]]" .github/workflows/*.yml .github/dependabot.yml` | 0 | 2026-10-01 | **PASS** | All workflows & dependabot parse cleanly; 16/16 `uses:` lines pinned with 40-char SHA; 0 `pull_request_target`. |
+| **GATE-APP-REC** | E3 Approval Record schema and hash verification | `python3 -m unittest tests.test_doccad.TestApprovalRecord -v` | 0 | 2026-10-01 | **PASS** | Ran 13 tests in 0.041s ... OK (stamped body hash, tamper rejection, draft reset). |
 | **GATE-SRCH-EN** | English local search index generation | `ls -lh build/search-index.json` | 0 | 2026-10-01 | **PASS** | File exists (350 KB, generated by `@easyops-cn/docusaurus-search-local`). |
 | **GATE-SRCH-HU** | Hungarian local search index generation | `ls -lh build/hu/search-index.json` | 0 | 2026-10-01 | **PASS** | File exists (343 KB, generated by `@easyops-cn/docusaurus-search-local`). |
 | **GATE-HU-HERO** | Hungarian translated landing page | `grep -o "DOCCAD Dokumentációs Ökoszisztéma" build/hu/index.html` | 0 | 2026-10-01 | **PASS** | Matches localized hero title in `build/hu/index.html`. |
 
 ---
 
-## 3. Required Failure Boundaries (ANTIGRAVITY_PROMPT §7)
+## 3. Required Failure Boundaries (ANTIGRAVITY_PROMPT §7 + Phase 1 E3)
 
-All 14 required failure boundaries are covered by unit tests in `prototype/tests/test_doccad.py` with zero expected failures:
+All 15 required failure boundaries are covered by unit tests in `prototype/tests/test_doccad.py` with zero expected failures:
 
 | Boundary ID | Failure Boundary | Implementing / Guarding File | Test Class & Method | Result | Verification Notes |
 |---|---|---|---|---|---|
@@ -54,10 +59,11 @@ All 14 required failure boundaries are covered by unit tests in `prototype/tests
 | **BND-12** | Blocked Path Traversal | `scripts/validate_docs.py` | `TestPathTraversalSecurity` | **PASS** | Rejects `../` in evidence paths and prevents directory escape. |
 | **BND-13** | Unsafe MDX Construct Rejection (T3) | `scripts/validate_docs.py` | `TestUnsafeMdxRejection`, `TestMdxRestrictionGate` | **PASS** | Forbids `import`/`export`, `<iframe>`, `<object>`, event handlers, `data:` URLs, and arbitrary JSX in `docs/generated/`. |
 | **BND-14** | Broken Citations Detection | `scripts/validate_docs.py` | `TestBrokenCitations` | **PASS** | Rejects `<EvidenceLink>` referencing non-existent canonical documents or headings. |
+| **BND-15** | Real CODEOWNER Approval & GitHub Gate (E3) | `scripts/github_approval.py`, `scripts/build_filter.py` | `TestApprovalRecord` | **PASS** | Requires merged PR, matching CODEOWNER review, and modified file; hash tamper sends back to in-review; fails closed on API permission error. |
 
 ---
 
-## 4. Quality & Security Gates Verification (T1–T6, T12)
+## 4. Quality & Security Gates Verification (T1–T6, T12, T14)
 
 | Gate ID | Security / Quality Gate | Implementing Component | Test Class | Result | Notes |
 |---|---|---|---|---|---|
@@ -67,6 +73,7 @@ All 14 required failure boundaries are covered by unit tests in `prototype/tests
 | **T5** | Mermaid Strict Rendering | `docusaurus.config.ts:84` | Config inspection | **PASS** | `mermaid.options.securityLevel: 'strict'` configured explicitly. |
 | **T6** | Context Secret Sanitization | `ai/router.py:115` | `TestContextSecretScan` | **PASS** | Prompt payload scanning detects and rejects API keys (`sk-`, `AIza`, `ghp_`, PEM keys). |
 | **T12** | Private Routing Chain Lock | `ai/router.py:44` | `TestPrivateChainConfig` | **PASS** | `ai.config.yaml` rules matching `privacy: private` validate strictly to `['local']`. |
+| **T14** | CODEOWNER Review & Body Hash Verification | `scripts/github_approval.py`, `scripts/build_filter.py` | `TestApprovalRecord` | **PASS** | Validates PR status, CODEOWNER review identity, touched paths via GitHub API, and body sha256 checksum. |
 
 ---
 

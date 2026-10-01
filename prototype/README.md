@@ -199,6 +199,43 @@ an OpenAI-compatible endpoint (for example Ollama) at `http://localhost:11434/v1
 | `.docs-manifest.json`, `impact.json` | Dependency manifest and last drift report (rewritten by `detect`) |
 | `.work/` | Drafts, review ledger, stashed views (git-ignored) |
 
+## Governance
+
+DOCCAD enforces a strict two-step governance model to guarantee that AI-derived documentation cannot reach production without verified human code-owner review (AD-9, ADR-005, E3):
+
+1. **Review Claim (`review_governance.py approve`)**:
+   A human reviewer on a pull request branch runs:
+   ```bash
+   python3 scripts/review_governance.py approve --artifact <id> --pr <pr-number> --reviewer <github-login>
+   ```
+   This verifies the artifact is currently in `in-review`, computes `approved_hash` (sha256 of the markdown body), and stamps an `approval_record` into the document frontmatter. If the body is modified afterwards, the hash mismatch immediately invalidates the approval and returns the view to `in-review`.
+
+2. **Publish Verification Gate (`build_filter.py --mode production` / `publish.yml`)**:
+   The CLI stamp is a claim; the production publication gate is the GitHub API check during the `publish` workflow on `main`. For every page claiming `approval_status: approved`, the gate verifies via the GitHub REST API:
+   - The pull request `pr` is merged into `main`.
+   - The pull request was reviewed and approved by an authorized CODEOWNER (from `.github/CODEOWNERS`) matching `approved_by`.
+   - The pull request touched the specific file.
+   - Current content hash matches `approved_hash`.
+   Any verification negative excludes the page from publication, replacing it with an audited production hold stub. Infrastructure/API/permission errors fail the build job immediately to prevent deploying unverified documentation.
+
+   > [!IMPORTANT]
+   > **Sole CODEOWNER and Bot-Authored PRs**:
+   > GitHub branch protection rules prohibit PR authors from approving their own pull requests. Because `@w7-mgfcode` is the sole CODEOWNER, any PR authored directly by `@w7-mgfcode` cannot receive a CODEOWNER approval from `@w7-mgfcode`. Consequently, the E3 verification gate only passes on bot-authored (or third-party) pull requests (such as automated generation branches `docs-gen/*` or a GitHub App), allowing `@w7-mgfcode` to act as the approving CODEOWNER.
+
+### GitHub Repository Ruleset Configuration
+
+Repository rulesets on `main` must be applied by the repository owner (`@w7-mgfcode`) via GitHub repository settings (H-8):
+- **Target branch**: `main`
+- **Require a pull request before merging**: enabled
+  - Require approvals: `1`
+  - Require review from Code Owners: enabled
+  - Dismiss stale pull request approvals when new commits are pushed: enabled
+- **Require status checks to pass before merging**: enabled
+  - Required check: `validate-and-build` (from workflow `ci.yml`)
+  - Require branches to be up to date before merging: enabled
+- **Block force pushes**: enabled
+- **Bypass list**: Repository admin / owner bypass permitted for "Pull Requests only" to satisfy ruleset while unblocking bot PR merges.
+
 ## Rules
 
 - Canonical pages never import or cite generated pages.

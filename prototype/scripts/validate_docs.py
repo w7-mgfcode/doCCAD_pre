@@ -152,6 +152,9 @@ def make_validator():
                     for req in ["generated", "generation"]:
                         if req not in instance:
                             errs.append(f"missing required '{req}'")
+                    gen = instance.get("generation") or {}
+                    if gen.get("approval_status") == "approved" and "approval_record" not in gen:
+                        errs.append("approval_status is approved but missing required 'approval_record'")
                 elif instance.get("type") == "stub":
                     for req in ["stub_version", "audience", "owners", "hold_reason"]:
                         if req not in instance:
@@ -280,6 +283,16 @@ def main() -> int:
 
         if isinstance(fm.get("generation"), dict):
             hash_checks.append((rel, fm["generation"]))
+            if fm["generation"].get("approval_status") == "approved":
+                rec = fm["generation"].get("approval_record")
+                if isinstance(rec, dict):
+                    approved_hash = rec.get("approved_hash")
+                    actual_hash = "sha256:" + hashlib.sha256(body.encode("utf-8")).hexdigest()
+                    if actual_hash != approved_hash:
+                        problems.append(
+                            f"{rel}: approval_record.approved_hash mismatch: recorded {approved_hash}, "
+                            f"actual {actual_hash} — body was modified after approval; artifact must return to in-review"
+                        )
 
     # Interview JSON datasets
     for jf in sorted((DOCS / "generated").rglob("*.interview.json")):

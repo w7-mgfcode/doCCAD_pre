@@ -1,0 +1,146 @@
+# Human-triggered generation workflow (AD-4, AD-9, M1.5)
+# Generates views using the deterministic fixture provider, validates output, and pushes a docs-gen/* branch.
+# Pull requests created by GITHUB_TOKEN do not trigger GitHub Actions workflows (CI), so this workflow
+# pushes the docs-gen/* branch and outputs instructions for the human owner to open the PR (unless an E8 GitHub App is configured).
+name: generate
+
+on:
+  workflow_dispatch:
+    inputs:
+      contract:
+        description: "Task contract to run"
+        type: choice
+        required: true
+        options:
+          - GenerateRecruiterPage
+          - GenerateInterviewPrep
+          - GenerateQuestionPage
+      target:
+        description: "Canonical doc id (or question text for GenerateQuestionPage)"
+        type: string
+        required: true
+      privacy:
+        description: "Privacy class (private hard-pins to local provider)"
+        type: choice
+        required: true
+        default: public
+        options:
+          - public
+          - private
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-${{ inputs.contract }}-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: prototype
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: prototype/package-lock.json
+
+      - name: Setup Python 3.14
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          npm ci
+
+      - name: Run generation contract with sanitized inputs
+        env:
+          INPUT_CONTRACT: ${{ inputs.contract }}
+          INPUT_TARGET: ${{ inputs.target }}
+          INPUT_PRIVACY: ${{ inputs.privacy }}
+        run: |
+          python3 - <<'EOF'
+          import os, re, subprocess, sys
+
+          contract = os.environ.get("INPUT_CONTRACT", "").strip()
+          target = os.environ.get("INPUT_TARGET", "").strip()
+          privacy = os.environ.get("INPUT_PRIVACY", "public").strip()
+
+          valid_contracts = {"GenerateRecruiterPage", "GenerateInterviewPrep", "GenerateQuestionPage"}
+          if contract not in valid_contracts:
+              print(f"ERROR: Invalid contract '{contract}'", file=sys.stderr)
+              sys.exit(1)
+
+          if privacy not in {"public", "private"}:
+              print(f"ERROR: Invalid privacy '{privacy}'", file=sys.stderr)
+              sys.exit(1)
+
+          if not target:
+              print("ERROR: Target input cannot be empty", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"Executing contract {contract} for target '{target}' (privacy: {privacy})...")
+          if contract == "GenerateQuestionPage":
+              cmd = [
+                  "python3", "scripts/generate_question.py",
+                  "--query", target,
+                  "--provider", "fixture",
+                  "--privacy", privacy,
+                  "--persist"
+              ]
+          else:
+              cmd = [
+                  "python3", "scripts/generate_page.py",
+                  "--contract", contract,
+                  "--target", target,
+                  "--provider", "fixture",
+                  "--privacy", privacy
+              ]
+          subprocess.check_call(cmd)
+          EOF
+
+      - name: Validate generated output
+        run: DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate
+
+      - name: Commit and push docs-gen branch
+        env:
+          INPUT_CONTRACT: ${{ inputs.contract }}
+          INPUT_TARGET: ${{ inputs.target }}
+        run: |
+          python3 - <<'EOF'
+          import os, re, subprocess, sys
+
+          contract = os.environ.get("INPUT_CONTRACT", "").strip()
+          target = os.environ.get("INPUT_TARGET", "").strip()
+
+          target_slug = re.sub(r'[^a-z0-9]+', '-', target.lower()).strip('-')[:30] or "gen"
+          contract_slug = re.sub(r'[^a-z0-9]+', '-', contract.lower()).strip('-')
+          branch = f"docs-gen/{contract_slug}-{target_slug}"
+
+          subprocess.check_call(["git", "config", "user.name", "github-actions[bot]"])
+          subprocess.check_call(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"])
+
+          subprocess.check_call(["git", "checkout", "-b", branch])
+          subprocess.check_call(["git", "add", "docs/generated/"])
+
+          diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+          if diff.returncode == 0:
+              print("No file changes detected under docs/generated/. Exiting cleanly.")
+              sys.exit(0)
+
+          subprocess.check_call(["git", "commit", "-m", f"docs(gen): {contract} for {target}"])
+          subprocess.check_call(["git", "push", "origin", branch])
+
+          print(f"SUCCESS: Branch '{branch}' pushed.")
+          print(f"Open PR: https://github.com/w7-mgfcode/doCCAD_pre/pull/new/{branch}")
+          EOF

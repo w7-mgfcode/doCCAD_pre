@@ -26,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, check_path_containment, _normalize  # noqa: E402
 from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
+from review_governance import reset_to_draft  # noqa: E402
 
 CONTRACTS = ROOT / "contracts"
 PROMPTS = ROOT / "prompts"
@@ -295,6 +296,7 @@ def main() -> int:
         "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "approval_status": "draft",
     }
+    fm.get("generation", {}).pop("approval_record", None)
 
     # Validate output schema
     validate = make_validator()
@@ -316,6 +318,7 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{doc_id}.mdx"
     out_path.write_text(full_output, encoding="utf-8")
+    reset_to_draft(doc_id, out_path.relative_to(ROOT).as_posix())
 
     status = "insufficient_evidence" if "insufficient" in body.lower() else "success"
     print(f"\nWrote candidate artifact ({status}): {out_path.relative_to(ROOT)}")

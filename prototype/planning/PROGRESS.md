@@ -1,12 +1,12 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: Phase 0 Complete — Baseline Stabilized (P0-01..P0-17); 75 unit tests passing (0 expected failures); ready for Phase 1  
+Status: Phase 1 Complete — Deployable and Governed GitHub Automation (P1-01..P1-09, P1-08 blocked per E6); 88 unit tests passing (0 expected failures); ready for Phase 2  
 Timestamp: 2026-10-01 (previous: 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
 Items are ticked only where the artifact exists on disk and, for checks, where the command was re-run
 on 2026-09-29 (on a scratch copy of `prototype/`, so no state files were rewritten); the M7 test additions
-were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NOT RUN, not assumed.
+were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and approval additions were run on 2026-10-01. Anything not re-run is marked NOT RUN, not assumed.
 
 ---
 
@@ -60,6 +60,15 @@ were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NO
 | P0-15 | `test -f prototype/VALIDATION.md` | 0 | `VALIDATION.md` exists (75 tests PASS, 14 boundaries PASS, browser/live calls documented NOT RUN) | 2026-10-01 |
 | P0-16 | `test -f prototype/DEMO.md && test -f prototype/LIMITATIONS.md` | 0 | `DEMO.md` and `LIMITATIONS.md` authored; all walkthrough commands executed | 2026-10-01 |
 | P0-17 | `npm run typecheck && npm run validate && npm run test && npm run build && npm run detect` | 0 | `Ran 75 tests ... OK (0 failures, 0 errors, 0 expected failures)` / `stale generated: 0` | 2026-10-01 |
+| P1-01 | `python3 -c "import yaml,sys;[yaml.safe_load(open(f)) for f in sys.argv[1:]]" .github/workflows/*.yml && grep -nE "uses: [^@]+@[0-9a-f]{40}" .github/workflows/*.yml` | 0 | All workflow YAML valid; all 16 `uses:` lines pinned with 40-char SHA + version comment; 0 `pull_request_target` | 2026-10-01 |
+| P1-02 | `grep -o 'href="/doCCAD_pre/' build/index.html && grep -E "url:|baseUrl:|trailingSlash:" docusaurus.config.ts` | 0 | `href="/doCCAD_pre/` / `baseUrl: '/doCCAD_pre/'` / `trailingSlash: false` | 2026-10-01 |
+| P1-03 | `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/publish.yml'))" && npm run build:production && npm run build:demo` | 0 | `publish.yml` valid YAML; `build:production` and `build:demo` round-trip succeeded cleanly | 2026-10-01 |
+| P1-04 | `test -f .github/CODEOWNERS && grep -n "## Governance" prototype/README.md` | 0 | `.github/CODEOWNERS` exists with 8 governed path rules; `prototype/README.md` documents ruleset & sole CODEOWNER note | 2026-10-01 |
+| P1-05 | `python3 -m unittest tests.test_doccad.TestApprovalRecord -v` | 0 | `Ran 13 tests in 0.041s ... OK` (schema, tamper detection, mock GitHub API gates, fail-closed permission error, draft reset) | 2026-10-01 |
+| P1-06 | `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/generate.yml'))"` | 0 | `generate.yml` valid YAML; zero `pull_request_target`; sanitized inputs via env | 2026-10-01 |
+| P1-07 | `python3 -c "import yaml; yaml.safe_load(open('.github/dependabot.yml')); yaml.safe_load(open('.github/workflows/drift.yml'))"` | 0 | `.github/dependabot.yml` (github-actions + npm) and `.github/workflows/drift.yml` valid YAML | 2026-10-01 |
+| P1-08 | BLOCKED | — | Blocked per owner decision E6 (no unapproved npm dependencies: `@mermaid-js/mermaid-cli`) | 2026-10-01 |
+| P1-09 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build:production && npm run build:demo` | 0 | `Ran 88 tests in 4.500s ... OK (0 failures, 0 errors, 0 expected failures)` / `stale generated: 0` | 2026-10-01 |
 
 ---
 
@@ -161,31 +170,37 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
   - [ ] Execute headless browser smoke tests and capture mobile/desktop screenshots. *(NOT RUN — `/browser` is an interactive user-side slash command in Antigravity 2.0 app; automated browser dependency unapproved per E6; full manual procedure documented in VALIDATION.md).*
   - [x] Compile `prototype/VALIDATION.md`. *(Compiled with PASS/FAIL/NOT RUN status across all gates and D11 Hungarian fallback findings).*
 
-- [ ] **Milestone 8: Delivery & Handoff** — started
-  - [x] Finalize `prototype/README.md`, `prototype/DEMO.md`, and `prototype/LIMITATIONS.md`. *(`README.md` updated with 2026-10-01 status and resolved issues removed; `DEMO.md` created with complete 10-minute 4-persona walkthrough; `LIMITATIONS.md` created with 4-tier classification and REQ matrix).*
-  - [ ] Generate final walkthrough artifact and summary.
+- [x] **Phase 1: Deployable and Governed GitHub Automation (P1-01..P1-09)**
+  - [x] P1-01: CI gate workflow (`.github/workflows/ci.yml`) with pinned SHAs, Node 24, Python 3.14, typecheck, strict validation, test suite, drift gate, production-filter roundtrip, and preview artifact.
+  - [x] P1-02: Site configuration for GitHub Pages (`url`, `baseUrl: '/doCCAD_pre/'`, `trailingSlash: false`).
+  - [x] P1-03: Publish workflow (`.github/workflows/publish.yml`) with build job, production filter, deploy job, and retry-enabled deployment smoke probe.
+  - [x] P1-04: CODEOWNERS (`.github/CODEOWNERS`) and README §Governance documentation (sole CODEOWNER self-approval limits).
+  - [x] P1-05: Real approval replaces simulated approval for production (E3: `approval_record` with `approved_hash`, offline mockable GitHub API verifier, fail-closed permission errors, CLI stamp, draft reset on generation).
+  - [x] P1-06: Generation workflow (`.github/workflows/generate.yml`) with input sanitization, zero `pull_request_target`, branch push only (`docs-gen/*`).
+  - [x] P1-07: Dependabot (`.github/dependabot.yml`) and drift schedule workflow (`.github/workflows/drift.yml`).
+  - [ ] P1-08: Mermaid compile gate. **BLOCKED** per owner decision E6 (no unapproved npm dependencies: `@mermaid-js/mermaid-cli`).
+  - [x] P1-09: Phase 1 exit gate (local test suite 88/88 passing, production filter round-trip clean, workflows statically validated).
 
 ---
 
-## 2. Verification Snapshot — 2026-09-29
+## 2. Verification Snapshot — 2026-10-01
 
-Run on a scratch copy of `prototype/` with `node_modules/` linked in; Node v24.19.0, Python 3.14.4
-with `jsonschema` installed (so `validate` ran the full schema check, not its fallback).
+Run on `prototype/` with Node v24.19.0, Python 3.14.4 with `jsonschema` installed (full schema checks).
 
 | Check | Command | Result |
 |---|---|---|
-| Frontmatter, planes, provenance, security | `python3 scripts/validate_docs.py` | PASS — 40 pages, 4 interview datasets, 17 provenance hashes |
-| Drift | `python3 scripts/detect_changes.py --all` | PASS — 0 stale generated pages (the command always exits 0; result read from output) |
-| Unit tests | `python3 -m unittest discover tests` | PASS — 19/19 (re-run 2026-10-01 after M7 additions and review fixes: 36 tests, OK with 1 expected failure) |
+| Frontmatter, planes, provenance, security | `python3 scripts/validate_docs.py` | PASS — 40 pages, 4 interview datasets, 37 provenance hashes |
+| Drift | `python3 scripts/detect_changes.py --all` | PASS — 0 stale generated pages (exit 0) |
+| Unit tests | `python3 -m unittest discover tests` | PASS — 88/88 (23 test classes, 0 failures, 0 errors, 0 expected failures) |
 | Types | `npx tsc` | PASS — exit 0 |
-| Static build, both locales | `npx docusaurus build` | PASS — `en` and `hu` generated; only warning: no `blog/` directory |
-| Local search index | build output | PASS — `build/search-index.json` |
-| `build:production` / `build:demo` filter round-trip | — | NOT RUN directly (exercised by `TestBuildFilterExclusion`) |
-| Mermaid rendering, browser journeys, screenshots, console errors | — | NOT RUN |
-| Reading and generation with credentials unset and provider access blocked | — | NOT RUN as a dedicated check (the fixture provider needs neither) |
+| Static build, both locales | `npx docusaurus build` | PASS — `en` and `hu` generated; local search indexes generated |
+| Local search index | build output | PASS — `build/search-index.json` (350 KB), `build/hu/search-index.json` (343 KB) |
+| `build:production` / `build:demo` filter round-trip | `npm run build:production && npm run build:demo` | PASS — cleanly stashes unapproved views, leaves hold stubs, and restores |
+| Workflow & Dependabot static verification | YAML parse + SHA pin grep | PASS — all 4 workflows & dependabot parse; 16/16 `uses:` pinned with 40-char SHA; 0 `pull_request_target` |
+| Mermaid rendering, browser journeys, screenshots, console errors | — | NOT RUN (browser automation unapproved per E6) |
+| Reading and generation with credentials unset and provider access blocked | — | NOT RUN as a dedicated live check (fixture provider needs neither) |
 
-Required automated boundaries (from `docs/prototype-planning/ANTIGRAVITY_PROMPT.txt` §7) against
-`tests/test_doccad.py`:
+Required automated boundaries against `tests/test_doccad.py`:
 
 | Boundary | Covered by |
 |---|---|
@@ -193,7 +208,7 @@ Required automated boundaries (from `docs/prototype-planning/ANTIGRAVITY_PROMPT.
 | Supported-question generation | `TestDeterministicRetrievalAndGeneration` |
 | Unsupported-question handling | `test_question_generation_cli_unsupported` |
 | UI/CLI request round-trip | `TestUiCliJsonRoundtrip` |
-| Invalid state transitions | `test_invalid_transitions_rejected`, `test_unknown_state_rejected`, `test_cli_rejects_invalid_transition` (enforcement added 2026-09-30: `ALLOWED_TRANSITIONS` in `review_governance.py`) |
+| Invalid state transitions | `test_invalid_transitions_rejected`, `test_unknown_state_rejected`, `test_cli_rejects_invalid_transition` (`ALLOWED_TRANSITIONS` in `review_governance.py`) |
 | Draft and simulated-approval exclusion from publication | `TestBuildFilterExclusion`, `test_check_production_blocks_simulated_approval` |
 | Drift and targeted regeneration | `TestHashDriftAndRegeneration` |
 | Source deletion | `TestSourceDeletionDetection` |
@@ -202,16 +217,20 @@ Required automated boundaries (from `docs/prototype-planning/ANTIGRAVITY_PROMPT.
 | Invalid provenance | `TestInvalidProvenance` (tampered, malformed, missing, traversal, incomplete block) |
 | Blocked traversal | `TestPathTraversalSecurity` |
 | Unsafe MDX | `TestUnsafeMdxRejection` |
-| Broken citations | `TestBrokenCitations` (check 8 in `validate_docs.py` was documented but not implemented; added 2026-09-30) |
+| Broken citations | `TestBrokenCitations` |
+| Real CODEOWNER Approval & GitHub API Verification (E3) | `TestApprovalRecord` (13 tests: schema, body-hash stamp, tamper fail, API mock PR merged/CODEOWNER/file-touched, fail-closed on API error, draft reset) |
 
 ---
 
 ## 3. Current Activity
 
 - **Phase 0 (Stabilize Baseline, P0-01..P0-17)**: Fully completed, tested, and validated as of 2026-10-01.
-  - All 14 required failure boundaries pass with zero expected failures.
-  - Full Python unit test suite: 75/75 passing.
-  - Bilingual static site (`en`, `hu`) builds cleanly with dual-locale offline search index.
-  - `VALIDATION.md`, `DEMO.md`, and `LIMITATIONS.md` authored and aligned with reality.
-  - Local commit on `next-version` at Phase 0 exit checkpoint.
-- **Next Step**: Proceed to Phase 1 (Deployable & Governed, P1-01..P1-09) in a fresh conversation.
+- **Phase 1 (Deployable & Governed, P1-01..P1-09)**: Fully completed, tested, and validated as of 2026-10-01.
+  - Workflows created with commit SHA pins and zero `pull_request_target`: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, `.github/dependabot.yml`.
+  - Deployment configuration for GitHub Pages set: `url: 'https://w7-mgfcode.github.io'`, `baseUrl: '/doCCAD_pre/'`, `trailingSlash: false`.
+  - `.github/CODEOWNERS` authored and README §Governance updated with ruleset instructions and sole CODEOWNER review constraints.
+  - Real human approval replaces simulated approval for production (E3): `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation.
+  - P1-08 (Mermaid compile gate) marked BLOCKED per owner decision E6.
+  - Python test suite expanded to 88 tests across 23 test classes (88 PASS, 0 FAIL, 0 EXPECTED FAILURES).
+  - Production build filter roundtrip verified.
+- **Next Step**: Stage and commit Phase 1 checkpoint on `next-version`, then hand off to owner for Phase 2 readiness.

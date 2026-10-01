@@ -1,0 +1,140 @@
+# Deterministic-first CI validation gate (AD-10, ADR-003, ADR-007, T8)
+# All checks are merge-blocking. Runs on pull requests and pushes targeting main.
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Least privilege: this workflow only reads the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: prototype
+    steps:
+      # Pinned to full 40-character commit SHA to prevent tag-rewrite attacks (T8)
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: prototype/package-lock.json
+
+      - name: Setup Python 3.14
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install JavaScript dependencies
+        run: npm ci
+
+      - name: Lint YAML well-formedness
+        run: |
+          python3 - <<'EOF'
+          import glob, sys, yaml
+          files = (
+              glob.glob('contracts/*.yaml')
+              + ['ai.config.yaml']
+              + glob.glob('../.github/workflows/*.yml')
+              + ['../.github/dependabot.yml']
+          )
+          for f in files:
+              with open(f, encoding='utf-8') as fp:
+                  yaml.safe_load(fp)
+              print(f"ok {f}")
+          EOF
+
+      - name: Generation-path guard (ADR-003)
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          python3 - <<'EOF'
+          import os, subprocess, sys
+
+          head_ref = os.environ.get("HEAD_REF", "")
+          if not head_ref.startswith("docs-gen/"):
+              print(f"Branch '{head_ref}' is not a docs-gen/* branch; path guard passed.")
+              sys.exit(0)
+
+          base_ref = os.environ.get("BASE_REF") or "main"
+          print(f"Checking diff between origin/{base_ref} and HEAD for docs-gen/* guard...")
+          diff = subprocess.check_output(
+              ["git", "diff", "--name-only", f"origin/{base_ref}...HEAD"],
+              text=True
+          )
+          changed_files = [f.strip() for f in diff.splitlines() if f.strip()]
+          invalid = []
+          for f in changed_files:
+              # Only generated views and Hungarian translation mirrors may be modified by docs-gen branches
+              if not (f.startswith("prototype/docs/generated/") or f.startswith("prototype/i18n/hu/")):
+                  invalid.append(f)
+
+          if invalid:
+              print("SECURITY ERROR: docs-gen/* branch modified files outside generated views and i18n mirror:", file=sys.stderr)
+              for bad in invalid:
+                  print(f"  - {bad}", file=sys.stderr)
+              sys.exit(1)
+          print(f"docs-gen path guard passed ({len(changed_files)} files checked).")
+          EOF
+
+      - name: TypeScript typecheck
+        run: npm run typecheck
+
+      - name: Frontmatter, schema, provenance and security validation
+        run: DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate
+
+      - name: Python unit test suite
+        run: npm run test
+
+      - name: Change impact and drift gate (AD-8)
+        run: |
+          npm run detect
+          python3 - <<'EOF'
+          import json, sys
+          imp = json.load(open("impact.json", encoding="utf-8"))
+          stale = imp.get("stale_generated", [])
+          if stale:
+              print(f"DRIFT GATE FAILURE: {len(stale)} stale generated view(s) detected:", file=sys.stderr)
+              for s in stale:
+                  print(f"  - {s.get('id')} ({s.get('path')})", file=sys.stderr)
+              sys.exit(1)
+          print("Drift gate passed: 0 stale generated views.")
+          EOF
+
+      - name: Docusaurus build (en + hu)
+        run: npm run build
+
+      - name: Production-filter round-trip verification (P0-11)
+        run: |
+          python3 scripts/build_filter.py --mode production
+          npm run build:demo
+
+      - name: Upload PR site preview artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: site-preview
+          path: prototype/build
+          retention-days: 7

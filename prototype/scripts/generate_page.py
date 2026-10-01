@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, _normalize  # noqa: E402
 from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
+from review_governance import reset_to_draft  # noqa: E402
 
 CONTRACTS = ROOT / "contracts"
 PROMPTS = ROOT / "prompts"
@@ -136,6 +137,7 @@ def stamp_provenance(fm: Dict[str, Any], contract: Dict[str, Any],
         "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "approval_status": "draft",
     }
+    fm.get("generation", {}).pop("approval_record", None)
     return fm
 
 
@@ -257,6 +259,7 @@ def main() -> int:
             out_dir.mkdir(parents=True, exist_ok=True)
             out_path = out_dir / f"{args.target}.interview.json"
             out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+            reset_to_draft(args.target, out_path.relative_to(ROOT).as_posix())
             print(f"Wrote {out_path.relative_to(ROOT)}")
             return 0
 
@@ -294,6 +297,7 @@ def main() -> int:
             out_path = out_dir / f"{args.target}.mdx"
             front = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
             out_path.write_text(f"---\n{front}\n---\n\n{body}\n", encoding="utf-8")
+            reset_to_draft(fm.get("id", args.target), out_path.relative_to(ROOT).as_posix())
             print(f"Wrote {out_path.relative_to(ROOT)}")
             print(f"PR branch (persistence: {contract['persistence']}): {branch}")
             return 0
