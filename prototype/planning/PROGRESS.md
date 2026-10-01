@@ -1,6 +1,6 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: In Progress — Milestones 1–5 complete; 6 and 7 partial; 8 started  
+Status: Phase 0 Complete — Baseline Stabilized (P0-01..P0-17); 75 unit tests passing (0 expected failures); ready for Phase 1  
 Timestamp: 2026-10-01 (previous: 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
@@ -58,6 +58,8 @@ were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NO
 | P0-13 | `npm run validate && npm run detect` | 0 | `stale generated: 0` / `OK — frontmatter schemas valid, planes intact` | 2026-10-01 |
 | P0-14 | `grep -c "<Translate\|translate(" src/pages/index.tsx && npm run build` | 0 | `33` / `Generated static files in "build/hu"` / `build/hu/search-index.json` | 2026-10-01 |
 | P0-15 | `test -f prototype/VALIDATION.md` | 0 | `VALIDATION.md` exists (75 tests PASS, 14 boundaries PASS, browser/live calls documented NOT RUN) | 2026-10-01 |
+| P0-16 | `test -f prototype/DEMO.md && test -f prototype/LIMITATIONS.md` | 0 | `DEMO.md` and `LIMITATIONS.md` authored; all walkthrough commands executed | 2026-10-01 |
+| P0-17 | `npm run typecheck && npm run validate && npm run test && npm run build && npm run detect` | 0 | `Ran 75 tests ... OK (0 failures, 0 errors, 0 expected failures)` / `stale generated: 0` | 2026-10-01 |
 
 ---
 
@@ -160,7 +162,7 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
   - [x] Compile `prototype/VALIDATION.md`. *(Compiled with PASS/FAIL/NOT RUN status across all gates and D11 Hungarian fallback findings).*
 
 - [ ] **Milestone 8: Delivery & Handoff** — started
-  - [ ] Finalize `prototype/README.md`, `prototype/DEMO.md`, and `prototype/LIMITATIONS.md`. *(`README.md` written 2026-09-29, including known issues; `DEMO.md` and `LIMITATIONS.md` do not exist.)*
+  - [x] Finalize `prototype/README.md`, `prototype/DEMO.md`, and `prototype/LIMITATIONS.md`. *(`README.md` updated with 2026-10-01 status and resolved issues removed; `DEMO.md` created with complete 10-minute 4-persona walkthrough; `LIMITATIONS.md` created with 4-tier classification and REQ matrix).*
   - [ ] Generate final walkthrough artifact and summary.
 
 ---
@@ -206,7 +208,10 @@ Required automated boundaries (from `docs/prototype-planning/ANTIGRAVITY_PROMPT.
 
 ## 3. Current Activity
 
-- Close Milestone 7: decide and implement private-content exclusion (then drop the `expectedFailure`),
-  run browser smoke tests (or record the exact gap), and write `prototype/VALIDATION.md` from §2.
-- Finish Milestone 6: translate the landing page and navigation into Hungarian.
-- Then Milestone 8: `DEMO.md`, `LIMITATIONS.md`, and the walkthrough.
+- **Phase 0 (Stabilize Baseline, P0-01..P0-17)**: Fully completed, tested, and validated as of 2026-10-01.
+  - All 14 required failure boundaries pass with zero expected failures.
+  - Full Python unit test suite: 75/75 passing.
+  - Bilingual static site (`en`, `hu`) builds cleanly with dual-locale offline search index.
+  - `VALIDATION.md`, `DEMO.md`, and `LIMITATIONS.md` authored and aligned with reality.
+  - Local commit on `next-version` at Phase 0 exit checkpoint.
+- **Next Step**: Proceed to Phase 1 (Deployable & Governed, P1-01..P1-09) in a fresh conversation.
