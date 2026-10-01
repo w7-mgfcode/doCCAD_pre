@@ -1,12 +1,11 @@
 ---
 id: q-002-drift-detection
-slug: /questions/q-002-drift-detection
-title: 'Question: Hash-Based Drift Detection Workflow'
+title: 'DOCCAD Question: Hash-Based Drift Detection'
 type: generated
-visibility: public
 audience:
 - developer
 - architect
+- operator
 owners:
 - architecture
 last_validated: '2026-09-21'
@@ -16,22 +15,104 @@ generation:
   contract_version: 2
   prompt_version: question-page.v2
   source_documents:
+  - id: getting-started-quickstart
+    path: docs/source/getting-started/quickstart.md
+    content_hash: sha256:a3db954e3610293435fe42629035bb88b56a08a885e145843df37735fa451ed4
   - id: validation-drift-detection
     path: docs/source/validation/drift-detection.md
     content_hash: sha256:bae6071a4082bc178994781f8ef4676ce0b3d8fbc8070409720710fe840464d9
+  - id: operations-runbook-stale-views
+    path: docs/source/operations/runbook-stale-views.md
+    content_hash: sha256:0a2315c8c79548eca38908c41889fba39162be501bfd90323ccbd022b7323d75
+  - id: overview-index
+    path: docs/source/overview/index.md
+    content_hash: sha256:47b683b76501252e08e144cf1435df28ce7059719d8c276f39d4e2c9e0c24685
+  - id: overview-vision-and-goals
+    path: docs/source/overview/vision-and-goals.md
+    content_hash: sha256:83a99421e8de3fe08a2d76484d04a9ae55fabb042b0c31ab7dd478f018ed5c85
+  - id: validation-quality-gates
+    path: docs/source/validation/quality-gates.md
+    content_hash: sha256:9ed9594b16fd69386ebd749e364cb79c51842b551b9655b3d0da09a5207aa0a9
+  - id: architecture-content-planes
+    path: docs/source/architecture/content-planes.md
+    content_hash: sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68
+  - id: architecture-system-overview
+    path: docs/source/architecture/system-overview.md
+    content_hash: sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499
+  - id: decisions-adr-007-mermaid-as-code
+    path: docs/source/decisions/adr-007-mermaid-as-code.md
+    content_hash: sha256:fe3709e8e5cebdc4c586ed73a73440da514a8dd10c8d1718dba6aea69fbee492
+  - id: operations-monitoring-and-metrics
+    path: docs/source/operations/monitoring-and-metrics.md
+    content_hash: sha256:051ceb38a0f9a9dc50ac736b8c8fbffaa42fa7c1fb8c421eca74c0cff6348b88
+  - id: overview-glossary
+    path: docs/source/overview/glossary.md
+    content_hash: sha256:1cf356936c1f62f93d74f0d22652426aec4dc4cc5b005596b0aa10d8b83b204c
+  - id: security-prompt-injection-defense
+    path: docs/source/security/prompt-injection-defense.md
+    content_hash: sha256:a710a385175ba87dae44d47020e77700f526648dc2ff3b34169743ea7946c205
+  - id: architecture-ai-generation-plane
+    path: docs/source/architecture/ai-generation-plane.md
+    content_hash: sha256:47491b9f907c48a260c0ba7a67d53ba25586578f39089dfb85d06361df7f6377
+  - id: architecture-platform-research
+    path: docs/source/architecture/platform-research.md
+    content_hash: sha256:039451157bbf0328004259b7906ac2fccba68181949a9d372f9bcd7efe4815c8
+  - id: decisions-adr-002-docusaurus-foundation
+    path: docs/source/decisions/adr-002-docusaurus-foundation.md
+    content_hash: sha256:307c44aa5c76c449524df258d447fffb244347c2ba6076fb367e039f5d18e74f
+  - id: development-contracts-and-schemas
+    path: docs/source/development/contracts-and-schemas.md
+    content_hash: sha256:9b013ca4b46e98fa89ab8f26efa39befcec58b6dc8702097f1881067f7efc385
+  - id: generation-contracts
+    path: docs/source/generation/contracts.md
+    content_hash: sha256:f0e8bce7ed735c0fe8f99cde069aa534409fc288a2c6ddd720ae5347b784619f
+  - id: generation-pipeline-lifecycle
+    path: docs/source/generation/pipeline-lifecycle.md
+    content_hash: sha256:380e3d65d621157f7f0c3355e721c9222bfe4827ec49e589aa3547778c4ecf97
+  - id: getting-started-installation
+    path: docs/source/getting-started/installation.md
+    content_hash: sha256:98c6629e101a600a0d69e196fdc8a70460cf27779aa56ecd3d5df2971dc8546e
+  - id: security-trust-boundaries
+    path: docs/source/security/trust-boundaries.md
+    content_hash: sha256:4aae38a0a07eb8e77ee1a904be6ededdb0a016c79c45e7b5172470c76a0c3ed7
+  - id: troubleshooting-generation-failures
+    path: docs/source/troubleshooting/generation-failures.md
+    content_hash: sha256:c9877cb694f860326fcc8aeb40fab6603a47f648fd00f6bf778c1f871eeb949e
+  repo_evidence: []
   provider: fixture
   model: deterministic-demo-fixture
   generation_mode: demo
-  generated_at: '2026-09-21T00:00:00Z'
-  approval_status: approved-for-demo
+  generated_at: '2026-10-01T02:47:00Z'
+  approval_status: draft
 ---
 
-# Question: How does DOCCAD detect drift when canonical architecture or code changes?
 
-## Grounded Answer
+# Question: How does DOCCAD detect drift when canonical architecture changes?
 
-Every derived artifact records the `sha256` content hash of its source canonical documents in frontmatter. When sources change, CI re-evaluates hashes against disk and flags only affected pages as STALE in `impact.json`, triggering targeted regeneration.
+## Answer Summary
+DOCCAD detects drift mechanically using **sha256 content hashes** stored directly in the frontmatter of generated pages. When a canonical file changes, a deterministic script re-evaluates all hashes against disk and flags only the affected derived pages as stale.
+
+## Detailed Drift Workflow
+
+### 1. Hash Recording at Generation Time
+When a view (such as a recruiter page or question answer) is generated, `generate_page.py` computes the `sha256` digest of each canonical document included in the context and stores it in the `generation.source_documents` frontmatter array:
+```yaml
+generation:
+  source_documents:
+    - id: architecture-system-overview
+      path: docs/source/architecture/system-overview.md
+      content_hash: sha256:4f8a1...
+```
+
+### 2. CI Verification (`detect_changes.py`)
+On every push or scheduled audit:
+1. `scripts/detect_changes.py` inspects `.docs-manifest.json` and parses all files.
+2. For every generated view, it computes the current on-disk `sha256` of each referenced source.
+3. If any recorded hash differs from disk, the view is labeled `STALE` in `impact.json`.
+
+### 3. Targeted, Non-Full-Corpus Regeneration
+Instead of costly full-corpus re-runs, the system schedules regeneration **only** for the specific views identified in `impact.json`. Unaffected pages remain untouched.
 
 ## Supporting Canonical Evidence
-- <EvidenceLink to="/docs/validation/drift-detection">Canonical Reference: validation-drift-detection</EvidenceLink>
-
+- [Drift Detection & Freshness Specification](/docs/validation/drift-detection)
+- [Runbook: Managing Stale Views](/docs/operations/runbook-stale-views)
