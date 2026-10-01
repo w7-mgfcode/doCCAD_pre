@@ -10,7 +10,7 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/w7-mgfcode/doCCAD_pre/actions/workflows/ci.yml)
 [![Pages](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/publish.yml?branch=main&style=flat-square&label=pages)](https://w7-mgfcode.github.io/doCCAD_pre/)
-[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%201%20complete-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
+[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%201%20live,%20approval%20pending-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
 [![Docusaurus](https://img.shields.io/badge/Docusaurus-3.10.2-3ECC5F?style=flat-square&logo=docusaurus&logoColor=white)](prototype/package.json)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](prototype/package.json)
 [![Node](https://img.shields.io/badge/node-%E2%89%A524.14-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](prototype/.nvmrc)
@@ -141,7 +141,9 @@ The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATI
 ## 🗺️ Roadmap
 
 - [x] **Phase 0: baseline stabilization.** Validation gates, security gates, Hungarian UI and 75 tests ([progress log](prototype/planning/PROGRESS.md))
-- [x] **Phase 1: deployable and governed.** CI gate, GitHub Pages, CODEOWNERS, ruleset, approval record checked against GitHub (first real approval waits on E8)
+- [ ] **Phase 1: deployable and governed.**
+  - [x] Infrastructure live: CI gate, GitHub Pages, CODEOWNERS, ruleset, approval record checked against GitHub
+  - [ ] First real approval of a generated view, end to end (needs a bot-authored PR, decision E8)
 - [ ] **Phase 2: live AI behind the fixture default.** Structured output, budgets, grounding gate, injection fixtures
 - [ ] **Phase 3: beyond the prototype.** Scoped in [`docs/next-phase/`](docs/next-phase/README.md)
 
