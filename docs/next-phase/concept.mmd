@@ -1,0 +1,44 @@
+flowchart TD
+    subgraph P0["Phase 0 - Stabilize, Antigravity run"]
+        C[Canonical pages docs/source]
+        GEN[Generation scripts with fixture default]
+        GATES[Deterministic gates - schema, planes, hashes, citations, MDX restriction, link allowlist, secret scan, visibility]
+        EV[PROGRESS.md evidence log and VALIDATION.md]
+    end
+
+    subgraph P1["Phase 1 - Deployable and governed"]
+        GH[GitHub repository - human creates and pushes]
+        CI[ci.yml - validate, test, detect, build, path guard]
+        PR[docs-gen branch and bot PR with run report]
+        APR[Human approval record and code-owner review]
+        PUB[publish.yml - production build to GitHub Pages via OIDC]
+    end
+
+    subgraph P2["Phase 2 - Live generation"]
+        RT[Router - fixture first, private to local only]
+        AD[Adapters with structured output, retry, budget]
+        LV[Local schema validation and grounding gate]
+        OWN[Live smoke call - owner executed]
+    end
+
+    subgraph P3["Phase 3 - External evidence, spec only"]
+        EXT[Pinned external repo snapshots - repo, commit, path, hash]
+    end
+
+    C --> GEN
+    GEN --> GATES
+    GATES --> EV
+    EV -->|Phase 0 checkpoint| GH
+    GH --> CI
+    CI --> PR
+    PR --> APR
+    APR --> PUB
+    PUB --> R[Readers EN and HU - static site, no AI at read time]
+    GEN --> RT
+    RT --> AD
+    AD --> LV
+    LV --> PR
+    OWN -.->|keys and spend caps held by owner| AD
+    EXT -.->|owner decision NV-SUP-2| GEN
+    C -->|source hashes| D[detect - stale set]
+    D -->|executable regeneration plan| GEN
