@@ -57,6 +57,7 @@ were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NO
 | P0-12 | `python3 -m unittest tests.test_doccad.TestMdxRestrictionGate tests.test_doccad.TestExternalLinkAllowlist tests.test_doccad.TestContextSecretScan tests.test_doccad.TestPrivateChainConfig -v` | 0 | `Ran 19 tests ... OK` | 2026-10-01 |
 | P0-13 | `npm run validate && npm run detect` | 0 | `stale generated: 0` / `OK — frontmatter schemas valid, planes intact` | 2026-10-01 |
 | P0-14 | `grep -c "<Translate\|translate(" src/pages/index.tsx && npm run build` | 0 | `33` / `Generated static files in "build/hu"` / `build/hu/search-index.json` | 2026-10-01 |
+| P0-15 | `test -f prototype/VALIDATION.md` | 0 | `VALIDATION.md` exists (75 tests PASS, 14 boundaries PASS, browser/live calls documented NOT RUN) | 2026-10-01 |
 
 ---
 
