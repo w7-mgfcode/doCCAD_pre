@@ -45,7 +45,7 @@ No API keys, database or network access are needed.
 ```bash
 cd prototype
 npm ci
-npm run validate      # → "Validated 40 pages, 4 interview datasets, 17 provenance hashes." + OK
+npm run validate      # → "Validated 40 pages, 4 interview datasets, 37 provenance hashes." + OK
 npm run build         # → [SUCCESS] for en, then for build/hu
 npm run serve         # → http://localhost:3000
 ```

@@ -13,9 +13,11 @@ repository holds two things:
 - `prototype/` — a runnable local DOCCAD prototype: Docusaurus 3.10.2 + React 19 static site, Python
   governance scripts, a provider-agnostic AI router, task contracts and JSON schemas.
 
-The repository is a git repository (initialized 2026-09-29; branch `main`, first commit 2026-09-29,
-no remote yet — `docs/primary-inputs/README.md` still says it is uninitialized, which predates this).
-Git history starts at that initial import, so `git log` explains nothing from before it. `.claude/`,
+The repository is a git repository (initialized 2026-09-29; `docs/primary-inputs/README.md` still
+says it is uninitialized, which predates this). Remote `origin` is the public
+`https://github.com/w7-mgfcode/doCCAD_pre` (since 2026-10-01). Active work happens on `next-version`;
+`main` holds the initial import. Git history starts at that import, so `git log` explains nothing from
+before it. Code is MIT (`LICENSE`); docs are CC BY 4.0 (`LICENSE-docs`). `.claude/`,
 `.agents/`, `.kb/` and local session notes are git-ignored, so git does not track the agent layer. Read-only git commands (`status`, `diff`, `log`) are fine; do not commit, push, or create
 branches unless asked.
 

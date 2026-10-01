@@ -79,7 +79,7 @@ These capabilities are implemented as offline simulations for testing and demons
 These components are implemented in code but have not been executed against external production infrastructure:
 1. **Live Cloud AI Providers**: Adapters for Anthropic Claude (`ai/anthropic_provider.py`), OpenAI GPT (`ai/openai_provider.py`), and Google Gemini (`ai/gemini_provider.py`) are implemented. However, no live API requests were made during Phase 0 per run safety rules. Live execution is deferred to Phase 2 under owner credentials and spend caps.
 2. **Local Model Provider**: The OpenAI-compatible adapter for local runtimes (`ai/local_provider.py`) is implemented but unverified against a live Ollama or vLLM daemon.
-3. **GitHub Actions Workflows**: Workflow definitions for CI (`ci.yml`), generation (`generate.yml`), and deployment (`publish.yml`) will be created in Phase 1; live execution requires repository push to GitHub.
+3. **GitHub Actions Workflows**: Not yet written. CI (`ci.yml`), generation (`generate.yml`) and deployment (`publish.yml`) are Phase 1 items P1-01, P1-06 and P1-03.
 4. **Interactive Browser Verification**: Visual verification using the Antigravity 2.0 `/browser` slash command is an interactive human procedure and is documented as NOT RUN in automated CI logs.
 
 ### Tier 4: Deferred Production Work
@@ -93,21 +93,29 @@ These features are intentional design decisions deferred to future phases or own
 
 ## 3. Requirement-to-Evidence Matrix
 
-| Requirement | Description | Primary Implementing Files | Test Class / Verification | Status |
+Requirement IDs and titles follow `docs/primary-inputs/01_PROJECT_KNOWLEDGE/REQUIREMENTS.md` and
+`planning/ACCEPTANCE.md`. Status vocabulary — kept deliberately narrow so no row claims more than was run:
+
+- **VERIFIED** — an automated test or check covering the requirement ran and passed (2026-10-01).
+- **BUILD-ONLY** — the code compiles into the static build; it was not exercised in a browser.
+- **PARTIAL** — the local part is verified; the named remainder is planned and not yet built.
+- **DOCUMENTED** — satisfied by a research or design artifact; there is nothing executable to test.
+
+| Requirement | Title | Primary Implementing Files | Evidence | Status |
 |---|---|---|---|---|
-| **REQ-001** | Git Repository Source of Truth | `docs/source/**`, `prototype/` | Git branch `next-version`, file-based tracking | **VERIFIED** |
-| **REQ-002** | Docusaurus 3.x Foundation | `docusaurus.config.ts`, `package.json` | `npm run build`, `npm run typecheck` | **VERIFIED** |
-| **REQ-003** | Structural Plane Separation | `scripts/validate_docs.py` | `TestPlaneSeparation` | **VERIFIED** |
-| **REQ-004** | AI in CI / PR-Gated Only | `scripts/generate_page.py`, `scripts/review_governance.py` | `TestBuildFilterExclusion`, `TestProductionFilterValidity` | **VERIFIED** |
-| **REQ-005** | Provider Abstraction & Routing | `ai/router.py`, `ai/provider.py`, `ai.config.yaml` | `TestRouterFallbackSemantics`, `TestPrivateRoutingPolicy` | **VERIFIED** |
-| **REQ-006** | Static Serving (Zero Runtime AI) | `docusaurus.config.ts`, `src/pages/index.tsx` | `npm run build && npm run serve` | **VERIFIED** |
-| **REQ-007** | Task Contracts & Schemas | `contracts/*.yaml`, `schemas/*.schema.json` | `TestValidatorDependencyMode`, `TestLivePagePipeline` | **VERIFIED** |
-| **REQ-008** | Mechanical Provenance & Drift | `scripts/detect_changes.py`, `scripts/validate_docs.py` | `TestHashDriftAndRegeneration`, `TestRegenerationPlanExecutable` | **VERIFIED** |
-| **REQ-009** | Governed Derived Views | `docs/generated/recruiter/`, `docs/generated/interview/` | `npm run validate`, `npm run detect` | **VERIFIED** |
-| **REQ-010** | Reader Trust & Non-Fabrication | `docs/source/security/prompt-injection-defense.md` | `TestDeterministicRetrievalAndGeneration`, P0-13 truth alignment | **VERIFIED** |
-| **REQ-011** | Knowledge Discovery Tooling | `src/components/KnowledgeExplorer/`, `DriftInspector/` | `npm run build`, search local plugin | **VERIFIED** |
-| **REQ-012** | Human Governance Ledger | `scripts/review_governance.py` | `TestReviewGovernanceStateTransitions` | **VERIFIED** |
-| **REQ-013** | Hungarian Localization | `i18n/hu/**`, `src/pages/index.tsx` | `npm run build`, `GATE-HU-HERO`, D11 fallback verification | **VERIFIED** |
-| **REQ-014** | Comprehensive Architecture Spine | `docs/source/architecture/`, `docs/diagrams/` | 29 canonical documents validated, 7 Mermaid diagrams | **VERIFIED** |
-| **REQ-015** | Runnable Validated Prototype | `tests/test_doccad.py`, `VALIDATION.md`, `DEMO.md` | 75 unit tests (0 expected failures), `npm run validate` | **VERIFIED** |
-| **REQ-016** | Security Architecture & Defense | `ai/router.py`, `validate_docs.py`, `link-allowlist.yaml` | `TestMdxRestrictionGate`, `TestContextSecretScan`, `TestExternalLinkAllowlist` | **VERIFIED** |
+| **REQ-001** | Six-platform research | `docs/primary-inputs/02_RESEARCH/`, `docs/source/architecture/platform-research.md` | Archive research set; canonical summary page validates | **DOCUMENTED** |
+| **REQ-002** | Weighted decision model | `docs/source/decisions/adr-002-docusaurus-foundation.md` | ADR with the 11-criterion scoring; page validates | **DOCUMENTED** |
+| **REQ-003** | Git/GitHub source of truth | `docs/source/**`, `.docs-manifest.json` | Files only, no database; git repository with a GitHub remote. PR-based flows arrive in Phase 1 | **PARTIAL** |
+| **REQ-004** | Structural canonical vs generated separation; no silent promotion | `scripts/validate_docs.py`, `scripts/build_filter.py`, `docusaurus.config.ts` | `TestPlaneSeparation`, `TestBuildFilterExclusion`, `TestProductionFilterValidity` | **VERIFIED** |
+| **REQ-005** | Thin AI provider abstraction | `ai/provider.py`, `ai/router.py`, `ai.config.yaml` | `TestRouterFallbackSemantics`, `TestPrivateRoutingPolicy`, `TestRepairRetry`. Cloud and local adapters never ran live (Tier 3) | **PARTIAL** |
+| **REQ-006** | Static reads without AI | `docusaurus.config.ts`, `src/**` | `npm run build` with no keys set; no runtime model calls in `src/`. Browser reading not run | **BUILD-ONLY** |
+| **REQ-007** | Level-1 deterministic retrieval | `scripts/generate_question.py`, `scripts/generate_page.py` | `TestDeterministicRetrievalAndGeneration`, `TestPathTraversalSecurity` | **VERIFIED** |
+| **REQ-008** | Ingestion & incremental regeneration | `scripts/detect_changes.py` | `TestHashDriftAndRegeneration`, `TestRegenerationPlanExecutable`, `TestSourceDeletionDetection`. Automated GitHub ingestion (P1-06) not built | **PARTIAL** |
+| **REQ-009** | Provenance metadata & hash drift | `generation` frontmatter block, `scripts/validate_docs.py` | `TestInvalidProvenance`, `TestHashDriftAndRegeneration`, `TestGenerationModeStamp` | **VERIFIED** |
+| **REQ-010** | Evidence-grounded recruiter views | `docs/generated/recruiter/project-overview.mdx`, `<EvidenceLink>` | `TestBrokenCitations`, `npm run validate`. Content is fixture output (Tier 2), not a live model | **VERIFIED** (fixture) |
+| **REQ-011** | Interview prep component | `src/components/InterviewPrep/`, 4 `*.interview.json` datasets | Datasets pass `interview.schema.json`; component compiles. Rendering not checked in a browser | **BUILD-ONLY** |
+| **REQ-012** | Special-question workflow | `scripts/generate_question.py`, `scripts/review_governance.py`, `/workbench` | `TestUiCliJsonRoundtrip`, `TestQuestionPersistenceGovernance`, `TestReviewGovernanceStateTransitions`. Approval is simulated; real approval is P1-05 | **PARTIAL** |
+| **REQ-013** | EN/HU bilingual capability | `i18n/hu/**`, `src/pages/index.tsx` | Both locales build; landing, navigation and 4 canonical pages translated, the rest fall back to English (D11) | **PARTIAL** |
+| **REQ-014** | Anti-overengineering | Whole prototype | By inspection: no database, service, vector store or agent swarm; Python is stdlib + PyYAML + jsonschema | **VERIFIED** (inspection) |
+| **REQ-015** | Runnable validated prototype | `tests/test_doccad.py`, `VALIDATION.md`, `DEMO.md` | 75 unit tests pass; `VALIDATION.md` separates executed from NOT RUN checks | **VERIFIED** |
+| **REQ-016** | Security architecture | `ai/router.py`, `scripts/validate_docs.py`, `contracts/link-allowlist.yaml` | `TestMdxRestrictionGate`, `TestContextSecretScan`, `TestExternalLinkAllowlist`, `TestPrivateChainConfig`. CI-side threats (T8) arrive with Phase 1 | **PARTIAL** |

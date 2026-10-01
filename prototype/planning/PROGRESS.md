@@ -74,7 +74,6 @@ were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NO
 
 | Item ID | Missing prerequisite | Smallest action that unblocks it |
 |---|---|---|
-| P1-02 | Repository owner/name or custom domain (E2) | Owner specifies repository target or domain |
 | P1-05 | Approval-record semantics confirmation (E3) | Owner confirms human `approval_record` metadata schema |
 | P1-08 | Mermaid compile gate dependency approval (E6) | Owner approves new dependency or alternative check |
 | P2-08 | Provider API keys and spend caps (E5, H-9) | Owner executes live smoke tests locally |
@@ -89,12 +88,14 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
 | Decision | Answer |
 |---|---|
 | E1 — GitHub repository visibility | **Public** |
-| E2 — repository owner/name or custom domain | **Not decided yet** — P1-02 stays Blocked until the owner names it; ask at the start of Phase 1 |
+| E2 — repository owner/name or custom domain | **Decided 2026-10-01:** `w7-mgfcode/doCCAD_pre` (https://github.com/w7-mgfcode/doCCAD_pre), GitHub Pages project site — `url: 'https://w7-mgfcode.github.io'`, `baseUrl: '/doCCAD_pre/'`, `trailingSlash: false`. P1-02 is unblocked |
 | E3 — approval-record semantics (D6) | Not yet confirmed — ask at the start of Phase 1 |
 | E6 — dependencies | **Approved:** `jsonschema` + `referencing` as declared requirements (P0-02). **Not approved:** `@playwright/test`, `@mermaid-js/mermaid-cli`, `@docusaurus/faster`, lychee — P1-08 and any CI browser smoke stay Blocked |
 | E5, E7, E8, E9 | Not decided — they gate Phase 2 live calls, the GitHub App, Phase 3 and the archive `ai-models/` folder |
 | Antigravity setup | 2.0 app (not the CLI); command auto-execution enabled for the `doCCAD_pre` project only; workspace guard hook `.agents/hooks.json` active (blocks push, remote/`gh`, destructive git, protected-path writes, `.env`/keys) |
 | Branch | Work on `next-version` (created 2026-10-01 with the baseline commits) |
+| Licensing (recorded 2026-10-01) | Code MIT (`LICENSE`); documentation, diagrams and research CC BY 4.0 (`LICENSE-docs`); `docs/primary-inputs/10_EXTERNAL_ARTIFACTS/` excluded (third-party) |
+| Remote (recorded 2026-10-01) | `origin` = https://github.com/w7-mgfcode/doCCAD_pre.git, public; `main` and `next-version` pushed by the owner's session. Pushing is still an owner action — the run itself never pushes |
 
 ### 0.1 Claimed Quality & Security Gates (P0-13 Truth Alignment Table)
 
