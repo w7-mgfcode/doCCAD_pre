@@ -392,7 +392,7 @@
     "message": "DOCCAD: GitHub-natív, MI-vel kiegészített dokumentációs ökoszisztéma"
   },
   "homepage.hero.badge": {
-    "message": "PROTOTÍPUS v0.2.0 • OFFLINE DETERMINISZTIKUS DEMÓ",
+    "message": "PROTOTÍPUS v0.2.0 • DETERMINISZTIKUS • FUTÁSIDEJŰ MI NÉLKÜL",
     "description": "Badge in hero section"
   },
   "homepage.hero.title": {
@@ -406,10 +406,6 @@
   "homepage.hero.button.explore": {
     "message": "Kanonikus Dokumentáció Felfedezése (/docs)",
     "description": "Button to explore canonical docs"
-  },
-  "homepage.hero.button.recruiter": {
-    "message": "Toborzói Összefoglaló (30 mp / 2 perc / Részletes)",
-    "description": "Button for recruiter briefing"
   },
   "homepage.hero.button.workbench": {
     "message": "Kérdés Munkapad →",
@@ -428,7 +424,7 @@
     "description": "Metric label for derived views"
   },
   "homepage.metrics.derived.desc": {
-    "message": "Toborzói, interjú- és kérdésoldalak a /views alatt",
+    "message": "A /views alatt csak valódi kódtulajdonosi jóváhagyás után jelennek meg",
     "description": "Metric description for derived views"
   },
   "homepage.metrics.offline.title": {
@@ -468,11 +464,11 @@
     "description": "Title for recruiter persona"
   },
   "homepage.personas.recruiter.desc": {
-    "message": "A 30 másodperces vezetői összefoglaló, a 2 perces műszaki áttekintés és a kompetenciákat feltérképező bizonyítékhivatkozások áttekintése.",
+    "message": "A kanonikus dokumentációból generált 30 másodperces / 2 perces / részletes összefoglaló bizonyítéklinkekkel. A nyilvános oldalon jóváhagyásig visszatartva.",
     "description": "Description for recruiter persona"
   },
   "homepage.personas.recruiter.link": {
-    "message": "Toborzói Profil →",
+    "message": "Toborzói nézet (jóváhagyásra vár) →",
     "description": "Link text for recruiter persona"
   },
   "homepage.personas.interviewer.title": {
@@ -480,11 +476,11 @@
     "description": "Title for interviewer persona"
   },
   "homepage.personas.interviewer.desc": {
-    "message": "A rendszerkoncepciókat, tervezési kompromisszumokat és minta kérdés-válaszokat részletező interjúkártyák felfedezése.",
+    "message": "A kanonikus dokumentációból generált interjúkártyák rendszerkoncepciókkal, tervezési kompromisszumokkal és minta kérdés-válaszokkal. A nyilvános oldalon jóváhagyásig visszatartva.",
     "description": "Description for interviewer persona"
   },
   "homepage.personas.interviewer.link": {
-    "message": "Interjú Felkészülés →",
+    "message": "Interjú-felkészülés (jóváhagyásra vár) →",
     "description": "Link text for interviewer persona"
   },
   "homepage.personas.reviewer.title": {
@@ -514,5 +510,21 @@
   "homepage.features.inspector": {
     "message": "🔄 Eltérés Ellenőr",
     "description": "Button label for drift inspector"
+  },
+  "homepage.hero.button.governance": {
+    "message": "Hogyan működik a publikálási jóváhagyás",
+    "description": "Button explaining publication approval"
+  },
+  "homepage.hero.notice.title": {
+    "message": "A származtatott nézetek a nyilvános oldalon visszatartva.",
+    "description": "Title of the publication-hold notice"
+  },
+  "homepage.hero.notice.body": {
+    "message": "A kanonikus dokumentáció teljes egészében megjelenik. Az MI által származtatott nézetek (toborzói, interjú- és kérdésoldalak) csak azután jelennek meg, hogy egy kódtulajdonos valódi pull requestben jóváhagyta őket; a szimulált demójóváhagyás soha nem publikál. Addig ezek az oldalak publikálási visszatartást mutatnak.",
+    "description": "Body of the publication-hold notice"
+  },
+  "homepage.hero.notice.demo": {
+    "message": "A teljes demó futtatása helyben →",
+    "description": "Link to run the full demo locally"
   }
 }

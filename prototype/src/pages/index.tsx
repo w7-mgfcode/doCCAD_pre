@@ -28,7 +28,7 @@ export default function Home(): React.JSX.Element {
             }}
           >
             <Translate id="homepage.hero.badge" description="Badge in hero section">
-              PROTOTYPE v0.2.0 • OFFLINE DETERMINISTIC DEMO
+              PROTOTYPE v0.2.0 • DETERMINISTIC • NO RUNTIME AI
             </Translate>
           </div>
           <h1 style={{fontSize: '2.75rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em'}}>
@@ -60,7 +60,7 @@ export default function Home(): React.JSX.Element {
               </Translate>
             </Link>
             <Link
-              to="/views/recruiter/project-overview"
+              to="/docs/decisions/adr-005-pr-gated-generation"
               style={{
                 backgroundColor: '#f3f4f6',
                 color: '#1f2937',
@@ -72,8 +72,8 @@ export default function Home(): React.JSX.Element {
                 border: '1px solid #d1d5db',
               }}
             >
-              <Translate id="homepage.hero.button.recruiter" description="Button for recruiter briefing">
-                Recruiter Briefing (30s / 2m / Deep)
+              <Translate id="homepage.hero.button.governance" description="Button explaining publication approval">
+                How Publication Approval Works
               </Translate>
             </Link>
             <Link
@@ -90,6 +90,36 @@ export default function Home(): React.JSX.Element {
             >
               <Translate id="homepage.hero.button.workbench" description="Button for question workbench">
                 Question Workbench &rarr;
+              </Translate>
+            </Link>
+          </div>
+
+          <div
+            role="note"
+            style={{
+              maxWidth: '780px',
+              margin: '2rem auto 0',
+              padding: '1rem 1.25rem',
+              borderRadius: '8px',
+              border: '1px solid #f0c36d',
+              backgroundColor: '#fff8e6',
+              color: '#5c4300',
+              fontSize: '0.95rem',
+              lineHeight: '1.55',
+              textAlign: 'left',
+            }}
+          >
+            <strong>
+              <Translate id="homepage.hero.notice.title" description="Title of the publication-hold notice">
+                Derived views are held on the public site.
+              </Translate>
+            </strong>{' '}
+            <Translate id="homepage.hero.notice.body" description="Body of the publication-hold notice">
+              Canonical documentation is published in full. AI-derived views (recruiter, interview and question pages) are published only after a code owner approves them in a real pull request; simulated demo approvals never publish. Until then their pages show a publication hold.
+            </Translate>{' '}
+            <Link href="https://github.com/w7-mgfcode/doCCAD_pre/blob/main/prototype/DEMO.md" style={{fontWeight: 600}}>
+              <Translate id="homepage.hero.notice.demo" description="Link to run the full demo locally">
+                Run the full demo locally &rarr;
               </Translate>
             </Link>
           </div>
@@ -127,7 +157,7 @@ export default function Home(): React.JSX.Element {
             </div>
             <div style={{fontSize: '0.8rem', color: '#6b7280'}}>
               <Translate id="homepage.metrics.derived.desc" description="Metric description for derived views">
-                Recruiter, interview & question pages under /views
+                Published under /views only after a real code-owner approval
               </Translate>
             </div>
           </div>
@@ -193,12 +223,12 @@ export default function Home(): React.JSX.Element {
               </h3>
               <p style={{fontSize: '0.9rem', color: '#4b5563', lineHeight: '1.5', marginBottom: '1rem'}}>
                 <Translate id="homepage.personas.recruiter.desc" description="Description for recruiter persona">
-                  Review the 30s executive summary, 2m technical walkthrough, and evidence links mapping competencies.
+                  A 30s / 2m / deep-dive summary generated from the canonical docs, with evidence links. On the public site it stays on hold until approved.
                 </Translate>
               </p>
               <Link to="/views/recruiter/project-overview" style={{fontWeight: 600, color: '#0052cc'}}>
                 <Translate id="homepage.personas.recruiter.link" description="Link text for recruiter persona">
-                  Recruiter Profile &rarr;
+                  Recruiter View (approval hold) &rarr;
                 </Translate>
               </Link>
             </div>
@@ -211,12 +241,12 @@ export default function Home(): React.JSX.Element {
               </h3>
               <p style={{fontSize: '0.9rem', color: '#4b5563', lineHeight: '1.5', marginBottom: '1rem'}}>
                 <Translate id="homepage.personas.interviewer.desc" description="Description for interviewer persona">
-                  Explore collapsible interview cards detailing system concepts, design trade-offs, and sample Q&A.
+                  Interview cards with system concepts, design trade-offs and sample Q&A, generated from the canonical docs. On the public site they stay on hold until approved.
                 </Translate>
               </p>
               <Link to="/views/interview/architecture-system-overview" style={{fontWeight: 600, color: '#0052cc'}}>
                 <Translate id="homepage.personas.interviewer.link" description="Link text for interviewer persona">
-                  Interview Preparation &rarr;
+                  Interview Prep (approval hold) &rarr;
                 </Translate>
               </Link>
             </div>
