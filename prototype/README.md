@@ -19,17 +19,17 @@ Design intent: [`planning/CONCEPT.md`](planning/CONCEPT.md). Requirements mappin
 
 ## Status
 
-Verified on 2026-09-29 (Node 24.19, Python 3.14, on a copy of this directory):
+Verified on 2026-10-01 (Node 24.19, Python 3.14, branch `next-version`):
 
 | Area | Works today | Not yet |
 | --- | --- | --- |
-| Static site | Builds in `en` and `hu`; every page, view, workbench, inspector, explorer and local search | Hungarian covers 4 docs pages; the landing page, navbar and footer are English only |
-| Checks | `validate`, `detect`, 19 unit tests, `typecheck`, `build` all pass | 4 required failure cases have no test (see `PROGRESS.md` §2) |
-| Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip | — |
-| Page pipeline | `generate_page.py --dry-run` for all contracts | Live runs fail validation — see [Known issues](#known-issues) |
-| Regeneration | `seed_generated_views.py` rebuilds every derived view with fresh hashes | Targeted per-view regeneration through `generate_page.py` |
-| Review | Simulated review ledger; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (no remote or CI yet) |
-| Cloud / local models | Adapters and routing exist | Never run with real keys or a local endpoint |
+| Static site | Builds in `en` and `hu`; landing page, navbar, footer, and search index localized; all 29 canonical and 11 generated pages | Untranslated canonical docs fall back to English source (D11 verified) |
+| Checks | `validate`, `detect`, 75 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
+| Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip, forced draft | — |
+| Page pipeline | `generate_page.py` live pipeline verified with date normalization and strict schema adherence (`TestLivePagePipeline`) | — |
+| Regeneration | Targeted deduplicated regeneration through `generate_page.py` and `generate_question.py`; `seed_generated_views.py` | — |
+| Review | Simulated review ledger with strict state machine; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (Phase 1 P1-05) |
+| Cloud / local models | Secret scanning (T6), transport vs content error fallback semantics, privacy hard-pinning (T12) | Real cloud provider calls deferred to Phase 2 with owner API keys |
 
 ## Requirements
 
@@ -212,15 +212,6 @@ Contributor and agent conventions: [`../AGENTS.md`](../AGENTS.md).
 
 ## Known issues
 
-- **`generate_page.py` live runs fail.** Recruiter pages fail post-generation validation with
-  `last_validated: datetime.date(...) is not of type 'string'` (YAML parses the date). Interview prep fails
-  because the fixture's JSON uses plain strings for `concepts` and `example_answers`, and omits
-  `evidence`, `choice`/`benefit`/`cost` and `to` fields that `schemas/interview.schema.json` requires.
-  Use `seed_generated_views.py` to regenerate those views.
-- **`detect`'s regeneration plan** names `GenerateRecruiterPage` and `GenerateInterviewPrep` targets
-  that the failure above cannot run, and it lists some interview targets twice under different IDs.
-- **`detect_changes.py --range`** needs git history; until the repository has commits, use `--all`.
-- **The test suite works on the live `docs/generated/` tree.** An interrupted run can leave views
-  stashed; `npm run build:demo` restores them.
-- **Not verified:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a browser,
-  and any real provider call.
+- **`detect_changes.py --range`** needs git history; until the repository has remote commits, use `--all` for a full-workspace scan.
+- **The test suite exercises the production filter.** An interrupted test run can leave unapproved views stashed in `.work/stashed_unapproved/`; `npm run build:demo` restores them.
+- **Not verified in CI:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a live browser (interactive `/browser` available in Antigravity 2.0 app), and live cloud provider calls with real API keys (deferred to Phase 2).
