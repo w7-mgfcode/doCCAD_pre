@@ -60,6 +60,11 @@ from scripts.review_governance import (
     reset_to_draft,
     REVIEWS_FILE,
 )
+import scripts.generate_page as generate_page_module
+import scripts.generate_question as generate_question_module
+import scripts.build_filter as build_filter_module
+import scripts.detect_changes as detect_changes_module
+import scripts.review_governance as review_governance_module
 from github_approval import (
     ApprovalVerifier,
     MockGitHubApiClient,
@@ -1848,6 +1853,122 @@ class TestApprovalRecord(unittest.TestCase):
             restore_stashed()
 
 
+class TestWorkflowScriptInvocations(unittest.TestCase):
+    """Verifies that all script invocations across workflows match the script CLI parsers (argparse)."""
+
+    def setUp(self):
+        self.workflow_dir = PROTOTYPE_ROOT.parent / ".github" / "workflows"
+        self.parsers = {
+            "generate_page.py": generate_page_module.build_parser,
+            "generate_question.py": generate_question_module.build_parser,
+            "build_filter.py": build_filter_module.build_parser,
+            "detect_changes.py": detect_changes_module.build_parser,
+            "review_governance.py": review_governance_module.build_parser,
+        }
+
+    def test_generate_question_cli_argparse_rules(self):
+        """Confirm generate_question.py accepts --question and optional --audience, but rejects --query and --provider."""
+        parser = generate_question_module.build_parser()
+
+        # Valid with only --question (confirming --audience defaults to 'developer')
+        args = parser.parse_args(["--question", "What is DOCCAD?"])
+        self.assertEqual(args.question, "What is DOCCAD?")
+        self.assertEqual(args.audience, "developer")
+        self.assertEqual(args.privacy, "public")
+
+        # Valid with explicit --audience
+        args2 = parser.parse_args(["--question", "What is DOCCAD?", "--audience", "recruiter", "--privacy", "private", "--persist"])
+        self.assertEqual(args2.audience, "recruiter")
+        self.assertEqual(args2.privacy, "private")
+        self.assertTrue(args2.persist)
+
+        # Rejects deprecated / invalid --query
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                parser.parse_args(["--query", "What is DOCCAD?"])
+
+        # Rejects unrecognized --provider
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                parser.parse_args(["--question", "What is DOCCAD?", "--provider", "fixture"])
+
+    def test_generate_page_cli_argparse_rules(self):
+        """Confirm generate_page.py accepts --contract, --target, --privacy, but rejects --provider."""
+        parser = generate_page_module.build_parser()
+
+        # Valid invocation
+        args = parser.parse_args(["--contract", "GenerateRecruiterPage", "--target", "system-overview"])
+        self.assertEqual(args.contract, "GenerateRecruiterPage")
+        self.assertEqual(args.target, "system-overview")
+        self.assertEqual(args.privacy, "public")
+
+        # Rejects unrecognized --provider
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                parser.parse_args(["--contract", "GenerateRecruiterPage", "--target", "system-overview", "--provider", "fixture"])
+
+    def test_all_workflows_parse_against_argparse(self):
+        """Dynamically extract every Python script invocation across .github/workflows/*.yml and parse against argparse."""
+        import shlex
+
+        found_invocations = []
+
+        self.assertTrue(self.workflow_dir.is_dir(), f"Workflows directory not found: {self.workflow_dir}")
+        workflow_files = sorted(self.workflow_dir.glob("*.yml"))
+        self.assertGreater(len(workflow_files), 0, "No workflow files found to test")
+
+        for yf in workflow_files:
+            data = yaml.safe_load(yf.read_text(encoding="utf-8"))
+            for job_name, job in data.get("jobs", {}).items():
+                for step in job.get("steps", []):
+                    run = step.get("run", "")
+
+                    # 1. Shell command lines: python3 scripts/<name>.py <args>
+                    for match in re.finditer(r'python3\s+scripts/([a-zA-Z0-9_]+\.py)([^\n]*)', run):
+                        script_name = match.group(1)
+                        args_str = match.group(2).strip()
+                        # Drop trailing shell pipes or chain operators if any
+                        args_str = re.split(r'(&&|\||;)', args_str)[0].strip()
+                        tokens = shlex.split(args_str)
+                        found_invocations.append((yf.name, script_name, tokens))
+
+                    # 2. Python subprocess lists: ["python3", "scripts/<name>.py", ...]
+                    for match in re.finditer(r'\[\s*"python3",\s*"scripts/([a-zA-Z0-9_]+\.py)",\s*(.*?)\]', run, re.DOTALL):
+                        script_name = match.group(1)
+                        body = match.group(2)
+                        items = [x.strip().strip('"\'') for x in body.split(",") if x.strip()]
+                        subbed = []
+                        for item in items:
+                            if item in ("target", "question"):
+                                subbed.append("dummy-target")
+                            elif item == "privacy":
+                                subbed.append("public")
+                            elif item == "contract":
+                                subbed.append("GenerateRecruiterPage")
+                            else:
+                                subbed.append(item)
+                        found_invocations.append((yf.name, script_name, subbed))
+
+        self.assertGreater(len(found_invocations), 0, "No script invocations found in workflows")
+
+        # Validate every invocation against its argparse parser
+        for wf_file, script_name, args_tokens in found_invocations:
+            if script_name == "validate_docs.py":
+                self.assertEqual(len(args_tokens), 0, f"{wf_file} passed unexpected args to validate_docs.py: {args_tokens}")
+                continue
+
+            self.assertIn(script_name, self.parsers, f"Unknown script invoked in {wf_file}: {script_name}")
+            parser_fn = self.parsers[script_name]
+            parser = parser_fn()
+
+            try:
+                parsed = parser.parse_args(args_tokens)
+                self.assertIsNotNone(parsed)
+            except SystemExit as e:
+                self.fail(f"Workflow '{wf_file}' invokes '{script_name}' with invalid arguments {args_tokens}: exit code {e}")
+
+
 if __name__ == "__main__":
     unittest.main()
+
 

@@ -11,10 +11,10 @@
 
 This document records the definitive validation results for the DOCCAD prototype at the conclusion of Phase 1 (Deployable & Governed GitHub Automation). Every check is categorized as **PASS**, **FAIL**, or **NOT RUN**. No assumed or historical test results are reported; every passing entry represents a command executed in this run with exit code 0.
 
-- **Total Automated Python Unit Tests**: 88 tests across 23 test classes (**88 PASS, 0 FAIL, 0 EXPECTED FAILURES**).
-- **Core Governance Scripts**: `validate_docs.py`, `detect_changes.py`, `generate_page.py`, `generate_question.py`, `review_governance.py`, `build_filter.py`, `github_approval.py` all verified.
-- **GitHub Automation & Workflows**: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, and `dependabot.yml` statically validated, action pins pinned to full commit SHAs, zero `pull_request_target`.
-- **Governance & CODEOWNERS (E3)**: Real human approval replaces simulated approval for production: `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation.
+- **Total Automated Python Unit Tests**: 91 tests across 24 test classes (**91 PASS, 0 FAIL, 0 EXPECTED FAILURES**).
+- **Core Governance Scripts**: `validate_docs.py`, `detect_changes.py`, `generate_page.py`, `generate_question.py`, `review_governance.py`, `build_filter.py`, `github_approval.py` all verified with exposed `build_parser()` CLI endpoints.
+- **GitHub Automation & Workflows**: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, and `dependabot.yml` statically validated, action pins pinned to full commit SHAs, zero `pull_request_target`, and all CLI script invocations verified against script argparse definitions.
+- **Governance & CODEOWNERS (E3)**: Real human approval replaces simulated approval for production: `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation. End-to-end production approval is noted as BLOCKED on E8 (GitHub App) because the sole CODEOWNER cannot approve their own pull requests.
 - **Frontend & Static Build**: TypeScript compilation (`tsc`) and Docusaurus dual-locale build (`en`, `hu`) exit 0 with search index generation.
 - **Security & Quality Gates (T1–T6, T12, T14)**: AST safety, link allowlisting, secret scanning, strict Mermaid rendering, private routing hard-pinning, private content isolation, and CODEOWNER approval verification verified.
 - **Browser Testing**: Marked **NOT RUN** per run rules (interactive `/browser` slash command in Antigravity 2.0 app and unapproved Playwright dependency per decision E6).
@@ -27,11 +27,12 @@ This document records the definitive validation results for the DOCCAD prototype
 |---|---|---|---|---|---|---|
 | **GATE-VAL** | Schema, plane, hash, link & AST validation | `npm run validate` | 0 | 2026-10-01 | **PASS** | `OK — frontmatter schemas valid, planes intact, IDs unique, 37 provenance hashes verified, link/security checks passed.` |
 | **GATE-DRIFT** | Change impact & drift detection | `npm run detect` | 0 | 2026-10-01 | **PASS** | `stale generated: 0; nothing to regenerate — all provenance hashes current.` |
-| **GATE-TEST** | Comprehensive Python unit test suite | `npm run test` | 0 | 2026-10-01 | **PASS** | `Ran 88 tests in 4.500s ... OK (0 failures, 0 errors, 0 expected failures)` |
+| **GATE-TEST** | Comprehensive Python unit test suite | `npm run test` | 0 | 2026-10-01 | **PASS** | `Ran 91 tests in 4.430s ... OK (0 failures, 0 errors, 0 expected failures)` |
 | **GATE-TYPE** | TypeScript static type verification | `npm run typecheck` | 0 | 2026-10-01 | **PASS** | `tsc --noEmit` exits 0 cleanly. |
 | **GATE-BUILD** | Dual-locale static production build | `npm run build` | 0 | 2026-10-01 | **PASS** | `Generated static files in "build"` and `Generated static files in "build/hu"`. |
 | **GATE-PROD-ROUND** | Production build filter & demo restoration | `npm run build:production && npm run build:demo` | 0 | 2026-10-01 | **PASS** | Production filter stashes unapproved files with hold stubs; demo build cleanly restores. |
 | **GATE-WORKFLOW-VAL** | Workflow YAML syntax & action SHA pin checks | `python3 -c "import yaml,sys;[yaml.safe_load(open(f)) for f in sys.argv[1:]]" .github/workflows/*.yml .github/dependabot.yml` | 0 | 2026-10-01 | **PASS** | All workflows & dependabot parse cleanly; 16/16 `uses:` lines pinned with 40-char SHA; 0 `pull_request_target`. |
+| **GATE-WORKFLOW-ARG** | Dynamic workflow CLI invocation parsing vs argparse | `python3 -m unittest tests.test_doccad.TestWorkflowScriptInvocations -v` | 0 | 2026-10-01 | **PASS** | Ran 3 tests in 0.014s ... OK (workflow shell & subprocess calls match CLI parser definitions). |
 | **GATE-APP-REC** | E3 Approval Record schema and hash verification | `python3 -m unittest tests.test_doccad.TestApprovalRecord -v` | 0 | 2026-10-01 | **PASS** | Ran 13 tests in 0.041s ... OK (stamped body hash, tamper rejection, draft reset). |
 | **GATE-SRCH-EN** | English local search index generation | `ls -lh build/search-index.json` | 0 | 2026-10-01 | **PASS** | File exists (350 KB, generated by `@easyops-cn/docusaurus-search-local`). |
 | **GATE-SRCH-HU** | Hungarian local search index generation | `ls -lh build/hu/search-index.json` | 0 | 2026-10-01 | **PASS** | File exists (343 KB, generated by `@easyops-cn/docusaurus-search-local`). |
@@ -41,7 +42,7 @@ This document records the definitive validation results for the DOCCAD prototype
 
 ## 3. Required Failure Boundaries (ANTIGRAVITY_PROMPT §7 + Phase 1 E3)
 
-All 15 required failure boundaries are covered by unit tests in `prototype/tests/test_doccad.py` with zero expected failures:
+All 16 required failure boundaries are covered by unit tests in `prototype/tests/test_doccad.py` with zero expected failures:
 
 | Boundary ID | Failure Boundary | Implementing / Guarding File | Test Class & Method | Result | Verification Notes |
 |---|---|---|---|---|---|
@@ -60,6 +61,7 @@ All 15 required failure boundaries are covered by unit tests in `prototype/tests
 | **BND-13** | Unsafe MDX Construct Rejection (T3) | `scripts/validate_docs.py` | `TestUnsafeMdxRejection`, `TestMdxRestrictionGate` | **PASS** | Forbids `import`/`export`, `<iframe>`, `<object>`, event handlers, `data:` URLs, and arbitrary JSX in `docs/generated/`. |
 | **BND-14** | Broken Citations Detection | `scripts/validate_docs.py` | `TestBrokenCitations` | **PASS** | Rejects `<EvidenceLink>` referencing non-existent canonical documents or headings. |
 | **BND-15** | Real CODEOWNER Approval & GitHub Gate (E3) | `scripts/github_approval.py`, `scripts/build_filter.py` | `TestApprovalRecord` | **PASS** | Requires merged PR, matching CODEOWNER review, and modified file; hash tamper sends back to in-review; fails closed on API permission error. |
+| **BND-16** | Workflow Script Invocations vs Argparse | `tests/test_doccad.py` | `TestWorkflowScriptInvocations` | **PASS** | Dynamic workflow CLI extraction and parse against argparse: rejects `--query`, `--provider`, verifies `--question` and `--audience`. |
 
 ---
 

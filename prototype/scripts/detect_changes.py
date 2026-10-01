@@ -141,13 +141,18 @@ def compute_impact(manifest: Dict[str, Any], changed: List[str],
     }
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--all", action="store_true",
                       help="full scan without git (works in a non-git directory)")
     mode.add_argument("--range", metavar="GIT_RANGE",
                       help="git range, e.g. origin/main...HEAD")
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     manifest = build_manifest()

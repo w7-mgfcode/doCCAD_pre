@@ -182,7 +182,7 @@ def split_output(text: str) -> Tuple[Dict[str, Any], str]:
     return yaml.safe_load(m.group(1)), m.group(2).rstrip("`\n ")
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--request", help="Path to QuestionRequest JSON file")
     ap.add_argument("--question", help="Question text")
@@ -191,6 +191,11 @@ def main() -> int:
     ap.add_argument("--target", help="Canonical doc id")
     ap.add_argument("--persist", action="store_true", help="Write directly to docs/generated/questions/")
     ap.add_argument("--export-run", help="Output path for GenerationRun JSON")
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     if args.request:

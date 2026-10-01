@@ -220,7 +220,7 @@ def approve_artifact(
     return record
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="action", required=True)
 
@@ -247,6 +247,11 @@ def main() -> int:
     p_chk = sub.add_parser("check-production", help="Check if artifact is eligible for production publication")
     p_chk.add_argument("--artifact", required=True)
 
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     if args.action == "list":

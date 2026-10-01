@@ -149,12 +149,17 @@ def split_model_output(text: str) -> tuple[Dict[str, Any], str]:
     return _normalize(yaml.safe_load(m.group(1))), m.group(2).rstrip("`\n ")
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--contract", required=True)
     ap.add_argument("--target", required=True, help="canonical doc id")
     ap.add_argument("--privacy", choices=["public", "private"], default="public")
     ap.add_argument("--dry-run", action="store_true")
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     contract = load_contract(args.contract)

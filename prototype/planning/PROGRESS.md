@@ -1,6 +1,6 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: Phase 1 Complete — Deployable and Governed GitHub Automation (P1-01..P1-09, P1-08 blocked per E6); 88 unit tests passing (0 expected failures); ready for Phase 2  
+Status: Phase 1 Complete — Deployable and Governed GitHub Automation (P1-01..P1-09, P1-08 blocked per E6; E3 prod blocked on E8); 91 unit tests passing (0 expected failures); ready for Phase 2  
 Timestamp: 2026-10-01 (previous: 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
@@ -68,7 +68,7 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | P1-06 | `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/generate.yml'))"` | 0 | `generate.yml` valid YAML; zero `pull_request_target`; sanitized inputs via env | 2026-10-01 |
 | P1-07 | `python3 -c "import yaml; yaml.safe_load(open('.github/dependabot.yml')); yaml.safe_load(open('.github/workflows/drift.yml'))"` | 0 | `.github/dependabot.yml` (github-actions + npm) and `.github/workflows/drift.yml` valid YAML | 2026-10-01 |
 | P1-08 | BLOCKED | — | Blocked per owner decision E6 (no unapproved npm dependencies: `@mermaid-js/mermaid-cli`) | 2026-10-01 |
-| P1-09 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build:production && npm run build:demo` | 0 | `Ran 88 tests in 4.500s ... OK (0 failures, 0 errors, 0 expected failures)` / `stale generated: 0` | 2026-10-01 |
+| P1-09 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build:production && npm run build:demo` | 0 | `Ran 91 tests in 4.430s ... OK (0 failures, 0 errors, 0 expected failures)` / `stale generated: 0` | 2026-10-01 |
 
 ---
 
@@ -84,6 +84,7 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | Item ID | Missing prerequisite | Smallest action that unblocks it |
 |---|---|---|
 | P1-08 | Mermaid compile gate dependency approval (E6) | Owner approves new dependency or alternative check |
+| E3 (prod) | Bot PR creation token (E8) — owner opening docs-gen PRs cannot self-approve as sole CODEOWNER | Owner approves E8 GitHub App so bot authors generation PRs |
 | P2-08 | Provider API keys and spend caps (E5, H-9) | Owner executes live smoke tests locally |
 
 ---
@@ -191,7 +192,7 @@ Run on `prototype/` with Node v24.19.0, Python 3.14.4 with `jsonschema` installe
 |---|---|---|
 | Frontmatter, planes, provenance, security | `python3 scripts/validate_docs.py` | PASS — 40 pages, 4 interview datasets, 37 provenance hashes |
 | Drift | `python3 scripts/detect_changes.py --all` | PASS — 0 stale generated pages (exit 0) |
-| Unit tests | `python3 -m unittest discover tests` | PASS — 88/88 (23 test classes, 0 failures, 0 errors, 0 expected failures) |
+| Unit tests | `python3 -m unittest discover tests` | PASS — 91/91 (24 test classes, 0 failures, 0 errors, 0 expected failures) |
 | Types | `npx tsc` | PASS — exit 0 |
 | Static build, both locales | `npx docusaurus build` | PASS — `en` and `hu` generated; local search indexes generated |
 | Local search index | build output | PASS — `build/search-index.json` (350 KB), `build/hu/search-index.json` (343 KB) |
@@ -219,6 +220,7 @@ Required automated boundaries against `tests/test_doccad.py`:
 | Unsafe MDX | `TestUnsafeMdxRejection` |
 | Broken citations | `TestBrokenCitations` |
 | Real CODEOWNER Approval & GitHub API Verification (E3) | `TestApprovalRecord` (13 tests: schema, body-hash stamp, tamper fail, API mock PR merged/CODEOWNER/file-touched, fail-closed on API error, draft reset) |
+| Workflow Script Invocations vs Argparse | `TestWorkflowScriptInvocations` (3 tests: generate_question rules, generate_page rules, all workflow YAML script invocations parse against CLI argparse) |
 
 ---
 
@@ -228,9 +230,9 @@ Required automated boundaries against `tests/test_doccad.py`:
 - **Phase 1 (Deployable & Governed, P1-01..P1-09)**: Fully completed, tested, and validated as of 2026-10-01.
   - Workflows created with commit SHA pins and zero `pull_request_target`: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, `.github/dependabot.yml`.
   - Deployment configuration for GitHub Pages set: `url: 'https://w7-mgfcode.github.io'`, `baseUrl: '/doCCAD_pre/'`, `trailingSlash: false`.
-  - `.github/CODEOWNERS` authored and README §Governance updated with ruleset instructions and sole CODEOWNER review constraints.
+  - `.github/CODEOWNERS` authored and README §Governance updated with ruleset instructions, sole CODEOWNER review constraints, and note that E3 production approval cannot pass while owner authors docs-gen PRs (blocked on E8).
   - Real human approval replaces simulated approval for production (E3): `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation.
   - P1-08 (Mermaid compile gate) marked BLOCKED per owner decision E6.
-  - Python test suite expanded to 88 tests across 23 test classes (88 PASS, 0 FAIL, 0 EXPECTED FAILURES).
+  - Python test suite expanded to 91 tests across 24 test classes (91 PASS, 0 FAIL, 0 EXPECTED FAILURES), including dynamic workflow argparse validation.
   - Production build filter roundtrip verified.
-- **Next Step**: Stage and commit Phase 1 checkpoint on `next-version`, then hand off to owner for Phase 2 readiness.
+- **Next Step**: Stage and commit Phase 1 refinements on `next-version`, then hand off to owner for Phase 2 readiness.

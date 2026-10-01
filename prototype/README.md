@@ -219,8 +219,10 @@ DOCCAD enforces a strict two-step governance model to guarantee that AI-derived 
    Any verification negative excludes the page from publication, replacing it with an audited production hold stub. Infrastructure/API/permission errors fail the build job immediately to prevent deploying unverified documentation.
 
    > [!IMPORTANT]
-   > **Sole CODEOWNER and Bot-Authored PRs**:
-   > GitHub branch protection rules prohibit PR authors from approving their own pull requests. Because `@w7-mgfcode` is the sole CODEOWNER, any PR authored directly by `@w7-mgfcode` cannot receive a CODEOWNER approval from `@w7-mgfcode`. Consequently, the E3 verification gate only passes on bot-authored (or third-party) pull requests (such as automated generation branches `docs-gen/*` or a GitHub App), allowing `@w7-mgfcode` to act as the approving CODEOWNER.
+   > **Sole CODEOWNER and Bot-Authored PRs (Blocked on E8)**:
+   > GitHub branch protection rules prohibit PR authors from approving their own pull requests. Because `@w7-mgfcode` is the sole CODEOWNER, any PR authored directly by `@w7-mgfcode` cannot receive a CODEOWNER approval from `@w7-mgfcode`.
+   > While the generation workflow (`generate.yml`) pushes a `docs-gen/*` branch that the repository owner manually opens as a pull request, the owner is recorded as the PR author and cannot self-approve. Therefore, **real E3 production approval cannot pass while the owner opens docs-gen PRs**.
+   > End-to-end automated E3 production approval remains **BLOCKED on decision E8** (configuring a GitHub App bot token so that pull requests are opened directly by the bot, allowing `@w7-mgfcode` to act independently as the approving CODEOWNER).
 
 ### GitHub Repository Ruleset Configuration
 

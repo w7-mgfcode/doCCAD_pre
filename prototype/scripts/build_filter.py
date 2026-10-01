@@ -197,10 +197,15 @@ def filter_for_demo() -> None:
     print("Demo mode active: All demo-approved fixtures and draft views available.")
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--mode", required=True, choices=["demo", "production"])
     ap.add_argument("--require-api", action="store_true", help="Require GitHub API verification for approved pages")
+    return ap
+
+
+def main() -> int:
+    ap = build_parser()
     args = ap.parse_args()
 
     if args.mode == "production":

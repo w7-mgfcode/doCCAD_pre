@@ -93,8 +93,7 @@ jobs:
           if contract == "GenerateQuestionPage":
               cmd = [
                   "python3", "scripts/generate_question.py",
-                  "--query", target,
-                  "--provider", "fixture",
+                  "--question", target,
                   "--privacy", privacy,
                   "--persist"
               ]
@@ -103,7 +102,6 @@ jobs:
                   "python3", "scripts/generate_page.py",
                   "--contract", contract,
                   "--target", target,
-                  "--provider", "fixture",
                   "--privacy", privacy
               ]
           subprocess.check_call(cmd)
