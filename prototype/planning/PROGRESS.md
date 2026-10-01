@@ -74,7 +74,6 @@ were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NO
 
 | Item ID | Missing prerequisite | Smallest action that unblocks it |
 |---|---|---|
-| P1-05 | Approval-record semantics confirmation (E3) | Owner confirms human `approval_record` metadata schema |
 | P1-08 | Mermaid compile gate dependency approval (E6) | Owner approves new dependency or alternative check |
 | P2-08 | Provider API keys and spend caps (E5, H-9) | Owner executes live smoke tests locally |
 
@@ -89,7 +88,7 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
 |---|---|
 | E1 — GitHub repository visibility | **Public** |
 | E2 — repository owner/name or custom domain | **Decided 2026-10-01:** `w7-mgfcode/doCCAD_pre` (https://github.com/w7-mgfcode/doCCAD_pre), GitHub Pages project site — `url: 'https://w7-mgfcode.github.io'`, `baseUrl: '/doCCAD_pre/'`, `trailingSlash: false`. P1-02 is unblocked |
-| E3 — approval-record semantics (D6) | Not yet confirmed — ask at the start of Phase 1 |
+| E3 — approval-record semantics (D6) | **Approved with amendments, 2026-10-01.** `approval_record: {pr, approved_by, approved_at, approved_hash}`; `approved_hash` = sha256 of the page body at approval, a mismatch sends the page back to `in-review`. The CLI stamp (`review_governance.py approve --pr <n>`) is a *claim*; the gate is the publish job, which verifies through the GitHub API that the PR is merged, carries an approving review from a CODEOWNER matching `approved_by`, and changed the file — failing closed if the API is unreachable. Demo builds keep `approved-for-demo`. Spec: `docs/next-phase/03_NEXT_VERSION_PLAN.md` P1-05. P1-05 is unblocked |
 | E6 — dependencies | **Approved:** `jsonschema` + `referencing` as declared requirements (P0-02). **Not approved:** `@playwright/test`, `@mermaid-js/mermaid-cli`, `@docusaurus/faster`, lychee — P1-08 and any CI browser smoke stay Blocked |
 | E5, E7, E8, E9 | Not decided — they gate Phase 2 live calls, the GitHub App, Phase 3 and the archive `ai-models/` folder |
 | Antigravity setup | 2.0 app (not the CLI); command auto-execution enabled for the `doCCAD_pre` project only; workspace guard hook `.agents/hooks.json` active (blocks push, remote/`gh`, destructive git, protected-path writes, `.env`/keys) |

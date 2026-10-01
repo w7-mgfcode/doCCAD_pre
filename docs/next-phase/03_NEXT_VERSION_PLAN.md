@@ -385,8 +385,19 @@ updated to current action majors (B3.2).
 - **Traces**: REQ-004, REQ-012; DEC-006 / ADR-005; `content_architecture.md:100`.
 - **Acceptance**: `python3 -m unittest tests.test_doccad.TestApprovalRecord -v`; production filter excludes
   `approved-for-demo` and record-less `approved` pages.
-- **Risks**: the design is a proposal (E3) — if the owner rejects it, stop and record.
-- **Human**: E3; the approval itself is always a human act.
+- **Owner decision E3 (2026-10-01) — approved with amendments; these override the lines above where they differ**:
+  1. `approval_record` also carries `approved_hash` (sha256 of the page body at approval). `validate_docs.py`
+     and `build_filter.py` treat a hash mismatch as not approved; the page returns to `in-review`.
+  2. The CLI stamp is a claim, not the gate. The publish job (P1-03) verifies each `approved` page through the
+     GitHub API: PR `pr` is merged, has an approving review by a CODEOWNER whose login equals `approved_by`,
+     and its changed files include the page. Any failure, including an unreachable API, excludes the page
+     (fail closed). The verifier takes an injectable API client so tests run offline with recorded responses.
+  3. Ordering: a stamp written on the PR branch predates the review, so `approved_at` is checked against the
+     review's `submitted_at` from the API, not trusted as written.
+- **Acceptance (amended)**: `TestApprovalRecord` also covers: hash mismatch → excluded; unmerged PR, missing
+  CODEOWNER review, reviewer ≠ `approved_by`, file not in PR, API error → each excluded (offline fakes).
+- **Risks**: GitHub API rate limits in the publish job — use the workflow `GITHUB_TOKEN`, one call per PR.
+- **Human**: E3 answered; the approval itself is always a human act.
 
 ### P1-06 Generation workflow (`generate.yml`)
 - **Files**: `.github/workflows/generate.yml` — `workflow_dispatch` inputs `contract`, `target`,
