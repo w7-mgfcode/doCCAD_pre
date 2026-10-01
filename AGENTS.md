@@ -30,7 +30,8 @@ instead of repeating it.
 - **Automation** (`.github/workflows/`). `ci.yml` (`validate-and-build`, on PRs and pushes to `main`);
   `publish.yml` (push to `main` → production filter → GitHub Pages at
   `https://w7-mgfcode.github.io/doCCAD_pre/`); `generate.yml` (manual, pushes a `docs-gen/*` branch);
-  `drift.yml` (weekly); `dependabot.yml`.
+  `drift.yml` (weekly). Dependabot (`.github/dependabot.yml`, not a workflow) opens weekly grouped
+  updates for Actions and npm.
 - **Not tracked.** `.claude/`, `.agents/`, `.kb/` and local session notes are git-ignored, so git never
   shows agent-layer changes.
 - **Agents** may run read-only git (`status`, `diff`, `log`); do not commit, push, create branches or
