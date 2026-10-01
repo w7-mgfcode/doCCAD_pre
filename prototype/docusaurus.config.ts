@@ -4,8 +4,8 @@ import type {Config} from '@docusaurus/types';
 const config: Config = {
   title: 'DOCCAD — AI-Augmented Documentation System',
   tagline: 'docs-as-code, static-first, AI-in-CI — prototype',
-  url: 'https://doccad.local',
-  baseUrl: '/',
+  url: 'https://w7-mgfcode.github.io',
+  baseUrl: '/doCCAD_pre/',
   favicon: undefined,
   trailingSlash: false,
 
