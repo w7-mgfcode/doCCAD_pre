@@ -15,6 +15,18 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      npm:
+      # Minor and patch updates arrive together; each major arrives as its own PR so it can be
+      # tested on its own (a grouped TypeScript 7 + mermaid 12 bump broke the typecheck in #1).
+      npm-minor-patch:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # TypeScript 7 removes `baseUrl` (TS5102) and is untested with Docusaurus 3.10.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # layout-elk 1.x requires mermaid 12; nothing on the site uses the ELK layout.
+      - dependency-name: "@mermaid-js/layout-elk"
+        update-types: ["version-update:semver-major"]
