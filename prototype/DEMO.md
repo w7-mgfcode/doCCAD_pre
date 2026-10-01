@@ -31,7 +31,7 @@ npm run build
 npm run serve
 ```
 
-The site is served locally at `http://localhost:3000`.
+The site is served locally at `http://localhost:3000/doCCAD_pre/`.
 
 ---
 
@@ -40,17 +40,17 @@ The site is served locally at `http://localhost:3000`.
 **Goal**: Inspect the human-authored canonical knowledge base, system architecture spine, architecture decision records (ADRs), interactive Mermaid diagrams, offline search, and bilingual navigation.
 
 1. **Visit the Landing Page**:
-   - Navigate to `http://localhost:3000/`.
+   - Navigate to `http://localhost:3000/doCCAD_pre/`.
    - Observe the system metrics: **29 Canonical Documents**, **11 Governed Derived Views**, **100% Offline Static Serving**, and **sha256 Mechanical Drift Tracking**.
    - Notice that the landing page is fully internationalized.
 
 2. **Bilingual Hungarian Navigation**:
-   - In the top-right navbar dropdown, select **Magyar (Hungarian)** or navigate to `http://localhost:3000/hu/`.
+   - In the top-right navbar dropdown, select **Magyar (Hungarian)** or navigate to `http://localhost:3000/doCCAD_pre/hu/`.
    - Observe the fully translated landing page hero: *"DOCCAD Dokumentációs Ökoszisztéma"*, localized navbar items (*Dokumentáció (Kanonikus)*, *Toborzói Nézet*, *Tudásbázis Böngésző*, *Kérdés Munkapad*, *Eltérés Ellenőr*), and localized footer links.
-   - Verify that untranslated canonical documents (such as `http://localhost:3000/hu/docs/architecture/system-overview`) gracefully fall back to the English source text with Hungarian navigation chrome rather than returning a 404 error (Decision D11).
+   - Verify that untranslated canonical documents (such as `http://localhost:3000/doCCAD_pre/hu/docs/architecture/system-overview`) gracefully fall back to the English source text with Hungarian navigation chrome rather than returning a 404 error (Decision D11).
 
 3. **Explore the Canonical Architecture Spine**:
-   - Navigate to `http://localhost:3000/docs/architecture/system-overview`.
+   - Navigate to `http://localhost:3000/doCCAD_pre/docs/architecture/system-overview`.
    - Examine the system architecture tenets (AD-1 through AD-15).
    - Scroll down to the embedded Mermaid C4 architecture diagrams. Notice that Mermaid diagrams render with strict security mode enabled (`securityLevel: 'strict'`).
    - Read the Architecture Decision Records under `/docs/decisions/` (e.g., ADR-001 GitHub Source of Truth, ADR-003 Two Content Planes, ADR-004 Provider Abstraction).
@@ -66,7 +66,7 @@ The site is served locally at `http://localhost:3000`.
 **Goal**: Evaluate how DOCCAD condenses complex engineering architectures into tailored views with verifiable citations.
 
 1. **Open the Recruiter Briefing**:
-   - Navigate to `http://localhost:3000/views/recruiter/project-overview`.
+   - Navigate to `http://localhost:3000/doCCAD_pre/views/recruiter/project-overview`.
    - Read the top Provenance Banner: contract `GenerateRecruiterPage v1`, provider `fixture`, generation mode `demo`, and source hashes.
 
 2. **Toggle Depth Views**:
@@ -80,7 +80,7 @@ The site is served locally at `http://localhost:3000`.
    - Notice the link navigates directly to the exact canonical source page and section anchor, proving that the generated summary is grounded in repository ground truth.
 
 4. **Explore Interview Preparation**:
-   - Navigate to `http://localhost:3000/views/interview/architecture-system-overview`.
+   - Navigate to `http://localhost:3000/doCCAD_pre/views/interview/architecture-system-overview`.
    - Expand the collapsible accordion cards to review system concepts, design trade-offs, and sample technical interview questions with evidence citations.
 
 ---

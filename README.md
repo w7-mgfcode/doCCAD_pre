@@ -8,7 +8,9 @@
 
 <br>
 
-[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%200%20complete-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
+[![CI](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/w7-mgfcode/doCCAD_pre/actions/workflows/ci.yml)
+[![Pages](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/publish.yml?branch=main&style=flat-square&label=pages)](https://w7-mgfcode.github.io/doCCAD_pre/)
+[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%201%20live,%20approval%20pending-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
 [![Docusaurus](https://img.shields.io/badge/Docusaurus-3.10.2-3ECC5F?style=flat-square&logo=docusaurus&logoColor=white)](prototype/package.json)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](prototype/package.json)
 [![Node](https://img.shields.io/badge/node-%E2%89%A524.14-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](prototype/.nvmrc)
@@ -18,7 +20,7 @@
 [![Docs: CC BY 4.0](https://img.shields.io/badge/docs-CC%20BY%204.0-lightgrey?style=flat-square)](LICENSE-docs)
 [![i18n](https://img.shields.io/badge/i18n-en%20·%20hu-0969da?style=flat-square)](prototype/i18n/hu)
 
-**[Quick start](#-quick-start)** · **[How it works](#-how-it-works)** · **[What's proven](#-whats-proven-and-what-isnt)** · **[Roadmap](#-roadmap)** · **[Repository map](#-repository-map)**
+**[Live site](https://w7-mgfcode.github.io/doCCAD_pre/)** · **[Quick start](#-quick-start)** · **[How it works](#-how-it-works)** · **[What's proven](#-whats-proven-and-what-isnt)** · **[Roadmap](#-roadmap)** · **[Repository map](#-repository-map)**
 
 </div>
 
@@ -36,7 +38,9 @@ plus a **runnable local prototype** that demonstrates it end to end, with no API
 > [!IMPORTANT]
 > This is a prototype. Generation uses a deterministic `fixture` provider by default, and the review
 > state `approved-for-demo` is a **simulated** approval. It is never treated as human sign-off, and
-> production builds refuse to publish anything that carries it. See
+> production builds refuse to publish anything that carries it, so on the
+> [live site](https://w7-mgfcode.github.io/doCCAD_pre/) the generated views show a publication hold
+> until a code owner approves them; run [`DEMO.md`](prototype/DEMO.md) locally to see them. See
 > [`prototype/LIMITATIONS.md`](prototype/LIMITATIONS.md) for exactly what is verified and what is not.
 
 ## ✨ Highlights
@@ -63,7 +67,7 @@ npm ci && pip install -r requirements.txt
 npm run validate   # schemas, planes, provenance hashes, security gates
 npm run test       # 75 unit tests
 npm run build      # static site, en + hu
-npm run serve      # → http://localhost:3000
+npm run serve      # → http://localhost:3000/doCCAD_pre/
 ```
 
 Needs Node ≥ 24.14 and Python 3. Ask the toolchain a question with no keys and no network:
@@ -129,14 +133,17 @@ flowchart LR
 | --- | --- |
 | **Verified by tests** | Plane separation, deterministic retrieval, hash drift and targeted regeneration, the review state machine, the production filter, private-routing hard-fail, MDX, link and secret gates |
 | **Simulated** | The `fixture` provider (not an LLM), `approved-for-demo` review, and the in-browser workbench |
-| **Not yet run** | Live cloud and local model calls, browser and mobile checks, GitHub Actions, Pages deployment |
+| **Running on GitHub** | CI gate (`validate-and-build`) on every PR, Pages deployment with a smoke check, weekly drift check, Dependabot |
+| **Not yet run** | Live cloud and local model calls, automated browser and mobile checks, real approval of a generated view (needs a bot-authored PR, decision E8) |
 
 The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATIONS.md`](prototype/LIMITATIONS.md#3-requirement-to-evidence-matrix).
 
 ## 🗺️ Roadmap
 
 - [x] **Phase 0: baseline stabilization.** Validation gates, security gates, Hungarian UI and 75 tests ([progress log](prototype/planning/PROGRESS.md))
-- [ ] **Phase 1: deployable and governed.** CI gate, GitHub Pages, CODEOWNERS, real PR-based approval
+- [ ] **Phase 1: deployable and governed.**
+  - [x] Infrastructure live: CI gate, GitHub Pages, CODEOWNERS, ruleset, approval record checked against GitHub
+  - [ ] First real approval of a generated view, end to end (needs a bot-authored PR, decision E8)
 - [ ] **Phase 2: live AI behind the fixture default.** Structured output, budgets, grounding gate, injection fixtures
 - [ ] **Phase 3: beyond the prototype.** Scoped in [`docs/next-phase/`](docs/next-phase/README.md)
 
