@@ -94,7 +94,10 @@ prototype choice).
   changed. **Still open (owner):** commands in the 2.0 app need manual approval
   (`CASCADE_COMMANDS_AUTO_EXECUTION_OFF`); for an unattended run, set the `doCCAD_pre` project's command
   auto-execution to eager in the app's project settings, or approve commands as they come.
-- H-2, H-5, H-6 (beyond `jsonschema` + `referencing`), H-7…H-9 — open.
+- H-3 — completed 2026-10-01 at the owner's approval: command auto-execution set to eager for the
+  `doCCAD_pre` Antigravity project only (`~/.gemini/config/projects/<id>.json`); restart the app to apply.
+- H-5 — owner will use the 2.0 app. H-6 — `jsonschema` + `referencing` approved; nothing else.
+- E1 public (recorded in `prototype/planning/PROGRESS.md` §0). H-2 repo name, H-7…H-9 — open.
 
 The run must stop at any item whose human prerequisite is missing, record "BLOCKED: <prerequisite>" in
 PROGRESS.md, and continue with independent items.

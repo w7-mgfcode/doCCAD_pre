@@ -10,6 +10,23 @@ were run on 2026-09-30 and again on 2026-10-01. Anything not re-run is marked NO
 
 ---
 
+## 0. Owner decisions for the next-version run (recorded 2026-10-01)
+
+Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
+`docs/next-phase/03_NEXT_VERSION_PLAN.md` §3. The run reads these before asking again.
+
+| Decision | Answer |
+|---|---|
+| E1 — GitHub repository visibility | **Public** |
+| E2 — repository owner/name or custom domain | **Not decided yet** — P1-02 stays Blocked until the owner names it; ask at the start of Phase 1 |
+| E3 — approval-record semantics (D6) | Not yet confirmed — ask at the start of Phase 1 |
+| E6 — dependencies | **Approved:** `jsonschema` + `referencing` as declared requirements (P0-02). **Not approved:** `@playwright/test`, `@mermaid-js/mermaid-cli`, `@docusaurus/faster`, lychee — P1-08 and any CI browser smoke stay Blocked |
+| E5, E7, E8, E9 | Not decided — they gate Phase 2 live calls, the GitHub App, Phase 3 and the archive `ai-models/` folder |
+| Antigravity setup | 2.0 app (not the CLI); command auto-execution enabled for the `doCCAD_pre` project only; workspace guard hook `.agents/hooks.json` active (blocks push, remote/`gh`, destructive git, protected-path writes, `.env`/keys) |
+| Branch | Work on `next-version` (created 2026-10-01 with the baseline commits) |
+
+---
+
 ## 1. Acceptance Checklist & Status
 
 - [x] **Milestone 1: Planning & Evidence Boundary**
