@@ -221,10 +221,42 @@ DOCCAD enforces a strict two-step governance model to guarantee that AI-derived 
    Any verification negative excludes the page from publication, replacing it with an audited production hold stub. Infrastructure/API/permission errors fail the build job immediately to prevent deploying unverified documentation.
 
    > [!IMPORTANT]
-   > **Sole CODEOWNER and Bot-Authored PRs (Blocked on E8)**:
-   > GitHub branch protection rules prohibit PR authors from approving their own pull requests. Because `@w7-mgfcode` is the sole CODEOWNER, any PR authored directly by `@w7-mgfcode` cannot receive a CODEOWNER approval from `@w7-mgfcode`.
-   > While the generation workflow (`generate.yml`) pushes a `docs-gen/*` branch that the repository owner manually opens as a pull request, the owner is recorded as the PR author and cannot self-approve. Therefore, **real E3 production approval cannot pass while the owner opens docs-gen PRs**.
-   > End-to-end automated E3 production approval remains **BLOCKED on decision E8** (configuring a GitHub App bot token so that pull requests are opened directly by the bot, allowing `@w7-mgfcode` to act independently as the approving CODEOWNER).
+   > **Sole CODEOWNER, so generation PRs must be bot-authored (E8).** GitHub does not let a PR's author
+   > approve it, and `@w7-mgfcode` is the only code owner. A generated view can therefore only reach
+   > production through a PR opened by the **DOCCAD GitHub App**. `generate.yml` does this when the App is
+   > configured; without it, the workflow only pushes the `docs-gen/*` branch and the E3 gate cannot pass.
+
+### Setting up the DOCCAD GitHub App (E8, one-time, owner)
+
+1. Create the App at <https://github.com/settings/apps/new>: any name (e.g. `doccad-generator`), homepage
+   `https://github.com/w7-mgfcode/doCCAD_pre`, **Webhook: inactive**, repository permissions
+   **Contents: Read and write** and **Pull requests: Read and write** (nothing else), "Only on this account".
+2. On the App page, note the **Client ID**, then **Generate a private key** (a `.pem` file downloads).
+3. **Install App** → only the `doCCAD_pre` repository.
+4. Store the credentials (the key stays out of the repository and out of chat):
+   ```bash
+   gh variable set DOCCAD_APP_CLIENT_ID --repo w7-mgfcode/doCCAD_pre --body "<client id>"
+   gh secret set DOCCAD_APP_PRIVATE_KEY --repo w7-mgfcode/doCCAD_pre < path/to/key.pem
+   ```
+   Then delete the local `.pem` or keep it in a password manager.
+
+`generate.yml` mints a short-lived installation token with `actions/create-github-app-token`, narrowed to
+contents and pull-requests write, pushes the branch and opens the PR as `<app>[bot]`. PRs opened with an
+App token trigger `ci.yml`, unlike PRs opened with `GITHUB_TOKEN`.
+
+### End-to-end approval of a generated view
+
+1. **Actions → generate → Run workflow** (contract, target, privacy). The App opens `docs-gen/…` as a PR;
+   `validate-and-build` runs on it; the page is `draft`.
+2. Check out the branch, review the page against its cited canonical sources, then from `prototype/`:
+   ```bash
+   python3 scripts/review_governance.py review --artifact <id> --decision in-review
+   python3 scripts/review_governance.py approve --artifact <id> --pr <PR number> --reviewer w7-mgfcode
+   ```
+   Commit and push the stamped frontmatter to the PR branch (the docs-gen path guard allows it).
+3. Approve the PR as code owner (after the stamp, so the review time is later than `approved_at`), and merge.
+4. `publish` re-verifies the record against the GitHub API (merged, approved by `approved_by`, file in the
+   PR, body hash unchanged) and only then publishes the page; otherwise it ships the hold stub.
 
 ### GitHub Repository Ruleset Configuration
 
@@ -236,9 +268,10 @@ Repository rulesets on `main` must be applied by the repository owner (`@w7-mgfc
   - Dismiss stale pull request approvals when new commits are pushed: enabled
 - **Require status checks to pass before merging**: enabled
   - Required check: `validate-and-build` (from workflow `ci.yml`)
-  - Require branches to be up to date before merging: enabled
-- **Block force pushes**: enabled
-- **Bypass list**: Repository admin / owner bypass permitted for "Pull Requests only" to satisfy ruleset while unblocking bot PR merges.
+  - Require branches to be up to date before merging: disabled
+- **Block force pushes** and **branch deletion**: enabled
+- **Bypass list**: repository admins, "for pull requests only". The owner uses it to merge their own PRs (which they cannot approve); a bot-authored generation PR needs no bypass, because the owner approves it as code owner.
+- Applied 2026-10-01 as ruleset `main-protection` (id 24289740).
 
 ## Rules
 
@@ -253,6 +286,7 @@ Contributor and agent conventions: [`../AGENTS.md`](../AGENTS.md).
 
 ## Known issues
 
+- **Question regeneration plans are not directly executable.** For a stale question page, `impact.json` lists only `--target <source id>`, not the original question, so running it literally creates a different page. Regenerate a question page with its original question: `python3 scripts/generate_question.py --question "<original question>" --persist` (for `q-002`: "How does DOCCAD detect drift?").
 - **`detect_changes.py --range`** needs git history; until the repository has remote commits, use `--all` for a full-workspace scan.
 - **The test suite exercises the production filter.** An interrupted test run can leave unapproved views stashed in `.work/stashed_unapproved/`; `npm run build:demo` restores them.
 - **Not verified in CI:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a live browser (interactive `/browser` available in Antigravity 2.0 app), and live cloud provider calls with real API keys (deferred to Phase 2).

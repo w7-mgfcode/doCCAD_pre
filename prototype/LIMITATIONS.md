@@ -79,7 +79,7 @@ These capabilities are implemented as offline simulations for testing and demons
 These components are implemented in code but have not been executed against external production infrastructure:
 1. **Live Cloud AI Providers**: Adapters for Anthropic Claude (`ai/anthropic_provider.py`), OpenAI GPT (`ai/openai_provider.py`), and Google Gemini (`ai/gemini_provider.py`) are implemented. However, no live API requests were made during Phase 0 per run safety rules. Live execution is deferred to Phase 2 under owner credentials and spend caps.
 2. **Local Model Provider**: The OpenAI-compatible adapter for local runtimes (`ai/local_provider.py`) is implemented but unverified against a live Ollama or vLLM daemon.
-3. **GitHub Actions Workflows**: Not yet written. CI (`ci.yml`), generation (`generate.yml`) and deployment (`publish.yml`) are Phase 1 items P1-01, P1-06 and P1-03.
+3. **GitHub Actions Workflows**: `ci.yml` and `publish.yml` run on GitHub (the site is live). `generate.yml` and the weekly `drift.yml` are written and tested offline but have not yet been dispatched or scheduled on GitHub.
 4. **Interactive Browser Verification**: Visual verification using the Antigravity 2.0 `/browser` slash command is an interactive human procedure and is documented as NOT RUN in automated CI logs.
 
 ### Tier 4: Deferred Production Work
@@ -87,7 +87,7 @@ These features are intentional design decisions deferred to future phases or own
 1. **Automated End-to-End Browser Testing**: Integration of `@playwright/test` was evaluated and deferred per owner decision E6 (dependency minimization).
 2. **Mermaid-CLI Pre-Compilation Gate**: CI-level diagram compilation via `@mermaid-js/mermaid-cli` is planned for Phase 1 (P1-08) but currently blocked awaiting owner dependency approval (E6).
 3. **Cryptographic Human Approval Records**: Replacing `approved-for-demo` with mandatory human pull request approval metadata (`approval_record: {pr, approved_by, approved_at}`) is scheduled for Phase 1 (P1-05).
-4. **Automated PR Dispatch Bot**: Automated generation PR creation using a GitHub App installation token is scheduled for Phase 1 (P1-06).
+4. **Bot-authored generation PRs (E8)**: `generate.yml` opens docs-gen PRs as the DOCCAD GitHub App when it is configured. The App itself is created by the owner, so the end-to-end path (bot PR → code-owner approval → verified publication) has not run yet.
 
 ---
 

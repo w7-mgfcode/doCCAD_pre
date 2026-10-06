@@ -1,7 +1,11 @@
-# Human-triggered generation workflow (AD-4, AD-9, M1.5)
-# Generates views using the deterministic fixture provider, validates output, and pushes a docs-gen/* branch.
-# Pull requests created by GITHUB_TOKEN do not trigger GitHub Actions workflows (CI), so this workflow
-# pushes the docs-gen/* branch and outputs instructions for the human owner to open the PR (unless an E8 GitHub App is configured).
+# Human-triggered generation workflow (AD-4, AD-9, M1.5, E8)
+# Generates views with the deterministic fixture provider, validates them and pushes a docs-gen/* branch.
+#
+# E8: when the DOCCAD GitHub App is configured (repository variable DOCCAD_APP_CLIENT_ID and secret
+# DOCCAD_APP_PRIVATE_KEY), the branch is pushed and the pull request is opened *as the App*. The PR author is
+# then the bot, so the sole CODEOWNER can approve it (GitHub forbids approving your own PR), and CI runs on it
+# (pull requests opened with GITHUB_TOKEN do not trigger workflows). Without the App the workflow falls back
+# to pushing the branch with GITHUB_TOKEN and printing the compare URL for a human to open the PR.
 name: generate
 
 on:
@@ -43,8 +47,21 @@ jobs:
       run:
         working-directory: prototype
     steps:
+      - name: Create DOCCAD App token (E8)
+        id: app-token
+        if: vars.DOCCAD_APP_CLIENT_ID != ''
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.DOCCAD_APP_CLIENT_ID }}
+          private-key: ${{ secrets.DOCCAD_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Push as the App when configured, so the docs-gen PR and its CI run belong to the bot.
+          token: ${{ steps.app-token.outputs.token || github.token }}
 
       - name: Setup Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -111,9 +128,12 @@ jobs:
         run: DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate
 
       - name: Commit and push docs-gen branch
+        id: push
         env:
           INPUT_CONTRACT: ${{ inputs.contract }}
           INPUT_TARGET: ${{ inputs.target }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
         run: |
           python3 - <<'EOF'
           import os, re, subprocess, sys
@@ -125,8 +145,19 @@ jobs:
           contract_slug = re.sub(r'[^a-z0-9]+', '-', contract.lower()).strip('-')
           branch = f"docs-gen/{contract_slug}-{target_slug}"
 
-          subprocess.check_call(["git", "config", "user.name", "github-actions[bot]"])
-          subprocess.check_call(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"])
+          app_slug = os.environ.get("APP_SLUG", "").strip()
+          if app_slug:
+              bot = f"{app_slug}[bot]"
+              bot_id = subprocess.check_output(["gh", "api", f"users/{bot}", "--jq", ".id"], text=True).strip()
+              name, email = bot, f"{bot_id}+{bot}@users.noreply.github.com"
+          else:
+              name, email = "github-actions[bot]", "41898282+github-actions[bot]@users.noreply.github.com"
+          subprocess.check_call(["git", "config", "user.name", name])
+          subprocess.check_call(["git", "config", "user.email", email])
+
+          def output(key, value):
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+                  fh.write(f"{key}={value}\n")
 
           subprocess.check_call(["git", "checkout", "-b", branch])
           subprocess.check_call(["git", "add", "docs/generated/"])
@@ -134,11 +165,55 @@ jobs:
           diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
           if diff.returncode == 0:
               print("No file changes detected under docs/generated/. Exiting cleanly.")
+              output("changed", "false")
               sys.exit(0)
 
           subprocess.check_call(["git", "commit", "-m", f"docs(gen): {contract} for {target}"])
           subprocess.check_call(["git", "push", "origin", branch])
+          output("changed", "true")
+          output("branch", branch)
 
           print(f"SUCCESS: Branch '{branch}' pushed.")
-          print(f"Open PR: https://github.com/w7-mgfcode/doCCAD_pre/pull/new/{branch}")
+          if not app_slug:
+              print("DOCCAD App not configured (E8): open the PR yourself. You will be its author and cannot")
+              print("approve it, so it cannot reach production approval. See prototype/README.md#governance.")
+              print(f"Open PR: https://github.com/w7-mgfcode/doCCAD_pre/pull/new/{branch}")
+          EOF
+
+      - name: Open pull request as the DOCCAD App (E8)
+        if: steps.app-token.outputs.token != '' && steps.push.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+          INPUT_CONTRACT: ${{ inputs.contract }}
+          INPUT_TARGET: ${{ inputs.target }}
+          INPUT_PRIVACY: ${{ inputs.privacy }}
+        run: |
+          python3 - <<'EOF'
+          import os, subprocess
+
+          branch = os.environ["BRANCH"]
+          contract = os.environ["INPUT_CONTRACT"]
+          target = os.environ["INPUT_TARGET"][:80]
+          privacy = os.environ["INPUT_PRIVACY"]
+
+          body = "\n".join([
+              f"Generated by the `generate` workflow: contract `{contract}`, privacy `{privacy}`, provider `fixture`.",
+              "",
+              "The page starts as `draft`. To approve it for production (E3):",
+              "",
+              "1. Check out this branch and review the page against its cited canonical sources.",
+              "2. From `prototype/`: `scripts/review_governance.py review --artifact <id> --decision in-review`",
+              "3. `scripts/review_governance.py approve --artifact <id> --pr <this PR number> --reviewer <your login>`",
+              "4. Commit and push the stamped frontmatter to this branch, then approve this PR as code owner.",
+              "",
+              "`publish` re-verifies the approval against the GitHub API before the page goes live.",
+          ])
+          subprocess.check_call([
+              "gh", "pr", "create",
+              "--base", "main",
+              "--head", branch,
+              "--title", f"docs(gen): {contract} for {target}",
+              "--body", body,
+          ])
           EOF

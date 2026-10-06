@@ -257,7 +257,7 @@
       "id": "development-setup",
       "path": "docs/source/development/setup.md",
       "type": "canonical",
-      "content_hash": "sha256:49a8b98e902f5ed466409c2f1323a3c85c536d359038e60aadacdf9375a825d6",
+      "content_hash": "sha256:d1d85e13b2dc30d8abcdd60729574f7a19c398fd44ae79f82a855f6cae532bdb",
       "sources": [
         "package.json",
         "scripts/validate_docs.py"
@@ -328,7 +328,7 @@
       "id": "getting-started-quickstart",
       "path": "docs/source/getting-started/quickstart.md",
       "type": "canonical",
-      "content_hash": "sha256:a3db954e3610293435fe42629035bb88b56a08a885e145843df37735fa451ed4",
+      "content_hash": "sha256:ecaa1ef5ea0afd6f51370b86eba1c032c1b1a0a5c6a6ae85785acbf3e35be42f",
       "sources": [
         "package.json",
         "scripts/validate_docs.py",
@@ -609,7 +609,7 @@
       "id": "q-002-drift-detection",
       "path": "docs/generated/questions/q-002-drift-detection.mdx",
       "type": "generated",
-      "content_hash": "sha256:61c71cef22e2565e1d303e51c7643bae87a447f79c7af53962e453a463ec94ea",
+      "content_hash": "sha256:58cd9860dbc84340be84f027fdb43847317c198a13aa95e2c05c858e655ece48",
       "sources": [],
       "related": [],
       "generation": {
@@ -618,7 +618,7 @@
           {
             "id": "getting-started-quickstart",
             "path": "docs/source/getting-started/quickstart.md",
-            "content_hash": "sha256:a3db954e3610293435fe42629035bb88b56a08a885e145843df37735fa451ed4"
+            "content_hash": "sha256:ecaa1ef5ea0afd6f51370b86eba1c032c1b1a0a5c6a6ae85785acbf3e35be42f"
           },
           {
             "id": "validation-drift-detection",
@@ -694,6 +694,11 @@
             "id": "development-contracts-and-schemas",
             "path": "docs/source/development/contracts-and-schemas.md",
             "content_hash": "sha256:9b013ca4b46e98fa89ab8f26efa39befcec58b6dc8702097f1881067f7efc385"
+          },
+          {
+            "id": "development-setup",
+            "path": "docs/source/development/setup.md",
+            "content_hash": "sha256:d1d85e13b2dc30d8abcdd60729574f7a19c398fd44ae79f82a855f6cae532bdb"
           },
           {
             "id": "generation-contracts",

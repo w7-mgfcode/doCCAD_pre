@@ -1968,6 +1968,51 @@ class TestWorkflowScriptInvocations(unittest.TestCase):
                 self.fail(f"Workflow '{wf_file}' invokes '{script_name}' with invalid arguments {args_tokens}: exit code {e}")
 
 
+class TestWorkflowSecurityInvariants(unittest.TestCase):
+    """Machine-checkable workflow rules (T8, .claude/rules/github-workflows.md): SHA-pinned actions, no
+    pull_request_target, untrusted expressions never interpolated into run: scripts, explicit permissions."""
+
+    PINNED = re.compile(r"^[^@\s]+@[0-9a-f]{40}$")
+    # Values an outside contributor or dispatcher controls; they must reach scripts through env: only.
+    UNTRUSTED_IN_RUN = re.compile(r"\$\{\{\s*(inputs\.|github\.event\.|github\.head_ref)")
+
+    def setUp(self):
+        self.workflow_dir = PROTOTYPE_ROOT.parent / ".github" / "workflows"
+        self.assertTrue(self.workflow_dir.is_dir(), f"Workflows directory not found: {self.workflow_dir}")
+        self.workflows = {p.name: yaml.safe_load(p.read_text(encoding="utf-8"))
+                          for p in sorted(self.workflow_dir.glob("*.yml"))}
+        self.assertTrue(self.workflows, "No workflows found")
+
+    def _steps(self):
+        for name, wf in self.workflows.items():
+            for job_id, job in (wf.get("jobs") or {}).items():
+                for i, step in enumerate(job.get("steps") or []):
+                    yield f"{name}:{job_id}:step{i}", step
+
+    def test_every_action_pinned_to_full_sha(self):
+        for where, step in self._steps():
+            uses = step.get("uses")
+            if uses and not uses.startswith("./"):
+                self.assertRegex(uses, self.PINNED, f"{where}: action not pinned to a 40-char commit SHA")
+
+    def test_no_pull_request_target_trigger(self):
+        for name, wf in self.workflows.items():
+            # PyYAML (YAML 1.1) reads the bare key `on` as boolean True.
+            triggers = wf.get("on", wf.get(True)) or {}
+            names = [triggers] if isinstance(triggers, str) else list(triggers)
+            self.assertNotIn("pull_request_target", names, f"{name}: pull_request_target is forbidden")
+
+    def test_untrusted_expressions_not_in_run_scripts(self):
+        for where, step in self._steps():
+            run = step.get("run") or ""
+            self.assertIsNone(self.UNTRUSTED_IN_RUN.search(run),
+                              f"{where}: pass inputs/event data through env:, not ${{{{ }}}} in run:")
+
+    def test_top_level_permissions_declared(self):
+        for name, wf in self.workflows.items():
+            self.assertIn("permissions", wf, f"{name}: declare top-level least-privilege permissions")
+
+
 if __name__ == "__main__":
     unittest.main()
 

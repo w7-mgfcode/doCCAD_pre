@@ -134,7 +134,7 @@ flowchart LR
 | **Verified by tests** | Plane separation, deterministic retrieval, hash drift and targeted regeneration, the review state machine, the production filter, private-routing hard-fail, MDX, link and secret gates |
 | **Simulated** | The `fixture` provider (not an LLM), `approved-for-demo` review, and the in-browser workbench |
 | **Running on GitHub** | CI gate (`validate-and-build`) on every PR, Pages deployment with a smoke check, weekly drift check, Dependabot |
-| **Not yet run** | Live cloud and local model calls, automated browser and mobile checks, real approval of a generated view (needs a bot-authored PR, decision E8) |
+| **Not yet run** | Live cloud and local model calls, automated browser and mobile checks, real approval of a generated view (workflow ready; waits on the owner creating the DOCCAD GitHub App, E8) |
 
 The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATIONS.md`](prototype/LIMITATIONS.md#3-requirement-to-evidence-matrix).
 
@@ -143,7 +143,7 @@ The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATI
 - [x] **Phase 0: baseline stabilization.** Validation gates, security gates, Hungarian UI and 75 tests ([progress log](prototype/planning/PROGRESS.md))
 - [ ] **Phase 1: deployable and governed.**
   - [x] Infrastructure live: CI gate, GitHub Pages, CODEOWNERS, ruleset, approval record checked against GitHub
-  - [ ] First real approval of a generated view, end to end (needs a bot-authored PR, decision E8)
+  - [ ] First real approval of a generated view, end to end (bot-PR workflow ready; waits on the DOCCAD GitHub App, E8)
 - [ ] **Phase 2: live AI behind the fixture default.** Structured output, budgets, grounding gate, injection fixtures
 - [ ] **Phase 3: beyond the prototype.** Scoped in [`docs/next-phase/`](docs/next-phase/README.md)
 
