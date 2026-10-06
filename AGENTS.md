@@ -29,7 +29,8 @@ instead of repeating it.
   their own PR, so admins merge through a PR-only bypass.
 - **Automation** (`.github/workflows/`). `ci.yml` (`validate-and-build`, on PRs and pushes to `main`);
   `publish.yml` (push to `main` → production filter → GitHub Pages at
-  `https://w7-mgfcode.github.io/doCCAD_pre/`); `generate.yml` (manual, pushes a `docs-gen/*` branch);
+  `https://w7-mgfcode.github.io/doCCAD_pre/`); `generate.yml` (manual; pushes a `docs-gen/*` branch, and opens the PR as the DOCCAD GitHub App only
+  when the App token step produced a token and the push step reported changes — otherwise the owner opens it, E8);
   `drift.yml` (weekly). Dependabot (`.github/dependabot.yml`, not a workflow) opens weekly grouped
   updates for Actions and npm.
 - **Not tracked.** `.claude/`, `.agents/`, `.kb/` and local session notes are git-ignored, so git never
@@ -52,6 +53,7 @@ instead of repeating it.
 | `prototype/tests/` | `unittest` suite |
 | `prototype/planning/` | `CONCEPT.md`, `ACCEPTANCE.md` (REQ-001…016), `PROGRESS.md` |
 | `docs/next-phase/` | Plan, acceptance (NV-REQ) and research for the next-version run (phases 0–3) |
+| `docs/phase-2/` | Handoff pack for the Phase 2 Antigravity run (live AI behind the fixture default); read-only for the run |
 | `.github/` | Workflows, `CODEOWNERS`, `dependabot.yml`, README banner assets |
 
 ## Setup

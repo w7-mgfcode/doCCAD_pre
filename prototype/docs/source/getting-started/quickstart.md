@@ -76,7 +76,7 @@ npm run serve
 ```
 
 Open your browser to:
-- `http://localhost:3000/` (Home page)
-- `http://localhost:3000/docs/overview` (Canonical documentation)
-- `http://localhost:3000/views/recruiter/project-overview` (Governed recruiter view)
-- `http://localhost:3000/hu/docs/overview` (Hungarian localized view)
+- `http://localhost:3000/doCCAD_pre/` (Home page)
+- `http://localhost:3000/doCCAD_pre/docs/overview` (Canonical documentation)
+- `http://localhost:3000/doCCAD_pre/views/recruiter/project-overview` (Governed recruiter view)
+- `http://localhost:3000/doCCAD_pre/hu/docs/overview` (Hungarian localized view)

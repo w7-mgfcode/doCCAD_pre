@@ -28,7 +28,7 @@ Start Docusaurus with hot reloading:
 npm start
 ```
 
-The site will be available at `http://localhost:3000/`.
+The site will be available at `http://localhost:3000/doCCAD_pre/`.
 
 ## Authoring Canonical Documentation
 

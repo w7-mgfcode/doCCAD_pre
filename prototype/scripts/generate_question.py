@@ -24,7 +24,8 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, check_path_containment, _normalize  # noqa: E402
+from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, check_path_containment, _normalize, check_mdx_security  # noqa: E402
+from check_grounding import check_grounding_document  # noqa: E402
 from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
 from review_governance import reset_to_draft  # noqa: E402
 
@@ -136,7 +137,10 @@ Prohibited:
 Canonical Evidence:
 {{evidence}}
 
-User Question: {{question}}
+User Question:
+<<<QUESTION-DATA
+{{question}}
+QUESTION-DATA>>>
 """
     blocks = []
     for f in evidence:
@@ -147,8 +151,11 @@ User Question: {{question}}
         )
     evidence_block = "\n\n".join(blocks)
 
+    # The question is untrusted data inside its own delimiter block: strip any marker
+    # text from it so it cannot close the block or open a fake evidence block.
+    safe_question = re.sub(r"<<<|>>>", "", question)
     rendered = (
-        template.replace("{{question}}", question)
+        template.replace("{{question}}", safe_question)
         .replace("{{audience}}", audience)
         .replace("{{privacy}}", privacy)
         .replace("{{contract_name}}", contract.get("contract", "GenerateQuestionPage"))
@@ -188,6 +195,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--question", help="Question text")
     ap.add_argument("--audience", default="developer")
     ap.add_argument("--privacy", choices=["public", "private"], default="public")
+    ap.add_argument("--provider", choices=["fixture", "anthropic", "gemini", "openai", "local"], default=None,
+                    help="Explicit provider selection: builds a 1-provider chain")
     ap.add_argument("--target", help="Canonical doc id")
     ap.add_argument("--persist", action="store_true", help="Write directly to docs/generated/questions/")
     ap.add_argument("--export-run", help="Output path for GenerationRun JSON")
@@ -254,11 +263,11 @@ def main() -> int:
     }
 
     router = Router(ROOT / "ai.config.yaml")
-    chain = router.select_chain_names(task_meta)
+    chain = router.select_chain_names(task_meta, provider=args.provider)
     print(f"Router chain: {' -> '.join(chain)}")
-
     try:
-        call_res = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}])
+        run_kw = {"provider": args.provider} if args.provider is not None else {}
+        call_res = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}], **run_kw)
     except PrivacyRoutingError as e:
         print(f"\n[FATAL] Privacy Routing Policy Enforced: {e}", file=sys.stderr)
         return 1
@@ -287,8 +296,8 @@ def main() -> int:
     fm["generated"] = True
     fm["generation"] = {
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 2),
-        "prompt_version": contract.get("prompt_version", "question-page.v2"),
+        "contract_version": contract.get("version", 4),
+        "prompt_version": contract.get("prompt_version", "question-page.v4"),
         "source_documents": source_docs,
         "repo_evidence": [
             f.relative_to(ROOT).as_posix()
@@ -309,6 +318,18 @@ def main() -> int:
     val_errors = validate(fm, "document")
     if val_errors:
         print(f"[ERROR] Generated frontmatter validation failed: {val_errors}", file=sys.stderr)
+        return 1
+
+    # Pre-write MDX restriction gate and link allowlist
+    sec_errors = check_mdx_security(body)
+    if sec_errors:
+        print(f"[ERROR] Generated MDX security check failed: {sec_errors}", file=sys.stderr)
+        return 1
+
+    # Pre-write Grounding Gate
+    grounding_errors = check_grounding_document(fm, body, root_dir=ROOT)
+    if grounding_errors:
+        print(f"[ERROR] Grounding validation failed: {grounding_errors}", file=sys.stderr)
         return 1
 
     doc_id = fm.get("id", f"q-{abs(hash(question)) % 1000:03d}")
@@ -332,8 +353,8 @@ def main() -> int:
     run_record = {
         "run_id": f"run-{int(datetime.datetime.now().timestamp())}",
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 2),
-        "prompt_version": contract.get("prompt_version", "question-page.v2"),
+        "contract_version": contract.get("version", 4),
+        "prompt_version": contract.get("prompt_version", "question-page.v4"),
         "provider": provider_name,
         "model": model_name,
         "mode": gen_mode,

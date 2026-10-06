@@ -1,0 +1,17 @@
+{
+  "contract": "GenerateInterviewPrep",
+  "targets": {
+    "architecture-system-overview": [
+      "docs/source/architecture/system-overview.md"
+    ],
+    "architecture-content-planes": [
+      "docs/source/architecture/content-planes.md"
+    ],
+    "security-trust-boundaries": [
+      "docs/source/security/trust-boundaries.md"
+    ],
+    "validation-drift-detection": [
+      "docs/source/validation/drift-detection.md"
+    ]
+  }
+}

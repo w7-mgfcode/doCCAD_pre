@@ -19,12 +19,20 @@ from typing import Any, Dict, Iterable, List
 
 import yaml
 
-from .provider import Provider, ProviderError, ProviderTransportError, ProviderContentError
+from .provider import (
+    Provider,
+    ProviderError,
+    ProviderTransportError,
+    ProviderContentError,
+    MissingKeyError,
+    MissingModelError,
+)
 from .anthropic_provider import AnthropicProvider
 from .gemini_provider import GeminiProvider
 from .openai_provider import OpenAIProvider
 from .local_provider import LocalProvider
 from .fixture_provider import FixtureProvider
+from .schema_adapt import get_provider_schema
 
 _ENV_REF = re.compile(r"^\$\{([A-Z0-9_]+)\}$")
 
@@ -47,6 +55,13 @@ class PrivacyRoutingError(RoutingError):
 
 class PrivacyRoutingConfigError(RoutingError):
     """A routing rule for privacy: private violates T12 by including non-local providers."""
+
+
+class BudgetExceededError(RuntimeError):
+    """Per-run call or token budget exceeded."""
+
+
+BudgetError = BudgetExceededError
 
 
 class SecretScanViolation(RuntimeError):
@@ -95,12 +110,29 @@ def _resolve_env_ref(value: Any) -> Any:
 
 
 class Router:
-    def __init__(self, config_path: str | Path = "ai.config.yaml"):
+    def __init__(self, config_path: str | Path = "ai.config.yaml", budget: Dict[str, Any] | None = None):
         raw = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
         self.cfg: Dict[str, Any] = raw["ai"]
         validate_routing_config(self.cfg)
         self.providers_cfg: Dict[str, Dict[str, Any]] = self.cfg["providers"]
         self.rules: List[Dict[str, Any]] = self.cfg.get("routing", [])
+        self.root: Path = Path(config_path).resolve().parent
+        self.budget_cfg: Dict[str, Any] = budget if budget is not None else self.cfg.get("budget", {})
+        self.max_tokens_per_run: int | None = self.budget_cfg.get("max_tokens_per_run")
+        self.max_calls_per_run: int | None = self.budget_cfg.get("max_calls_per_run")
+        self.calls_count: int = 0
+        self.tokens_used: int = 0
+
+    def check_budget_before_call(self, estimated_tokens: int = 0) -> None:
+        """Check call and token limits before making a provider call."""
+        if self.max_calls_per_run is not None and self.calls_count + 1 > self.max_calls_per_run:
+            raise BudgetExceededError(
+                f"Per-run call budget exceeded: calls {self.calls_count} + 1 > max_calls_per_run {self.max_calls_per_run}"
+            )
+        if self.max_tokens_per_run is not None and self.tokens_used + estimated_tokens > self.max_tokens_per_run:
+            raise BudgetExceededError(
+                f"Per-run token budget exceeded: tokens {self.tokens_used} + {estimated_tokens} > max_tokens_per_run {self.max_tokens_per_run}"
+            )
 
     # -- rule matching -----------------------------------------------------
     @staticmethod
@@ -124,9 +156,25 @@ class Router:
         return True
 
     # -- chain selection ---------------------------------------------------
-    def select_chain_names(self, task_meta: Dict[str, Any]) -> List[str]:
+    # -- chain selection ---------------------------------------------------
+    def select_chain_names(self, task_meta: Dict[str, Any], provider: str | None = None) -> List[str]:
         """Return the ordered provider names for a task (no instantiation)."""
-        if task_meta.get("privacy") == "private":
+        privacy_pinned = task_meta.get("privacy") == "private"
+
+        if provider is not None:
+            if privacy_pinned and provider != "local":
+                raise PrivacyRoutingError(
+                    f"Task is privacy: private but provider '{provider}' was requested. "
+                    f"Refusing to route to any provider other than 'local'."
+                )
+            pcfg = self.providers_cfg.get(provider)
+            if not pcfg or not pcfg.get("enabled", False):
+                raise RoutingError(
+                    f"Requested provider '{provider}' is disabled in ai.config.yaml or unknown."
+                )
+            return [provider]
+
+        if privacy_pinned:
             # Hard pin (AD-5): never silently upgrade a private task to cloud.
             local_cfg = self.providers_cfg.get("local", {})
             if not local_cfg.get("enabled", False):
@@ -154,14 +202,20 @@ class Router:
             kwargs["env_key"] = pcfg["env_key"]
         if name == "local" and pcfg.get("endpoint"):
             kwargs["endpoint"] = pcfg["endpoint"]
+        if pcfg.get("params"):
+            kwargs["params"] = pcfg["params"]
+        if pcfg.get("token_param"):
+            kwargs["token_param"] = pcfg["token_param"]
         return _ADAPTERS[name](**kwargs)  # type: ignore[return-value]
 
-    def chain_for(self, task_meta: Dict[str, Any]) -> List[Provider]:
-        names = self.select_chain_names(task_meta)
+    def chain_for(self, task_meta: Dict[str, Any], provider: str | None = None) -> List[Provider]:
+        names = self.select_chain_names(task_meta, provider=provider)
         providers = []
         for n in names:
             try:
                 providers.append(self.instantiate(n))
+            except (MissingKeyError, MissingModelError):
+                raise
             except Exception:
                 pass
         return providers
@@ -169,18 +223,45 @@ class Router:
     # -- execution with fallback ------------------------------------------
     def run_with_fallback(self, task_meta: Dict[str, Any],
                           messages: List[Dict[str, str]],
-                          opts: Dict[str, Any] | None = None) -> Dict[str, Any]:
+                          opts: Dict[str, Any] | None = None,
+                          provider: str | None = None) -> Dict[str, Any]:
         for msg in messages:
             if isinstance(msg, dict) and "content" in msg:
                 scan_for_secrets(str(msg["content"]))
         errors: List[str] = []
-        chain_names = self.select_chain_names(task_meta)
+        chain_names = self.select_chain_names(task_meta, provider=provider)
         privacy_pinned = task_meta.get("privacy") == "private"
+
+        est_tokens = int(task_meta.get("context_tokens", 0))
+        if est_tokens <= 0 and messages:
+            est_tokens = sum(len(str(m.get("content", ""))) // 4 for m in messages if isinstance(m, dict))
+        if est_tokens <= 0 and opts and "max_tokens" in opts:
+            est_tokens = int(opts["max_tokens"])
+
         for name in chain_names:
+            self.check_budget_before_call(est_tokens)
             try:
-                provider = self.instantiate(name)
-                return provider.complete(task_meta, messages, opts)
+                p = self.instantiate(name)
+                call_opts = dict(opts) if opts else {}
+                if "schema" not in call_opts and "contract" in call_opts:
+                    contract = call_opts["contract"]
+                    schema = get_provider_schema(contract, name, root_dir=self.root)
+                    if schema:
+                        call_opts["schema"] = schema
+                self.calls_count += 1
+                result = p.complete(task_meta, messages, call_opts)
+                usage = result.get("usage") or {}
+                # Adapters normalise usage to input_tokens / output_tokens.
+                call_tokens = (
+                    (usage.get("input_tokens") or 0) + (usage.get("output_tokens") or 0)
+                    or est_tokens
+                )
+                self.tokens_used += int(call_tokens)
+                return result
             except Exception as e:
+                if isinstance(e, BudgetExceededError):
+                    raise
+                self.tokens_used += int(est_tokens)
                 errors.append(f"{name}: {e}")
                 if privacy_pinned:
                     raise PrivacyRoutingError(

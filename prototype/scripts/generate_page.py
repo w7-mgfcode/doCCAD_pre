@@ -21,7 +21,8 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, _normalize  # noqa: E402
+from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, _normalize, check_mdx_security  # noqa: E402
+from check_grounding import check_grounding_document, check_grounding_interview  # noqa: E402
 from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
 from review_governance import reset_to_draft  # noqa: E402
 
@@ -154,6 +155,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--contract", required=True)
     ap.add_argument("--target", required=True, help="canonical doc id")
     ap.add_argument("--privacy", choices=["public", "private"], default="public")
+    ap.add_argument("--provider", choices=["fixture", "anthropic", "gemini", "openai", "local"], default=None,
+                    help="Explicit provider selection: builds a 1-provider chain")
     ap.add_argument("--dry-run", action="store_true")
     return ap
 
@@ -192,7 +195,7 @@ def main() -> int:
     task_meta = {"task": contract["contract"], "target_id": args.target, "privacy": privacy,
                  "context_tokens": len(prompt) // 4}
     router = Router(ROOT / "ai.config.yaml")
-    chain = router.select_chain_names(task_meta)
+    chain = router.select_chain_names(task_meta, provider=args.provider)
     print(f"Provider chain (from ai.config.yaml): {' -> '.join(chain)}")
 
     branch = f"docs-gen/{contract['contract'].lower()}-{args.target}"
@@ -213,8 +216,9 @@ def main() -> int:
 
     while True:
         attempts += 1
-        result = router.run_with_fallback(task_meta, messages,
-                                          {"max_tokens": contract.get("max_tokens", 4096)})
+        run_opts: Dict[str, Any] = {"max_tokens": contract.get("max_tokens", 4096), "contract": contract}
+        run_kw = {"provider": args.provider} if args.provider is not None else {}
+        result = router.run_with_fallback(task_meta, messages, run_opts, **run_kw)
 
         if contract["output"]["format"] == "json":
             # Structured JSON output (e.g. InterviewPrep)
@@ -245,6 +249,8 @@ def main() -> int:
                     "approval_status": "draft",
                 }
                 val_errors = validate(data, "interview")
+                # Pre-write Grounding Gate
+                val_errors.extend(check_grounding_interview(data, root_dir=ROOT))
             else:
                 val_errors = parse_errors
 
@@ -253,12 +259,12 @@ def main() -> int:
                     messages.append({"role": "assistant", "content": result["text"]})
                     messages.append({
                         "role": "user",
-                        "content": "The previous output had validation errors:\n"
+                        "content": "The previous output had validation/grounding errors:\n"
                                    + "\n".join(val_errors)
-                                   + "\nPlease correct the JSON output according to the schema."
+                                   + "\nPlease correct the JSON output according to the schema and grounding rules."
                     })
                     continue
-                raise ContractViolation(f"Interview schema validation failed after repair retry: {val_errors}")
+                raise ContractViolation(f"Interview validation/grounding failed after repair retry: {val_errors}")
 
             out_dir = DOCS / "generated" / contract["output"]["dir"]
             out_dir.mkdir(parents=True, exist_ok=True)
@@ -282,6 +288,10 @@ def main() -> int:
                 fm = stamp_provenance(fm, contract, evidence, provider_name, result.get("model", ""),
                                       mode=gen_mode)
                 errors = validate(fm, "document")
+                # Pre-write MDX restriction gate and link allowlist
+                errors.extend(check_mdx_security(body))
+                # Pre-write Grounding Gate
+                errors.extend(check_grounding_document(fm, body, root_dir=ROOT))
             else:
                 errors = parse_errors
 
@@ -292,7 +302,7 @@ def main() -> int:
                         "role": "user",
                         "content": "The previous output had validation errors:\n"
                                    + "\n".join(errors)
-                                   + "\nPlease correct the output to ensure valid frontmatter and content."
+                                   + "\nPlease correct the output to ensure valid frontmatter, secure MDX, and strict grounding."
                     })
                     continue
                 raise ContractViolation("Output invalid after generation (repair retry failed):\n" + "\n".join(errors))

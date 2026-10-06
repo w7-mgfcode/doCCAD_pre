@@ -3,24 +3,69 @@
 from __future__ import annotations
 
 import json
-import urllib.error
-import urllib.request
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
-from .provider import ProviderError, require_env, require_model
+from .http import http_post_json
+from .provider import ProviderContentError, ProviderError, require_env, require_model
 
 API_URL = "https://api.anthropic.com/v1/messages"
 API_VERSION = "2023-06-01"
+
+
+def build_anthropic_request(
+    model: str,
+    messages: List[Dict[str, str]],
+    opts: Dict[str, Any],
+    api_key: str,
+    params: Optional[Dict[str, Any]] = None,
+) -> tuple[Dict[str, str], Dict[str, Any]]:
+    """Build Anthropic headers and request payload in one function (P2-02, P2-03)."""
+    system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
+    chat = [m for m in messages if m["role"] != "system"]
+    payload: Dict[str, Any] = {
+        "model": model,
+        "max_tokens": int(opts.get("max_tokens", 4096)),
+        "messages": chat,
+    }
+    if system:
+        payload["system"] = system
+
+    # Sampling parameters: opt-in only if configured in params (P2-03, KB C2.2)
+    if params:
+        for k in ("temperature", "top_p", "top_k"):
+            if k in params:
+                payload[k] = params[k]
+
+    # Structured JSON output via output_config.format (P2-02, KB C1.4)
+    if "schema" in opts:
+        payload["output_config"] = {
+            "format": {
+                "type": "json_schema",
+                "schema": opts["schema"],
+            }
+        }
+
+    headers = {
+        "content-type": "application/json",
+        "x-api-key": api_key,
+        "anthropic-version": API_VERSION,
+    }
+    return headers, payload
 
 
 class AnthropicProvider:
     name = "anthropic"
 
     def __init__(self, model: str | None, env_key: str = "ANTHROPIC_API_KEY",
-                 timeout: int = 120):
+                 timeout: int = 120, base_url: str | None = None,
+                 sleep_fn: Optional[Callable[[float], None]] = None,
+                 params: Optional[Dict[str, Any]] = None):
         self.model = model
         self.env_key = env_key
         self.timeout = timeout
+        self.base_url = base_url or API_URL
+        self.sleep_fn = sleep_fn
+        self.params = params or {}
 
     def complete(self, task_meta: Dict[str, Any], messages: List[Dict[str, str]],
                  opts: Dict[str, Any] | None = None) -> Dict[str, Any]:
@@ -28,45 +73,35 @@ class AnthropicProvider:
         api_key = require_env(self.env_key, self.name)
         model = require_model(self.model, self.name)
 
-        system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
-        chat = [m for m in messages if m["role"] != "system"]
-        payload: Dict[str, Any] = {
-            "model": model,
-            "max_tokens": int(opts.get("max_tokens", 4096)),
-            "messages": chat,
-        }
-        if system:
-            payload["system"] = system
-        if "temperature" in opts:
-            payload["temperature"] = float(opts["temperature"])
-
-        req = urllib.request.Request(
-            API_URL,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "content-type": "application/json",
-                "x-api-key": api_key,
-                "anthropic-version": API_VERSION,
-            },
-            method="POST",
+        headers, payload = build_anthropic_request(
+            model=model,
+            messages=messages,
+            opts=opts,
+            api_key=api_key,
+            params=self.params,
         )
-        try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                body = json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            raise ProviderError(
-                f"anthropic HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:500]}"
-            ) from e
-        except urllib.error.URLError as e:
-            raise ProviderError(f"anthropic unreachable: {e.reason}") from e
+
+        body, _ = http_post_json(
+            url=self.base_url,
+            payload=payload,
+            headers=headers,
+            timeout=self.timeout,
+            provider_name=self.name,
+            sleep_fn=self.sleep_fn,
+        )
+
+        stop_reason = body.get("stop_reason")
+        if stop_reason == "refusal":
+            raise ProviderContentError("anthropic request was refused by model (stop_reason: refusal)")
 
         text = "".join(b.get("text", "") for b in body.get("content", [])
                        if b.get("type") == "text")
         usage = body.get("usage", {})
+        returned_model = body.get("model") or model
         return {
             "text": text,
             "usage": {"input_tokens": usage.get("input_tokens", 0),
                       "output_tokens": usage.get("output_tokens", 0)},
             "provider": self.name,
-            "model": model,
+            "model": returned_model,
         }

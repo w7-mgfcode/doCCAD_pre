@@ -1,0 +1,23 @@
+{
+  "contract": "GenerateQuestionPage",
+  "targets": {
+    "q-001-canonical-separation": [
+      "docs/source/architecture/content-planes.md"
+    ],
+    "q-002-drift-detection": [
+      "docs/source/validation/drift-detection.md"
+    ],
+    "q-003-security-trust-zones": [
+      "docs/source/security/trust-boundaries.md"
+    ],
+    "q-004-docusaurus-selection": [
+      "docs/source/decisions/adr-002-docusaurus-foundation.md"
+    ],
+    "q-005-private-routing": [
+      "docs/source/decisions/adr-004-provider-abstraction.md"
+    ],
+    "q-006-kubernetes-topology": [
+      "docs/source/decisions/adr-009-deployment-github-pages.md"
+    ]
+  }
+}

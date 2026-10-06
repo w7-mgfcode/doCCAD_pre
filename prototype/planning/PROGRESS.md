@@ -1,7 +1,7 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: Phase 1 Complete — Deployable and Governed GitHub Automation (P1-01..P1-09, P1-08 blocked per E6; E3 prod blocked on E8); 91 unit tests passing (0 expected failures); ready for Phase 2  
-Timestamp: 2026-10-01 (previous: 2026-09-29, 2026-09-21)  
+Status: Phase 2 complete — Live AI generation behind fixture default (P2-00..P2-12); Checkpoint 2B complete; 147 unit tests (0 expected failures)  
+Timestamp: 2026-10-06 (previous: 2026-10-01, 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
 Items are ticked only where the artifact exists on disk and, for checks, where the command was re-run
@@ -10,7 +10,43 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 
 ---
 
-## Run rules (Binding for this run)
+## Run rules — Phase 2 run (Binding for this run)
+
+- **Branch & Isolation**: Work exclusively on branch `phase-2-live-ai`. No `git push`, no PR creation, no remote operations, no deployment. Local commits permitted only at phase checkpoints (2A and 2B). Single agent operating on working tree.
+- **Working Directory**: Run all commands from `prototype/` unless specified. Use scratch copies for generation acceptance tests writing into `docs/`. Interrupted stashed files restored via `npm run build:demo`.
+- **Evidence or it did not happen**: Tick an item ONLY after its acceptance command ran in this run and output was verified. Append to Evidence log: item ID, exact command, exit code, key output line, date.
+- **Verification of Edits**: Verify every file edit with `git diff --stat` or by re-reading content before proceeding.
+- **Bounded Attempts**: If a fix fails twice, halt work on that item, record details in *Tried and failed*, and proceed to the next independent item. Inspect failing item once before changing; do not loop on the same command.
+- **Test Invariants**:
+  - Every new test class named in the plan must exist in `prototype/tests/test_doccad.py` and must include at least one case that the new code rejects or that would fail without the change.
+  - All provider tests use stdlib `http.server` bound to `127.0.0.1` on port 0, with injected sleep so tests do not wait.
+  - Test-wide network guard: no test, script or step in this run may contact a real provider or any non-loopback address.
+- **Strict Architectural Invariants**:
+  - Two-plane separation: canonical (`docs/source/`) vs generated (`docs/generated/`). Canonical never imports or cites generated. Generated produced only by scripts, never hand-edited, stamped with generation block and source hashes.
+  - Default provider remains `fixture`. Zero keys/network required for tests and demo. Default routing chains in `ai.config.yaml` unchanged.
+  - `privacy: private` routes strictly to `local` and raises `PrivacyRoutingError` immediately on local failure; never fall back to cloud.
+  - Model IDs only as `${AI_MODEL_*}` environment references in `ai.config.yaml`; no keys or IDs in code, tests, or prompts.
+  - Cloud provider base URLs are not configurable in `ai.config.yaml` (constructor arg for tests only).
+  - Repository JSON Schemas remain the validation gate; re-validate every provider response locally even when provider enforced a schema.
+  - Published static site makes zero runtime model calls.
+  - Python dependencies: stdlib + PyYAML + approved `jsonschema` & `referencing`. No other packages without explicit owner consent.
+  - Simulated approval (`approved-for-demo`) is never presented as human approval and never enables production publication.
+  - Contract/schema/prompt changes require version bumps, re-seeding/regeneration, and `npm run detect` reporting 0 stale.
+  - No runtime datastores, vector DBs, provider SDKs, microservices, or multi-agent swarms.
+  - Never read, print, request, store or transmit a real API key, token, or `.env` value. Never create `.env`. Use obviously fake key-shaped strings in tests; assert they never leak into logs or error messages. Log request IDs, status codes, and token usage only; never payloads or auth header values.
+  - Do not weaken a failing gate to make checks pass.
+  - Canonical pages are human-owned; modifications strictly restricted to plan requirements, minimal, factual, and logged.
+  - Treat `docs/phase-2/` as a plan, not truth. Record decisions as proposed defaults in `PROGRESS.md`.
+- **Stop Conditions (Section 4)**: Halt affected item, record under Blocked, and continue with independent work if an action requires:
+  - Git push, PR, GitHub settings, environments, secrets, rulesets, or GitHub App.
+  - Real API key, model ID value, or network access beyond `127.0.0.1`.
+  - Unapproved dependencies.
+  - Edits under `docs/primary-inputs/` or other guarded paths.
+  - Unsatisfiable permission prompts.
+
+---
+
+## Run rules (Phase 1, superseded)
 
 - **Branch & Remote**: Work exclusively on branch `next-version`. No `git push`, no PR creation, no remote operations, no deployment. Local commits permitted only at phase checkpoints. Single agent on working tree.
 - **Working Directory**: Run all commands from `prototype/` unless specified. Use scratch copies for generation acceptance tests writing into `docs/`. Interrupted stashed files restored via `npm run build:demo`.
@@ -69,6 +105,20 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | P1-07 | `python3 -c "import yaml; yaml.safe_load(open('.github/dependabot.yml')); yaml.safe_load(open('.github/workflows/drift.yml'))"` | 0 | `.github/dependabot.yml` (github-actions + npm) and `.github/workflows/drift.yml` valid YAML | 2026-10-01 |
 | P1-08 | BLOCKED | — | Blocked per owner decision E6 (no unapproved npm dependencies: `@mermaid-js/mermaid-cli`) | 2026-10-01 |
 | P1-09 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build:production && npm run build:demo` | 0 | `Ran 91 tests in 4.430s ... OK (0 failures, 0 errors, 0 expected failures)` / `stale generated: 0` | 2026-10-01 |
+| E8 | `python3 -m unittest tests.test_doccad.TestWorkflowSecurityInvariants tests.test_doccad.TestWorkflowScriptInvocations` | 0 | `Ran 7 tests ... OK`; `generate.yml` opens the PR as the DOCCAD App when configured, branch-only fallback otherwise. Live App run: NOT RUN (owner creates the App) | 2026-10-01 |
+| P1-02 follow-up | `python3 scripts/generate_question.py --question "How does DOCCAD detect drift?" --persist && python3 scripts/detect_changes.py --all` | 0 | Canonical `quickstart.md` / `setup.md` localhost URLs gained `/doCCAD_pre/`; `q-002` regenerated by script; `stale generated: 0` | 2026-10-01 |
+| P2-00 | `npm ci && npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run build && npm run detect && python3 -m unittest tests.test_doccad.TestNoExternalNetwork -v` | 0 | Baseline verified (40 pages, 38 hashes, 0 stale, 98 tests pass with TestNoExternalNetwork, network guard active) | 2026-10-06 |
+| P2-04 | `python3 -m unittest tests.test_doccad.TestHttpRetryPolicy -v` | 0 | Ran 7 tests ... OK; retry on 503, 429 Retry-After, terminal statuses, quota 429, auth redaction, live fallback | 2026-10-06 |
+| P2-11 | `python3 -m unittest tests.test_doccad.TestExplicitProviderSelection -v && python3 scripts/generate_page.py --contract GenerateRecruiterPage --target architecture-system-overview --provider anthropic --dry-run` | 0 | Ran 6 tests ... OK (single-provider chain, privacy pin, disabled provider, error propagation); dry-run output showed only anthropic chain | 2026-10-06 |
+| P2-01 | `python3 -m unittest tests.test_doccad.TestProviderSchemaDerivation -v` | 0 | Ran 5 tests ... OK (keyword stripping per provider C1.3/C1.6/C1.9/C1.11, OpenAI strict required/additionalProperties, byte-identical on disk, structured_output gate) | 2026-10-06 |
+| P2-02 | `python3 -m unittest tests.test_doccad.TestAdapterRequestShapes -v` | 0 | Ran 7 tests ... OK (Anthropic output_config.format, OpenAI strict response_format, Gemini responseMimeType/responseJsonSchema, Local response_format + native /api/chat fallback, returned model string fallback, refusal ProviderContentError) | 2026-10-06 |
+| P2-03 | `python3 -m unittest tests.test_doccad.TestSamplingOptIn -v` | 0 | Ran 3 tests ... OK (no sampling keys when params empty, configured params forwarded, token_param switches max_tokens / max_completion_tokens, TestPrivateChainConfig PASS) | 2026-10-06 |
+| P2-05 | `python3 -m unittest tests.test_doccad.TestRunBudget -v` | 0 | Ran 5 tests ... OK (token budget accumulation, pre-call aborts, repair retry counting, prompt ordering) | 2026-10-06 |
+| P2-06 | `python3 -m unittest tests.test_doccad.TestGroundingGate -v` | 0 | Ran 6 tests ... OK (Rule 1 hash/existence, Rule 2 quote spans >= 15 chars, Rule 3 recruiter tech tokens, golden set) | 2026-10-06 |
+| P2-07 | `python3 -m unittest tests.test_doccad.TestPromptInjectionFixtures -v` | 0 | Ran 6 tests ... OK (rejection of exfiltration URL, fabricated citation, invented tech, executable MDX, fake quote; G7 chain_for errors) | 2026-10-06 |
+| P2-12 | `python3 -m unittest tests.test_doccad.TestWorkflowSecurityInvariants tests.test_doccad.TestWorkflowScriptInvocations tests.test_doccad.TestGenerateWorkflowProviderInput -v` | 0 | Ran 11 tests ... OK (default fixture, environment: generation, scoped secrets to generation step, env: pass-through) | 2026-10-06 |
+| P2-08 | `grep -A 10 "Live AI Provider Smoke Verification" prototype/VALIDATION.md` | 0 | Smoke test commands matrix authored for anthropic, gemini, openai, local; marked NOT RUN with clean-up procedure | 2026-10-06 |
+| P2-10 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build` | 0 | Full exit gate passed: 147 unit tests OK, 0 stale generated views, dual-locale build en+hu OK | 2026-10-06 |
 
 ---
 
@@ -84,7 +134,7 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | Item ID | Missing prerequisite | Smallest action that unblocks it |
 |---|---|---|
 | P1-08 | Mermaid compile gate dependency approval (E6) | Owner approves new dependency or alternative check |
-| E3 (prod) | Bot PR creation token (E8) — owner opening docs-gen PRs cannot self-approve as sole CODEOWNER | Owner approves E8 GitHub App so bot authors generation PRs |
+| E3 (prod) | DOCCAD GitHub App credentials (E8 decided 2026-10-01; workflow ready) | Owner creates the App and sets `DOCCAD_APP_CLIENT_ID` + `DOCCAD_APP_PRIVATE_KEY` (`prototype/README.md` §Governance) |
 | P2-08 | Provider API keys and spend caps (E5, H-9) | Owner executes live smoke tests locally |
 
 ---
@@ -100,7 +150,8 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
 | E2 — repository owner/name or custom domain | **Decided 2026-10-01:** `w7-mgfcode/doCCAD_pre` (https://github.com/w7-mgfcode/doCCAD_pre), GitHub Pages project site — `url: 'https://w7-mgfcode.github.io'`, `baseUrl: '/doCCAD_pre/'`, `trailingSlash: false`. P1-02 is unblocked |
 | E3 — approval-record semantics (D6) | **Approved with amendments, 2026-10-01.** `approval_record: {pr, approved_by, approved_at, approved_hash}`; `approved_hash` = sha256 of the page body at approval, a mismatch sends the page back to `in-review`. The CLI stamp (`review_governance.py approve --pr <n>`) is a *claim*; the gate is the publish job, which verifies through the GitHub API that the PR is merged, carries an approving review from a CODEOWNER matching `approved_by`, and changed the file — failing closed if the API is unreachable. Demo builds keep `approved-for-demo`. Spec: `docs/next-phase/03_NEXT_VERSION_PLAN.md` P1-05. P1-05 is unblocked |
 | E6 — dependencies | **Approved:** `jsonschema` + `referencing` as declared requirements (P0-02). **Not approved:** `@playwright/test`, `@mermaid-js/mermaid-cli`, `@docusaurus/faster`, lychee — P1-08 and any CI browser smoke stay Blocked |
-| E5, E7, E8, E9 | Not decided — they gate Phase 2 live calls, the GitHub App, Phase 3 and the archive `ai-models/` folder |
+| E8 — bot authorship of generation PRs | **Decided 2026-10-01: GitHub App** (`actions/create-github-app-token`, contents + pull-requests write, installed on this repo only). Rejected: machine-user PAT (extra account, long-lived secret), owner PAT (still self-authored), `GITHUB_TOKEN` + "Allow Actions to create PRs" (no CI trigger, widens a repo-wide permission). `generate.yml` falls back to branch-only when the App is not configured |
+| E5, E7, E9 | Not decided — they gate Phase 2 live calls, Phase 3 and the archive `ai-models/` folder |
 | Antigravity setup | 2.0 app (not the CLI); command auto-execution enabled for the `doCCAD_pre` project only; workspace guard hook `.agents/hooks.json` active (blocks push, remote/`gh`, destructive git, protected-path writes, `.env`/keys) |
 | Branch | Work on `next-version` (created 2026-10-01 with the baseline commits) |
 | Licensing (recorded 2026-10-01) | Code MIT (`LICENSE`); documentation, diagrams and research CC BY 4.0 (`LICENSE-docs`); `docs/primary-inputs/10_EXTERNAL_ARTIFACTS/` excluded (third-party) |
@@ -182,6 +233,20 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
   - [ ] P1-08: Mermaid compile gate. **BLOCKED** per owner decision E6 (no unapproved npm dependencies: `@mermaid-js/mermaid-cli`).
   - [x] P1-09: Phase 1 exit gate (local test suite 88/88 passing, production filter round-trip clean, workflows statically validated).
 
+- [x] **Phase 2: Live AI Generation Behind the Fixture Default (P2-00..P2-12)**
+  - [x] P2-00: Baseline re-verification, loopback socket guard (`TestNoExternalNetwork`), LIMITATIONS & PROGRESS stale text corrections.
+  - [x] P2-04: Stdlib HTTP transport helper (`ai/http.py`) with retries, backoff, jitter, Retry-After, fast-fail on 4xx/quota, auth header redaction (`TestHttpRetryPolicy`).
+  - [x] P2-11: Explicit `--provider` selection on generation scripts, 1-provider chain, privacy pin preserved (`TestExplicitProviderSelection`).
+  - [x] P2-01: Provider-facing schema adaptation (`ai/schema_adapt.py`) for contracts with `structured_output: true` (`TestProviderSchemaDerivation`).
+  - [x] P2-02: Adapter structured output native shapes, single request builder function per adapter, reported model string extraction, refusal as `ProviderContentError` (`TestAdapterRequestShapes`).
+  - [x] P2-03: Sampling parameters opt-in and OpenAI `token_param` configurable per provider (`TestSamplingOptIn`).
+  - [x] P2-05: Per-run token and call budget in `ai.config.yaml`, cache-friendly prompt ordering, template version bumps.
+  - [x] P2-06: Deterministic grounding gate (`scripts/check_grounding.py`), pre-write wiring, `validate_docs.py` integration, golden set.
+  - [x] P2-07: Prompt injection fixtures and deterministic rejection test suite (`TestPromptInjectionFixtures`), unswallowed errors in `chain_for` (G7).
+  - [x] P2-12: Provider input in `.github/workflows/generate.yml`, protected generation environment, scoped secrets (`TestGenerateWorkflowProviderInput`).
+  - [x] P2-08: Live smoke preparation (commands in `VALIDATION.md`, NOT RUN).
+  - [x] P2-10: Phase 2 exit gate and documentation sync (`VALIDATION.md`, `LIMITATIONS.md`, `README.md`, `PROGRESS.md`).
+
 ---
 
 ## 2. Verification Snapshot — 2026-10-01
@@ -221,6 +286,16 @@ Required automated boundaries against `tests/test_doccad.py`:
 | Broken citations | `TestBrokenCitations` |
 | Real CODEOWNER Approval & GitHub API Verification (E3) | `TestApprovalRecord` (13 tests: schema, body-hash stamp, tamper fail, API mock PR merged/CODEOWNER/file-touched, fail-closed on API error, draft reset) |
 | Workflow Script Invocations vs Argparse | `TestWorkflowScriptInvocations` (3 tests: generate_question rules, generate_page rules, all workflow YAML script invocations parse against CLI argparse) |
+| Loopback Socket Guard & No External Network | `TestNoExternalNetwork` (3 tests: non-loopback connect blocked, loopback allowed, DNS mock verification) |
+| Standard Library HTTP Transport & Retries | `TestHttpRetryPolicy` (7 tests: 503 retry, 429 Retry-After backoff, fatal 4xx/quota fail-fast, auth header redaction, live transport fallback) |
+| Explicit Provider Selection & Privacy Pin | `TestExplicitProviderSelection` (6 tests: single-provider chain, private-to-local enforcement, disabled provider error, missing key/model error propagation) |
+| Provider-facing Schema Derivation | `TestProviderSchemaDerivation` (5 tests: keyword stripping per provider, OpenAI strict required/additionalProperties, byte-identical canonical schemas, structured_output gate) |
+| Adapter Native Request Shapes & Content Errors | `TestAdapterRequestShapes` (7 tests: Anthropic/OpenAI/Gemini/Local structured output shapes, reported model body string extraction, refusals as ProviderContentError) |
+| Provider Sampling & Token Limits | `TestSamplingOptIn` (3 tests: no sampling parameters sent when empty, configured params forwarded, token_param switches max_tokens/max_completion_tokens) |
+| Per-run Token & Call Budget | `TestRunBudget` (5 tests: token accumulation, pre-call aborts, repair retry counting, prompt ordering) |
+| Deterministic Grounding Gate & Golden Set | `TestGroundingGate` (6 tests: Rule 1 hash/existence, Rule 2 quote spans >= 15 chars, Rule 3 recruiter tech tokens, golden set, pre-write disk protection) |
+| Prompt Injection Defense & Rejection | `TestPromptInjectionFixtures` (6 tests: exfiltration link rejection, fabricated citation rejection, ungrounded tech rejection, executable MDX rejection, fake quote rejection, end-to-end zero file write) |
+| Workflow Provider Selection & Environment Scoping | `TestGenerateWorkflowProviderInput` (4 tests: default fixture, non-fixture generation environment, scoped secrets, untrusted expressions not in run) |
 
 ---
 
@@ -228,11 +303,12 @@ Required automated boundaries against `tests/test_doccad.py`:
 
 - **Phase 0 (Stabilize Baseline, P0-01..P0-17)**: Fully completed, tested, and validated as of 2026-10-01.
 - **Phase 1 (Deployable & Governed, P1-01..P1-09)**: Fully completed, tested, and validated as of 2026-10-01.
-  - Workflows created with commit SHA pins and zero `pull_request_target`: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, `.github/dependabot.yml`.
-  - Deployment configuration for GitHub Pages set: `url: 'https://w7-mgfcode.github.io'`, `baseUrl: '/doCCAD_pre/'`, `trailingSlash: false`.
-  - `.github/CODEOWNERS` authored and README §Governance updated with ruleset instructions, sole CODEOWNER review constraints, and note that E3 production approval cannot pass while owner authors docs-gen PRs (blocked on E8).
-  - Real human approval replaces simulated approval for production (E3): `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation.
-  - P1-08 (Mermaid compile gate) marked BLOCKED per owner decision E6.
-  - Python test suite expanded to 91 tests across 24 test classes (91 PASS, 0 FAIL, 0 EXPECTED FAILURES), including dynamic workflow argparse validation.
-  - Production build filter roundtrip verified.
-- **Next Step**: Stage and commit Phase 1 refinements on `next-version`, then hand off to owner for Phase 2 readiness.
+- **Phase 2 (Checkpoint 2A, P2-00, P2-04, P2-11, P2-01, P2-02, P2-03)**: Fully completed, tested, and validated as of 2026-10-06.
+- **Phase 2 (Checkpoint 2B, P2-05, P2-06, P2-07, P2-12, P2-08-prep, P2-10)**: Fully completed, tested, and validated as of 2026-10-06.
+  - Per-run budget (`max_tokens_per_run`, `max_calls_per_run`) in `ai.config.yaml` and cache-friendly prompt ordering implemented (`TestRunBudget`, 5 tests).
+  - Deterministic grounding gate (`scripts/check_grounding.py`) implemented and integrated into pre-write validation and `validate_docs.py`; golden set fixtures in `tests/golden/` verified (`TestGroundingGate`, 6 tests).
+  - Prompt injection defense-in-depth rejection suite implemented (`TestPromptInjectionFixtures`, 6 tests); router `chain_for` error propagation verified (G7).
+  - GitHub Actions `generate.yml` updated with `provider` choice input and protected `generation` environment job with scoped secrets (`TestGenerateWorkflowProviderInput`, 4 tests).
+  - Owner-executed live smoke test matrix documented in `VALIDATION.md` with exact parameters and clean-up command (`git restore docs/generated`), marked NOT RUN (P2-08).
+  - Full Phase 2 exit gate verified: 147 unit tests pass (0 failures, 0 errors, 0 expected failures), `npm run validate` passes, `npm run detect` reports 0 stale, `npm run typecheck` and `npm run build` succeed for both `en` and `hu`.
+- **Status**: Ready for local commit `phase-2B: P2-05 P2-06 P2-07 P2-12 P2-08-prep P2-10` on `phase-2-live-ai`.
