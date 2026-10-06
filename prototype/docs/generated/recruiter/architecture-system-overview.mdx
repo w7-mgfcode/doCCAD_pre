@@ -1,0 +1,70 @@
+---
+id: recruiter-architecture-system-overview
+slug: /recruiter/architecture-system-overview
+title: Architectural Overview for Technical Talent
+type: generated
+audience:
+- recruiter
+owners:
+- docs-bot
+related:
+- architecture-system-overview
+- architecture-content-planes
+- architecture-ai-generation-plane
+generated: true
+generation:
+  contract: GenerateRecruiterPage
+  contract_version: 2
+  prompt_version: recruiter.v2
+  source_documents:
+  - id: architecture-system-overview
+    path: docs/source/architecture/system-overview.md
+    content_hash: sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499
+  - id: architecture-content-planes
+    path: docs/source/architecture/content-planes.md
+    content_hash: sha256:be300c26ebe7342b6b737e8fe210fc53456eef1d9889d1f07b43b64cb2676b68
+  - id: architecture-ai-generation-plane
+    path: docs/source/architecture/ai-generation-plane.md
+    content_hash: sha256:47491b9f907c48a260c0ba7a67d53ba25586578f39089dfb85d06361df7f6377
+  - id: decisions-adr-002-docusaurus-foundation
+    path: docs/source/decisions/adr-002-docusaurus-foundation.md
+    content_hash: sha256:307c44aa5c76c449524df258d447fffb244347c2ba6076fb367e039f5d18e74f
+  repo_evidence: []
+  provider: gemini
+  model: gemini-3.1-flash-lite
+  generation_mode: production
+  generated_at: '2026-10-06T22:31:26Z'
+  approval_status: draft
+---
+
+
+# 30-second version
+
+DOCCAD is built on a "docs-as-code" paradigm where all documentation is maintained in a single Git repository. We use a static-first approach, where the site is a build artifact, and AI is utilized strictly as an offline enrichment layer during the CI process. Our system ensures absolute separation between human-authored documentation and automated content to maintain verifiable engineering truth.
+
+# 2-minute version
+
+Our engineering environment prioritizes auditability, deterministic workflows, and strict content segregation:
+
+*   **Single Source of Truth**: All knowledge exists as versioned files in a single Git repository. We prohibit runtime datastores in favor of static compilation, as defined in our <EvidenceLink to="/docs/architecture/system-overview">System Architecture Spine</EvidenceLink>.
+*   **Structural Content Planes**: We maintain two independent content planes. Human engineers manage the canonical plane (`/docs`), while automated pipelines generate content for the views plane (`/views`). This structure prevents AI-generated content from polluting verified engineering documentation, a policy detailed in <EvidenceLink to="/docs/architecture/content-planes">Two Content Planes — Canonical vs Generated</EvidenceLink>.
+*   **AI as an Enrichment Layer**: AI generation occurs only within CI or local CLI environments—never at runtime. Our provider abstraction allows us to route tasks through various models while enforcing privacy requirements, such as pinning sensitive tasks to local execution endpoints, as established in <EvidenceLink to="/docs/architecture/ai-generation-plane">AI Generation Plane & Provider Abstraction</EvidenceLink>.
+*   **Docusaurus 3.x Foundation**: Our publishing layer utilizes Docusaurus 3.x for its ability to handle multi-instance documentation plugins, bilingual i18n, and static offline search capabilities, as documented in <EvidenceLink to="/docs/decisions/adr-002-docusaurus-foundation">ADR-002: Docusaurus 3.x as the Publishing Foundation</EvidenceLink>.
+
+# What this demonstrates about the engineering
+
+The architecture demonstrates a commitment to high-integrity documentation through:
+
+*   **Systematic Accountability**: By strictly segregating human-authored content from AI-generated content, we eliminate "AI-on-AI" hallucination feedback loops and ensure clear authorship attribution.
+*   **Governance via Code**: Our systems leverage deterministic validation gates—including schema checks and hash-based drift detection—to ensure that no AI-generated content enters the repository without human-approved pull requests.
+*   **Privacy-First Design**: The architecture forces a privacy boundary where sensitive tasks are routed to local endpoints, prohibiting cloud-based fallback for private data.
+*   **Maintainable Abstractions**: We avoid bloated frameworks in favor of thin, auditable protocols, allowing for system upgrades without requiring widespread architectural changes.
+
+# Technologies in evidence
+
+*   **Docusaurus 3.x**: Primary static publishing foundation.
+*   **Git**: System of record for all documentation and configuration.
+*   **Mermaid.js**: Diagram-as-code integration.
+*   **Python**: Used for deterministic validators, generation scripts, and AI provider protocols.
+*   **MDX**: The standard for human-authored documentation and frontmatter-based metadata.
+*   **GitHub Actions / CLI**: Execution environment for CI-based AI content generation.
