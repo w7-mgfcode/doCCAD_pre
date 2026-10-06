@@ -10,7 +10,7 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/w7-mgfcode/doCCAD_pre/actions/workflows/ci.yml)
 [![Pages](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/publish.yml?branch=main&style=flat-square&label=pages)](https://w7-mgfcode.github.io/doCCAD_pre/)
-[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%201%20live,%20approval%20pending-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
+[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%202%20merged,%20live%20calls%20pending-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
 [![Docusaurus](https://img.shields.io/badge/Docusaurus-3.10.2-3ECC5F?style=flat-square&logo=docusaurus&logoColor=white)](prototype/package.json)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](prototype/package.json)
 [![Node](https://img.shields.io/badge/node-%E2%89%A524.14-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](prototype/.nvmrc)
@@ -55,6 +55,12 @@ plus a **runnable local prototype** that demonstrates it end to end, with no API
   stops; it never falls back to a cloud provider.
 - 🛡️ **Security gates**: blocks executable MDX, allowlists external links, scans context for secrets,
   and keeps private content out of builds.
+- 🎯 **Grounding gate**: every citation must resolve to a source the page recorded, quoted spans must
+  appear in it, and recruiter technology claims must be evidenced, checked before a page is written
+  and again by `validate`.
+- 🔌 **Live providers behind the default**: Anthropic, Gemini, OpenAI and local adapters with retry,
+  fallback on transport errors, per-run token and call budgets, and explicit `--provider` selection.
+  `fixture` stays the default, and the tests never leave `127.0.0.1`.
 - 🌐 **Static and bilingual**: English and Hungarian, offline search, and no model calls at runtime.
 
 ## 🚀 Quick start
@@ -65,7 +71,7 @@ cd doCCAD_pre/prototype
 npm ci && pip install -r requirements.txt
 
 npm run validate   # schemas, planes, provenance hashes, security gates
-npm run test       # 75 unit tests
+npm run test       # unittest suite
 npm run build      # static site, en + hu
 npm run serve      # → http://localhost:3000/doCCAD_pre/
 ```
@@ -104,7 +110,7 @@ flowchart LR
     subgraph G["Generation · offline / CI only"]
         CT["Task contract<br/>evidence · schema · providers"]
         RT["Router<br/>fixture default · private → local only"]
-        VAL["validate<br/>schema · MDX · links · hashes"]
+        VAL["validate<br/>schema · MDX · links · hashes · grounding"]
     end
     subgraph R["Governance"]
         REV["Review ledger"]
@@ -131,10 +137,10 @@ flowchart LR
 
 | | |
 | --- | --- |
-| **Verified by tests** | Plane separation, deterministic retrieval, hash drift and targeted regeneration, the review state machine, the production filter, private-routing hard-fail, MDX, link and secret gates |
+| **Verified by tests** | Plane separation, deterministic retrieval, hash drift and targeted regeneration, the review state machine, the production filter, private-routing hard-fail, MDX, link and secret gates, the grounding gate, prompt-injection fixtures, and provider retry, fallback, request shapes and budgets against loopback stub servers |
 | **Simulated** | The `fixture` provider (not an LLM), `approved-for-demo` review, and the in-browser workbench |
 | **Running on GitHub** | CI gate (`validate-and-build`) on every PR, Pages deployment with a smoke check, weekly drift check, Dependabot |
-| **Not yet run** | Live cloud and local model calls, automated browser and mobile checks, real approval of a generated view (workflow ready; waits on the owner creating the DOCCAD GitHub App, E8) |
+| **Not yet run** | Live cloud and local model calls (owner smoke test waits on decision E5 and the `generation` environment), automated browser and mobile checks, real approval of a generated view (workflow ready; waits on the owner creating the DOCCAD GitHub App, E8) |
 
 The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATIONS.md`](prototype/LIMITATIONS.md#3-requirement-to-evidence-matrix).
 
@@ -144,7 +150,9 @@ The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATI
 - [ ] **Phase 1: deployable and governed.**
   - [x] Infrastructure live: CI gate, GitHub Pages, CODEOWNERS, ruleset, approval record checked against GitHub
   - [ ] First real approval of a generated view, end to end (bot-PR workflow ready; waits on the DOCCAD GitHub App, E8)
-- [ ] **Phase 2: live AI behind the fixture default.** Structured output, budgets, grounding gate, injection fixtures
+- [ ] **Phase 2: live AI behind the fixture default.** ([handoff pack](docs/phase-2/README.md))
+  - [x] Implemented and stub-tested: provider adapters, retry and fallback, structured output, budgets, grounding gate, injection fixtures, `generate.yml` provider input (PR #7)
+  - [ ] First live provider call (owner smoke test; waits on decision E5 and the `generation` environment)
 - [ ] **Phase 3: beyond the prototype.** Scoped in [`docs/next-phase/`](docs/next-phase/README.md)
 
 ## 📁 Repository map
@@ -156,14 +164,15 @@ doCCAD_pre/
 │   ├── docs/generated/        AI-derived views     → /views
 │   ├── ai/  ai.config.yaml    provider router (fixture default)
 │   ├── contracts/ schemas/ prompts/
-│   ├── scripts/               validate · detect · generate · review · build filter
+│   ├── scripts/               validate · detect · generate · grounding · review · build filter
 │   ├── src/                   site components and pages
-│   ├── tests/                 unittest suite
+│   ├── tests/                 unittest suite + grounding golden set
 │   └── planning/              concept, acceptance, progress
 └── docs/
     ├── primary-inputs/        research + design archive (sections 00–12)
     ├── prototype-planning/    how the prototype prompt was derived
-    └── next-phase/            plan, acceptance and research for the next run
+    ├── next-phase/            plan, acceptance and research for phases 0–3
+    └── phase-2/               handoff pack and record of the Phase 2 run
 ```
 
 The archive is **preserve-first**. The raw archive and the historical prompts are never edited; newer
