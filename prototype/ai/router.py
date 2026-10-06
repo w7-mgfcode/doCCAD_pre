@@ -251,9 +251,9 @@ class Router:
                 self.calls_count += 1
                 result = p.complete(task_meta, messages, call_opts)
                 usage = result.get("usage") or {}
+                # Adapters normalise usage to input_tokens / output_tokens.
                 call_tokens = (
-                    usage.get("total_tokens")
-                    or (usage.get("prompt_tokens", 0) + usage.get("completion_tokens", 0))
+                    (usage.get("input_tokens") or 0) + (usage.get("output_tokens") or 0)
                     or est_tokens
                 )
                 self.tokens_used += int(call_tokens)

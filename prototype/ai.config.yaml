@@ -23,7 +23,7 @@ ai:
       enabled: true
       env_key: OPENAI_API_KEY
       model: ${AI_MODEL_OPENAI}
-      token_param: max_tokens
+      token_param: max_completion_tokens
     local:
       enabled: false            # enable when an OpenAI-compatible endpoint runs locally
       endpoint: "http://localhost:11434/v1"

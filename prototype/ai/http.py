@@ -118,13 +118,21 @@ def http_post_json(
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 status = resp.status if hasattr(resp, "status") else 200
                 resp_headers = {k.lower(): v for k, v in resp.headers.items()}
-                raw_body = resp.read().decode("utf-8")
+                raw_bytes = resp.read()
+                try:
+                    raw_body = raw_bytes.decode("utf-8")
+                except UnicodeDecodeError as e:
+                    raise ProviderError(f"{provider_name} response body is not valid UTF-8") from e
                 try:
                     body_dict = json.loads(raw_body)
-                except Exception as e:
+                except json.JSONDecodeError as e:
                     raise ProviderError(
                         f"{provider_name} malformed JSON response: {sanitize_text(raw_body, sensitive_values)}"
                     ) from e
+                if not isinstance(body_dict, dict):
+                    raise ProviderError(
+                        f"{provider_name} JSON response is {type(body_dict).__name__}, expected an object"
+                    )
 
                 req_id = (
                     resp_headers.get("x-request-id")

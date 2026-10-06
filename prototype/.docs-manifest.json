@@ -591,7 +591,7 @@
       "id": "q-001-canonical-separation",
       "path": "docs/generated/questions/q-001-canonical-separation.mdx",
       "type": "generated",
-      "content_hash": "sha256:97aa6ee45354b0c1651bb555a55efad88571ffcc5c65b579e1e3974260988c50",
+      "content_hash": "sha256:0b93e1b793a65fc74343d72f5a617ec23c6d0356ec53e4aef2423149a8bf955b",
       "sources": [],
       "related": [],
       "generation": {
@@ -609,7 +609,7 @@
       "id": "q-002-drift-detection",
       "path": "docs/generated/questions/q-002-drift-detection.mdx",
       "type": "generated",
-      "content_hash": "sha256:72abbe0e7615feab098f53b5cbbe6d8903c65807239a026309eaa7f925fb4be8",
+      "content_hash": "sha256:650a70d08e9b00ab947cf959b08896e4ee152cb53354469151b143a82e383906",
       "sources": [],
       "related": [],
       "generation": {
@@ -627,7 +627,7 @@
       "id": "q-003-security-trust-zones",
       "path": "docs/generated/questions/q-003-security-trust-zones.mdx",
       "type": "generated",
-      "content_hash": "sha256:0ff03863d2ed650825769bfd97bca2ecc7e686bde7b7d95a102ef78875ace1bf",
+      "content_hash": "sha256:37427fff189c45fc7657c3ec49d1fafa2cf85aec6edf66c36c5241211dc141a7",
       "sources": [],
       "related": [],
       "generation": {
@@ -645,7 +645,7 @@
       "id": "q-004-docusaurus-selection",
       "path": "docs/generated/questions/q-004-docusaurus-selection.mdx",
       "type": "generated",
-      "content_hash": "sha256:15fc74d59ee1bf8e55d7d411473f29e8fd38aa3e7a7e823ff71f3a2fb5c95faf",
+      "content_hash": "sha256:33e6c330a02b2d6ba0b79a1e0ad239b48185917dbee35f93eb426a428c1bc3b4",
       "sources": [],
       "related": [],
       "generation": {
@@ -663,7 +663,7 @@
       "id": "q-005-private-routing",
       "path": "docs/generated/questions/q-005-private-routing.mdx",
       "type": "generated",
-      "content_hash": "sha256:17fc83ae9a6292b08a3ff62838847ad7dc492960880f370c2f44b34916f41076",
+      "content_hash": "sha256:29a4b2dfcc04f7671f41aab4d7220ca8bdf54dd9bbeab10086fc5f2c09f9eeb8",
       "sources": [],
       "related": [],
       "generation": {
@@ -681,7 +681,7 @@
       "id": "q-006-kubernetes-topology",
       "path": "docs/generated/questions/q-006-kubernetes-topology.mdx",
       "type": "generated",
-      "content_hash": "sha256:9978c3755f75bb012dd15509ea1351d5920f2ebde18545ef537d4b400b37439a",
+      "content_hash": "sha256:92da9e37053050a0b8562167954b590c387095aafa279075120a9eed11673270",
       "sources": [],
       "related": [],
       "generation": {

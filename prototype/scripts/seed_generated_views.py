@@ -284,8 +284,8 @@ def write_questions():
             "generated": True,
             "generation": {
                 "contract": "GenerateQuestionPage",
-                "contract_version": 3,
-                "prompt_version": "question-page.v3",
+                "contract_version": 4,
+                "prompt_version": "question-page.v4",
                 "source_documents": [
                     {"id": src_id, "path": src_path, "content_hash": shash}
                 ],

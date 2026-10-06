@@ -11,7 +11,11 @@ from __future__ import annotations
 
 import re
 from typing import Any, Dict, List
-from .provider import Provider, ProviderError
+from .provider import Provider, ProviderContentError, ProviderError
+
+_EVIDENCE_FILE_RE = re.compile(r"<<<EVIDENCE-DATA file=(docs/source/\S+?)\.mdx?\b")
+_CITED_ROUTE_RE = re.compile(r'(?:\bto=|"to":\s*)"/docs/([^"#]+)')
+_CITED_ID_RE = re.compile(r'"evidence":\s*"([a-z0-9-]+)"')
 
 
 class FixtureProvider:
@@ -38,6 +42,9 @@ class FixtureProvider:
         else:
             text = self._generate_generic(prompt, task_meta)
 
+        if task in ("GenerateRecruiterPage", "GenerateInterviewPrep"):
+            self._require_citations_in_closure(text, messages)
+
         return {
             "text": text,
             "usage": {
@@ -48,6 +55,31 @@ class FixtureProvider:
             "model": self.model,
             "generation_mode": "demo",
         }
+
+    @staticmethod
+    def _require_citations_in_closure(text: str, messages: List[Dict[str, str]]) -> None:
+        """Refuse canned output that cites documents outside the target's evidence closure.
+
+        The canned texts are written for specific targets. For any other target they would
+        cite pages the pipeline never assembled, fail the grounding gate, and repeat the same
+        citations on the repair retry. A content error stops the run before that happens.
+        Calls without assembled evidence blocks (direct unit-test calls) are not checked.
+        """
+        closure = set()
+        for m in messages:
+            closure.update(p[len("docs/source/"):] for p in _EVIDENCE_FILE_RE.findall(str(m.get("content", ""))))
+        if not closure:
+            return
+        closure_ids = {p.replace("/", "-") for p in closure}
+        missing = sorted(
+            {f"/docs/{r}" for r in _CITED_ROUTE_RE.findall(text) if r not in closure}
+            | {i for i in _CITED_ID_RE.findall(text) if i not in closure_ids}
+        )
+        if missing:
+            raise ProviderContentError(
+                "Fixture has no canned output grounded in this target's evidence closure "
+                f"(would cite {', '.join(missing)}); use a target the fixture supports or a live provider."
+            )
 
     def _generate_recruiter(self, prompt: str, target_id: str = "") -> str:
         tid = target_id or "project-overview"
@@ -225,7 +257,8 @@ Readers access a static site generated via `docusaurus build`. External search, 
         q = task_meta.get("question", "").lower()
         if not q:
             # Try to extract question from prompt
-            m = re.search(r"User Question:\s*(.+)", prompt, re.IGNORECASE)
+            m = (re.search(r"<<<QUESTION-DATA\s*\n(.+?)\n\s*QUESTION-DATA>>>", prompt, re.DOTALL)
+                 or re.search(r"User Question:\s*(.+)", prompt, re.IGNORECASE))
             if m:
                 q = m.group(1).lower()
 
@@ -241,8 +274,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 3
-  prompt_version: question-page.v3
+  contract_version: 4
+  prompt_version: question-page.v4
   source_documents:
     - id: decisions-adr-009-deployment-github-pages
       path: docs/source/decisions/adr-009-deployment-github-pages.md
@@ -284,8 +317,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 3
-  prompt_version: question-page.v3
+  contract_version: 4
+  prompt_version: question-page.v4
   source_documents:
     - id: architecture-content-planes
       path: docs/source/architecture/content-planes.md
@@ -339,8 +372,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 3
-  prompt_version: question-page.v3
+  contract_version: 4
+  prompt_version: question-page.v4
   source_documents:
     - id: validation-drift-detection
       path: docs/source/validation/drift-detection.md
@@ -398,8 +431,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 3
-  prompt_version: question-page.v3
+  contract_version: 4
+  prompt_version: question-page.v4
   source_documents:
     - id: security-trust-boundaries
       path: docs/source/security/trust-boundaries.md
@@ -444,8 +477,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 3
-  prompt_version: question-page.v3
+  contract_version: 4
+  prompt_version: question-page.v4
   source_documents:
     - id: decisions-adr-002-docusaurus-foundation
       path: docs/source/decisions/adr-002-docusaurus-foundation.md
@@ -493,8 +526,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 3
-  prompt_version: question-page.v3
+  contract_version: 4
+  prompt_version: question-page.v4
   source_documents:
     - id: decisions-adr-004-provider-abstraction
       path: docs/source/decisions/adr-004-provider-abstraction.md

@@ -137,7 +137,10 @@ Prohibited:
 Canonical Evidence:
 {{evidence}}
 
-User Question: {{question}}
+User Question:
+<<<QUESTION-DATA
+{{question}}
+QUESTION-DATA>>>
 """
     blocks = []
     for f in evidence:
@@ -148,8 +151,11 @@ User Question: {{question}}
         )
     evidence_block = "\n\n".join(blocks)
 
+    # The question is untrusted data inside its own delimiter block: strip any marker
+    # text from it so it cannot close the block or open a fake evidence block.
+    safe_question = re.sub(r"<<<|>>>", "", question)
     rendered = (
-        template.replace("{{question}}", question)
+        template.replace("{{question}}", safe_question)
         .replace("{{audience}}", audience)
         .replace("{{privacy}}", privacy)
         .replace("{{contract_name}}", contract.get("contract", "GenerateQuestionPage"))
@@ -290,8 +296,8 @@ def main() -> int:
     fm["generated"] = True
     fm["generation"] = {
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 3),
-        "prompt_version": contract.get("prompt_version", "question-page.v3"),
+        "contract_version": contract.get("version", 4),
+        "prompt_version": contract.get("prompt_version", "question-page.v4"),
         "source_documents": source_docs,
         "repo_evidence": [
             f.relative_to(ROOT).as_posix()
@@ -347,8 +353,8 @@ def main() -> int:
     run_record = {
         "run_id": f"run-{int(datetime.datetime.now().timestamp())}",
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 3),
-        "prompt_version": contract.get("prompt_version", "question-page.v3"),
+        "contract_version": contract.get("version", 4),
+        "prompt_version": contract.get("prompt_version", "question-page.v4"),
         "provider": provider_name,
         "model": model_name,
         "mode": gen_mode,

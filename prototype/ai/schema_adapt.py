@@ -74,6 +74,31 @@ UNSUPPORTED_KEYWORDS: Dict[str, Set[str]] = {
 }
 
 
+# Keywords whose value maps names to subschemas. The names are data (a property may be
+# called "pattern" or "if"), so keyword filtering applies only to the subschemas.
+_NAME_MAP_KEYWORDS: Set[str] = {"properties", "patternProperties", "$defs", "definitions"}
+
+_LOCAL_DEF_REF = "#/$defs/"
+
+
+def _resolve_local_refs(node: Any, defs: Dict[str, Any], seen: tuple = ()) -> Any:
+    """Inline local '#/$defs/<name>' references, for providers that reject $defs."""
+    if isinstance(node, list):
+        return [_resolve_local_refs(item, defs, seen) for item in node]
+    if not isinstance(node, dict):
+        return node
+    ref = node.get("$ref")
+    if isinstance(ref, str) and ref.startswith(_LOCAL_DEF_REF):
+        name = ref[len(_LOCAL_DEF_REF):]
+        if name in seen:
+            raise ValueError(f"Recursive schema reference cannot be inlined: {ref}")
+        if name not in defs:
+            raise ValueError(f"Unresolved local schema reference: {ref}")
+        merged = {**copy.deepcopy(defs[name]), **{k: v for k, v in node.items() if k != "$ref"}}
+        return _resolve_local_refs(merged, defs, seen + (name,))
+    return {k: _resolve_local_refs(v, defs, seen) for k, v in node.items()}
+
+
 def _clean_schema_node(node: Any, provider: str) -> Any:
     """Recursively strip unsupported keywords and enforce provider constraints."""
     if isinstance(node, list):
@@ -88,6 +113,9 @@ def _clean_schema_node(node: Any, provider: str) -> Any:
     # Filter and recurse
     for key, value in node.items():
         if key in unsupported:
+            continue
+        if key in _NAME_MAP_KEYWORDS and isinstance(value, dict):
+            clean[key] = {name: _clean_schema_node(sub, provider) for name, sub in value.items()}
             continue
         if key == "format" and provider == "gemini":
             # Gemini only supports date-time, date, time
@@ -135,6 +163,9 @@ def adapt_schema(schema: Dict[str, Any], provider: str) -> Dict[str, Any]:
     The original schema dictionary is never modified.
     """
     copied = copy.deepcopy(schema)
+    if "$defs" in UNSUPPORTED_KEYWORDS.get(provider, set()):
+        # Resolve local references before $defs is stripped, or they would dangle.
+        copied = _resolve_local_refs(copied, copied.get("$defs") or {})
     return _clean_schema_node(copied, provider)
 
 
