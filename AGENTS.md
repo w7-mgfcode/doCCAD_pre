@@ -122,8 +122,9 @@ S=<scratch>/doccad && mkdir -p "$S" && rsync -a .github "$S/" && \
   local provider and must fail rather than fall back to cloud; model IDs only via `${AI_MODEL_*}`.
   `--provider` on the generation scripts (`scripts/generate_page.py:158`, `scripts/generate_question.py:198`)
   selects one provider explicitly and never overrides the private pin. Tests never leave 127.0.0.1
-  (`TestNoExternalNetwork`). Live provider keys belong only in secrets of the `generation` environment,
-  which the owner has not created yet (2026-10-06: the repo has only `github-pages`).
+  (`TestNoExternalNetwork`). Live provider keys belong only in secrets of the `generation` environment
+  (created 2026-10-06, deployment limited to protected branches; so far it holds only `GEMINI_API_KEY`
+  and `AI_MODEL_GEMINI`).
 - **Static site.** No runtime model calls from the site.
 - **Dependencies.** Python: standard library + PyYAML, plus `jsonschema` and `referencing` (owner
   decision E6, declared in `prototype/requirements.txt`). Do not add packages without asking.

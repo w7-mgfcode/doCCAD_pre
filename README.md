@@ -140,8 +140,8 @@ flowchart LR
 | **Verified by tests** | Plane separation, deterministic retrieval, hash drift and targeted regeneration, the review state machine, the production filter, private-routing hard-fail, MDX, link and secret gates, the grounding gate, prompt-injection fixtures, and provider retry, fallback, request shapes and budgets against loopback stub servers |
 | **Simulated** | The `fixture` provider (not an LLM), `approved-for-demo` review, and the in-browser workbench |
 | **Running on GitHub** | CI gate (`validate-and-build`) on every PR, Pages deployment with a smoke check, weekly drift check, Dependabot |
-| **Run once by the owner** | Live Gemini generation (`gemini-3.1-flash-lite`, 2026-10-06): both contracts passed validation and the build ([`VALIDATION.md` §7](prototype/VALIDATION.md)) |
-| **Not yet run** | Live Anthropic, OpenAI and local model calls, live generation in CI (waits on decision E5 and the `generation` environment), automated browser and mobile checks, real approval of a generated view (workflow ready; waits on the owner creating the DOCCAD GitHub App, E8) |
+| **Run once by the owner** | Live Gemini generation (`gemini-3.1-flash-lite`, 2026-10-06): both contracts passed validation and the build locally, and one recruiter page passed in CI through `generate.yml` and the `generation` environment, pushed as a draft `docs-gen/*` branch ([`VALIDATION.md` §7](prototype/VALIDATION.md)) |
+| **Not yet run** | Live Anthropic, OpenAI and local model calls (decision E5), automated browser and mobile checks, real approval of a generated view (workflow ready; waits on the owner creating the DOCCAD GitHub App, E8) |
 
 The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATIONS.md`](prototype/LIMITATIONS.md#3-requirement-to-evidence-matrix).
 
@@ -154,7 +154,8 @@ The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATI
 - [ ] **Phase 2: live AI behind the fixture default.** ([handoff pack](docs/phase-2/README.md))
   - [x] Implemented and stub-tested: provider adapters, retry and fallback, structured output, budgets, grounding gate, injection fixtures, `generate.yml` provider input (PR #7)
   - [x] First live provider call: Gemini owner smoke test passed; its two findings fixed (PR #9)
-  - [ ] Remaining providers and live generation in CI (decision E5, `generation` environment)
+  - [x] First live generation in CI: Gemini through `generate.yml` and the `generation` environment (2026-10-06, PR #11)
+  - [ ] Remaining providers (decision E5)
 - [ ] **Phase 3: beyond the prototype.** Scoped in [`docs/next-phase/`](docs/next-phase/README.md)
 
 ## 📁 Repository map
