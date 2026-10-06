@@ -1,6 +1,6 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: Phase 2 complete — Live AI generation behind fixture default (P2-00..P2-12); Checkpoint 2B complete; 147 unit tests (0 expected failures)  
+Status: Phase 2 complete — Live AI generation behind fixture default (P2-00..P2-12); Checkpoint 2B complete; first live call (Gemini, owner-run) PASS; 155 unit tests (0 expected failures)  
 Timestamp: 2026-10-06 (previous: 2026-10-01, 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
@@ -119,6 +119,8 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | P2-12 | `python3 -m unittest tests.test_doccad.TestWorkflowSecurityInvariants tests.test_doccad.TestWorkflowScriptInvocations tests.test_doccad.TestGenerateWorkflowProviderInput -v` | 0 | Ran 11 tests ... OK (default fixture, environment: generation, scoped secrets to generation step, env: pass-through) | 2026-10-06 |
 | P2-08 | `grep -A 10 "Live AI Provider Smoke Verification" prototype/VALIDATION.md` | 0 | Smoke test commands matrix authored for anthropic, gemini, openai, local; marked NOT RUN with clean-up procedure | 2026-10-06 |
 | P2-10 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build` | 0 | Full exit gate passed: 147 unit tests OK, 0 stale generated views, dual-locale build en+hu OK | 2026-10-06 |
+| P2-08 (owner live) | `AI_MODEL_GEMINI=gemini-3.1-flash-lite python3 scripts/generate_page.py --contract GenerateInterviewPrep\|GenerateRecruiterPage --target architecture-system-overview --provider gemini` (owner-run, scratch copy) | 0 | Both contracts written; interview needed 1 repair retry; tokens in/out 3617/1235 + 5014/1242 and 3652/1033; strict validate and en+hu build exit 0; findings fixed in PR #9 (`TestLiveSmokeFindings`) | 2026-10-06 |
+| Post-PR #9 gate | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run detect && npm run test && npm run typecheck && npm run build` (scratch copy of `main`) | 0 | `Validated 40 pages, 4 interview datasets, 25 provenance hashes`; `stale generated: 0`; `Ran 155 tests ... OK`; typecheck and build exit 0 | 2026-10-06 |
 
 ---
 
@@ -244,7 +246,7 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
   - [x] P2-06: Deterministic grounding gate (`scripts/check_grounding.py`), pre-write wiring, `validate_docs.py` integration, golden set.
   - [x] P2-07: Prompt injection fixtures and deterministic rejection test suite (`TestPromptInjectionFixtures`), unswallowed errors in `chain_for` (G7).
   - [x] P2-12: Provider input in `.github/workflows/generate.yml`, protected generation environment, scoped secrets (`TestGenerateWorkflowProviderInput`).
-  - [x] P2-08: Live smoke preparation (commands in `VALIDATION.md`, NOT RUN).
+  - [x] P2-08: Live smoke preparation (commands in `VALIDATION.md`). Gemini owner-run PASS 2026-10-06; Anthropic, OpenAI, local NOT RUN.
   - [x] P2-10: Phase 2 exit gate and documentation sync (`VALIDATION.md`, `LIMITATIONS.md`, `README.md`, `PROGRESS.md`).
 
 ---

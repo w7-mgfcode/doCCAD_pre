@@ -11,7 +11,7 @@
 
 This document records the definitive validation results for the DOCCAD prototype at the conclusion of Phase 2 (Live AI Generation Behind Fixture Default, Checkpoint 2B). Every check is categorized as **PASS**, **FAIL**, or **NOT RUN**. No assumed or historical test results are reported; every passing entry represents a command executed in this run with exit code 0.
 
-- **Total Automated Python Unit Tests**: 147 tests across 39 test classes (**147 PASS, 0 FAIL, 0 EXPECTED FAILURES**).
+- **Total Automated Python Unit Tests**: 155 tests across 41 test classes (**155 PASS, 0 FAIL, 0 EXPECTED FAILURES**; re-run on `main` after PR #9, 2026-10-06; 147 at Checkpoint 2B).
 - **Core Governance Scripts**: `validate_docs.py`, `detect_changes.py`, `generate_page.py`, `generate_question.py`, `review_governance.py`, `build_filter.py`, `github_approval.py`, and `check_grounding.py` all verified with exposed `build_parser()` CLI endpoints.
 - **AI Abstraction & Providers**: Standard library HTTP transport helper (`ai/http.py`) with exponential backoff and jitter, provider-facing JSON schema derivation (`ai/schema_adapt.py`), sampling parameter opt-in (`TestSamplingOptIn`), explicit provider selection (`--provider`, `TestExplicitProviderSelection`), and per-run token/call budget (`TestRunBudget`).
 - **Grounding & Security Gates**: Deterministic grounding gate (`scripts/check_grounding.py`) verifying citation existence, exact quote span containment (>= 15 chars), and recruiter technology claims against fact set; prompt injection rejection suite (`TestPromptInjectionFixtures`) verifying refusal of exfiltration links, fabricated citations, ungrounded tech claims, and executable MDX.
@@ -29,7 +29,7 @@ This document records the definitive validation results for the DOCCAD prototype
 |---|---|---|---|---|---|---|
 | **GATE-VAL** | Schema, plane, hash, link, MDX & grounding validation | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate` | 0 | 2026-10-06 | **PASS** | `Validated 40 pages, 4 interview datasets, 25 provenance hashes. OK — frontmatter schemas valid, planes intact, provenance hashes current, security checks passed.` |
 | **GATE-DRIFT** | Change impact & drift detection | `npm run detect` | 0 | 2026-10-06 | **PASS** | `stale generated: 0; nothing to regenerate — all provenance hashes current.` |
-| **GATE-TEST** | Comprehensive Python unit test suite | `python3 -m unittest discover tests -v` | 0 | 2026-10-06 | **PASS** | `Ran 147 tests in 12.470s ... OK (0 failures, 0 errors, 0 expected failures)` |
+| **GATE-TEST** | Comprehensive Python unit test suite | `python3 -m unittest discover tests -v` | 0 | 2026-10-06 | **PASS** | `Ran 155 tests in 12.474s ... OK` (re-run on `main` after PR #9; 147 at Checkpoint 2B) |
 | **GATE-TYPE** | TypeScript static type verification | `npm run typecheck` | 0 | 2026-10-06 | **PASS** | `tsc --noEmit` exits 0 cleanly. |
 | **GATE-BUILD** | Dual-locale static production build | `npm run build` | 0 | 2026-10-06 | **PASS** | `Generated static files in "build"` and `Generated static files in "build/hu"`. |
 | **GATE-PROD-ROUND** | Production build filter & demo restoration | `npm run build:production && npm run build:demo` | 0 | 2026-10-01 | **PASS** | Production filter stashes unapproved files with hold stubs; demo build cleanly restores. |

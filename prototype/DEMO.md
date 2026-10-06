@@ -20,9 +20,9 @@ npm run test
 ```
 
 Expected output:
-- `validate`: `Validated 40 pages, 4 interview datasets, 37 provenance hashes. OK`
+- `validate`: `Validated 40 pages, 4 interview datasets, 25 provenance hashes. OK`
 - `detect`: `stale generated: 0; nothing to regenerate`
-- `test`: `Ran 75 tests ... OK (0 failures, 0 errors, 0 expected failures)`
+- `test`: `Ran 155 tests ... OK (0 failures, 0 errors, 0 expected failures)`
 
 Build and serve the static site locally:
 
