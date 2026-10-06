@@ -86,7 +86,7 @@ These components are implemented in code but have not been executed against exte
 These features are intentional design decisions deferred to future phases or owner approval:
 1. **Automated End-to-End Browser Testing**: Integration of `@playwright/test` was evaluated and deferred per owner decision E6 (dependency minimization).
 2. **Mermaid-CLI Pre-Compilation Gate**: CI-level diagram compilation via `@mermaid-js/mermaid-cli` is planned for Phase 1 (P1-08) but currently blocked awaiting owner dependency approval (E6).
-3. **Cryptographic Human Approval Records**: Replacing `approved-for-demo` with mandatory human pull request approval metadata (`approval_record: {pr, approved_by, approved_at}`) is scheduled for Phase 1 (P1-05).
+3. **Cryptographic Human Approval Records (E3)**: Implemented and unit-verified in Phase 1 (P1-05): `approval_record` with `pr`, `approved_by`, `approved_at`, and `approved_hash` (sha256 body checksum), verified against the GitHub API. End-to-end execution on GitHub is blocked awaiting owner creation of the DOCCAD GitHub App (E8).
 4. **Bot-authored generation PRs (E8)**: `generate.yml` opens docs-gen PRs as the DOCCAD GitHub App when it is configured. The App itself is created by the owner, so the end-to-end path (bot PR → code-owner approval → verified publication) has not run yet.
 
 ---

@@ -188,6 +188,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--question", help="Question text")
     ap.add_argument("--audience", default="developer")
     ap.add_argument("--privacy", choices=["public", "private"], default="public")
+    ap.add_argument("--provider", choices=["fixture", "anthropic", "gemini", "openai", "local"], default=None,
+                    help="Explicit provider selection: builds a 1-provider chain")
     ap.add_argument("--target", help="Canonical doc id")
     ap.add_argument("--persist", action="store_true", help="Write directly to docs/generated/questions/")
     ap.add_argument("--export-run", help="Output path for GenerationRun JSON")
@@ -254,11 +256,11 @@ def main() -> int:
     }
 
     router = Router(ROOT / "ai.config.yaml")
-    chain = router.select_chain_names(task_meta)
+    chain = router.select_chain_names(task_meta, provider=args.provider)
     print(f"Router chain: {' -> '.join(chain)}")
-
     try:
-        call_res = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}])
+        run_kw = {"provider": args.provider} if args.provider is not None else {}
+        call_res = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}], **run_kw)
     except PrivacyRoutingError as e:
         print(f"\n[FATAL] Privacy Routing Policy Enforced: {e}", file=sys.stderr)
         return 1

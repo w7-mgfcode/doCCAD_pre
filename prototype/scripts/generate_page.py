@@ -154,6 +154,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--contract", required=True)
     ap.add_argument("--target", required=True, help="canonical doc id")
     ap.add_argument("--privacy", choices=["public", "private"], default="public")
+    ap.add_argument("--provider", choices=["fixture", "anthropic", "gemini", "openai", "local"], default=None,
+                    help="Explicit provider selection: builds a 1-provider chain")
     ap.add_argument("--dry-run", action="store_true")
     return ap
 
@@ -192,7 +194,7 @@ def main() -> int:
     task_meta = {"task": contract["contract"], "target_id": args.target, "privacy": privacy,
                  "context_tokens": len(prompt) // 4}
     router = Router(ROOT / "ai.config.yaml")
-    chain = router.select_chain_names(task_meta)
+    chain = router.select_chain_names(task_meta, provider=args.provider)
     print(f"Provider chain (from ai.config.yaml): {' -> '.join(chain)}")
 
     branch = f"docs-gen/{contract['contract'].lower()}-{args.target}"
@@ -213,8 +215,9 @@ def main() -> int:
 
     while True:
         attempts += 1
-        result = router.run_with_fallback(task_meta, messages,
-                                          {"max_tokens": contract.get("max_tokens", 4096)})
+        run_opts: Dict[str, Any] = {"max_tokens": contract.get("max_tokens", 4096), "contract": contract}
+        run_kw = {"provider": args.provider} if args.provider is not None else {}
+        result = router.run_with_fallback(task_meta, messages, run_opts, **run_kw)
 
         if contract["output"]["format"] == "json":
             # Structured JSON output (e.g. InterviewPrep)

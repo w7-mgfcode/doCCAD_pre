@@ -20,10 +20,12 @@ from __future__ import annotations
 
 import copy
 import io
+import ipaddress
 import json
 import os
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -32,6 +34,41 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
 import yaml
+
+# Network guard (NV-REQ-025): prohibit any non-loopback network connection in tests
+_orig_socket_connect = socket.socket.connect
+_orig_socket_connect_ex = socket.socket.connect_ex
+
+def _is_loopback_address(address):
+    if isinstance(address, tuple) and len(address) >= 1:
+        host = str(address[0])
+        if host in ("localhost", "127.0.0.1", "::1"):
+            return True
+        try:
+            return ipaddress.ip_address(host).is_loopback
+        except ValueError:
+            return False
+    elif isinstance(address, (str, bytes)):
+        return True
+    return False
+
+def _guarded_connect(self, address):
+    if not _is_loopback_address(address):
+        raise RuntimeError(f"Network guard blocked non-loopback connection to {address}")
+    return _orig_socket_connect(self, address)
+
+def _guarded_connect_ex(self, address):
+    if not _is_loopback_address(address):
+        raise RuntimeError(f"Network guard blocked non-loopback connection to {address}")
+    return _orig_socket_connect_ex(self, address)
+
+def setUpModule():
+    socket.socket.connect = _guarded_connect
+    socket.socket.connect_ex = _guarded_connect_ex
+
+def tearDownModule():
+    socket.socket.connect = _orig_socket_connect
+    socket.socket.connect_ex = _orig_socket_connect_ex
 
 # Set paths
 TESTS_DIR = Path(__file__).resolve().parent
@@ -88,7 +125,19 @@ from scripts.generate_question import (
     ContractViolation as QuestionContractViolation,
 )
 from scripts.generate_page import ContractViolation as PageContractViolation
-from ai.provider import ProviderTransportError, ProviderContentError
+from ai.provider import (
+    ProviderError,
+    ProviderTransportError,
+    ProviderContentError,
+    MissingKeyError,
+    MissingModelError,
+)
+from ai.http import http_post_json
+from ai.schema_adapt import adapt_schema, get_provider_schema, UNSUPPORTED_KEYWORDS
+from ai.anthropic_provider import AnthropicProvider, build_anthropic_request
+from ai.openai_provider import OpenAIProvider, build_openai_request
+from ai.gemini_provider import GeminiProvider, build_gemini_request
+from ai.local_provider import LocalProvider, build_local_request, build_local_native_request
 from ai.router import (
     Router,
     PrivacyRoutingError,
@@ -98,6 +147,8 @@ from ai.router import (
     validate_routing_config,
     PrivacyRoutingConfigError,
 )
+import http.server
+import threading
 
 
 class TestPlaneSeparation(unittest.TestCase):
@@ -1887,13 +1938,17 @@ class TestWorkflowScriptInvocations(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 parser.parse_args(["--query", "What is DOCCAD?"])
 
+        # Accepts valid --provider
+        args_q = parser.parse_args(["--question", "What is DOCCAD?", "--provider", "fixture"])
+        self.assertEqual(args_q.provider, "fixture")
+
         # Rejects unrecognized --provider
         with redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
-                parser.parse_args(["--question", "What is DOCCAD?", "--provider", "fixture"])
+                parser.parse_args(["--question", "What is DOCCAD?", "--provider", "unknown_provider"])
 
     def test_generate_page_cli_argparse_rules(self):
-        """Confirm generate_page.py accepts --contract, --target, --privacy, but rejects --provider."""
+        """Confirm generate_page.py accepts --contract, --target, --privacy, --provider."""
         parser = generate_page_module.build_parser()
 
         # Valid invocation
@@ -1901,11 +1956,16 @@ class TestWorkflowScriptInvocations(unittest.TestCase):
         self.assertEqual(args.contract, "GenerateRecruiterPage")
         self.assertEqual(args.target, "system-overview")
         self.assertEqual(args.privacy, "public")
+        self.assertIsNone(args.provider)
+
+        # Accepts valid --provider
+        args_prov = parser.parse_args(["--contract", "GenerateRecruiterPage", "--target", "system-overview", "--provider", "fixture"])
+        self.assertEqual(args_prov.provider, "fixture")
 
         # Rejects unrecognized --provider
         with redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
-                parser.parse_args(["--contract", "GenerateRecruiterPage", "--target", "system-overview", "--provider", "fixture"])
+                parser.parse_args(["--contract", "GenerateRecruiterPage", "--target", "system-overview", "--provider", "unknown_provider"])
 
     def test_all_workflows_parse_against_argparse(self):
         """Dynamically extract every Python script invocation across .github/workflows/*.yml and parse against argparse."""
@@ -2011,6 +2071,649 @@ class TestWorkflowSecurityInvariants(unittest.TestCase):
     def test_top_level_permissions_declared(self):
         for name, wf in self.workflows.items():
             self.assertIn("permissions", wf, f"{name}: declare top-level least-privilege permissions")
+
+
+class TestNoExternalNetwork(unittest.TestCase):
+    """NV-REQ-025: Ensure tests never reach non-loopback addresses."""
+
+    def test_non_loopback_connection_is_blocked(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            with self.assertRaises(RuntimeError) as cm:
+                s.connect(("93.184.216.34", 80))
+            self.assertIn("Network guard blocked non-loopback connection", str(cm.exception))
+        finally:
+            s.close()
+
+    def test_non_loopback_hostname_is_blocked(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            with self.assertRaises(RuntimeError) as cm:
+                s.connect(("api.anthropic.com", 443))
+            self.assertIn("Network guard blocked non-loopback connection", str(cm.exception))
+        finally:
+            s.close()
+
+    def test_loopback_connection_permitted_by_guard(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            try:
+                s.connect(("127.0.0.1", 59999))
+            except ConnectionRefusedError:
+                pass
+            except OSError:
+                pass
+        except RuntimeError as e:
+            self.fail(f"Guard should not have blocked loopback connection: {e}")
+        finally:
+            s.close()
+
+
+
+class _StubHttpHandler(http.server.BaseHTTPRequestHandler):
+    response_map = {}  # path -> list of (status, headers, body)
+    received_requests = []
+
+    def log_message(self, format, *args):
+        pass
+
+    def do_POST(self):
+        content_length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(content_length) if content_length > 0 else b""
+        self.__class__.received_requests.append({
+            "path": self.path,
+            "headers": dict(self.headers),
+            "body": body,
+        })
+        queue = self.__class__.response_map.get(self.path, self.__class__.response_map.get("*", []))
+        if queue:
+            status, resp_headers, resp_body = queue.pop(0)
+        else:
+            status, resp_headers, resp_body = 200, {"Content-Type": "application/json"}, '{"choices":[{"message":{"content":"ok"}}],"model":"stub-model"}'
+
+        self.send_response(status)
+        for k, v in resp_headers.items():
+            self.send_header(k, v)
+        self.end_headers()
+        if isinstance(resp_body, str):
+            resp_body = resp_body.encode("utf-8")
+        self.wfile.write(resp_body)
+
+
+class TestHttpRetryPolicy(unittest.TestCase):
+    """P2-04: Test HTTP helper retry, error classification, redaction and fallback."""
+
+    def setUp(self):
+        _StubHttpHandler.response_map = {}
+        _StubHttpHandler.received_requests = []
+        self.server = http.server.HTTPServer(("127.0.0.1", 0), _StubHttpHandler)
+        self.port = self.server.server_port
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.sleeps = []
+        self.mock_sleep = lambda s: self.sleeps.append(s)
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(timeout=1.0)
+
+    def test_retry_on_503_with_backoff_and_eventual_success(self):
+        _StubHttpHandler.response_map["*"] = [
+            (503, {}, '{"error": "overloaded"}'),
+            (503, {}, '{"error": "overloaded"}'),
+            (200, {"Content-Type": "application/json"}, '{"content":[{"type":"text","text":"hello from anthropic"}],"model":"claude-3-test"}'),
+        ]
+        provider = AnthropicProvider(
+            model="claude-3-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/messages",
+            env_key="TEST_ANTHROPIC_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-123"}):
+            res = provider.complete({}, [{"role": "user", "content": "hi"}])
+        self.assertEqual(res["text"], "hello from anthropic")
+        self.assertEqual(len(self.sleeps), 2)
+        self.assertEqual(len(_StubHttpHandler.received_requests), 3)
+
+    def test_exhausted_retries_raises_provider_transport_error(self):
+        _StubHttpHandler.response_map["*"] = [
+            (503, {}, '{"error": "unavailable"}'),
+            (503, {}, '{"error": "unavailable"}'),
+            (503, {}, '{"error": "unavailable"}'),
+            (503, {}, '{"error": "unavailable"}'),
+        ]
+        provider = OpenAIProvider(
+            model="gpt-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            env_key="TEST_OPENAI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_OPENAI_KEY": "fake-key-123"}):
+            with self.assertRaises(ProviderTransportError) as cm:
+                provider.complete({}, [{"role": "user", "content": "hi"}])
+        self.assertIn("retries exhausted", str(cm.exception))
+        self.assertEqual(len(self.sleeps), 3)
+        self.assertEqual(len(_StubHttpHandler.received_requests), 4)
+
+    def test_retry_429_honours_retry_after(self):
+        _StubHttpHandler.response_map["*"] = [
+            (429, {"Retry-After": "3.5"}, '{"error": "rate limited"}'),
+            (200, {"Content-Type": "application/json"}, '{"choices":[{"message":{"content":"ok after rate limit"}}],"model":"gpt-test"}'),
+        ]
+        provider = OpenAIProvider(
+            model="gpt-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            env_key="TEST_OPENAI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_OPENAI_KEY": "fake-key-123"}):
+            res = provider.complete({}, [{"role": "user", "content": "hi"}])
+        self.assertEqual(res["text"], "ok after rate limit")
+        self.assertEqual(len(self.sleeps), 1)
+        self.assertEqual(self.sleeps[0], 3.5)
+
+    def test_terminal_http_statuses_fail_fast_without_retry(self):
+        for code in (400, 401, 403, 404):
+            _StubHttpHandler.response_map["*"] = [
+                (code, {}, f'{{"error": "terminal {code}"}}'),
+            ]
+            _StubHttpHandler.received_requests.clear()
+            self.sleeps.clear()
+
+            provider = AnthropicProvider(
+                model="claude-test",
+                base_url=f"http://127.0.0.1:{self.port}/v1/messages",
+                env_key="TEST_ANTHROPIC_KEY",
+                sleep_fn=self.mock_sleep,
+            )
+            with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-123"}):
+                with self.assertRaises(ProviderError) as cm:
+                    provider.complete({}, [{"role": "user", "content": "hi"}])
+            # Must NOT be a ProviderTransportError (which would trigger fallback)
+            self.assertNotIsInstance(cm.exception, ProviderTransportError)
+            self.assertEqual(len(_StubHttpHandler.received_requests), 1)
+            self.assertEqual(len(self.sleeps), 0)
+
+    def test_quota_and_spend_limit_429_are_terminal(self):
+        # OpenAI insufficient_quota
+        _StubHttpHandler.response_map["*"] = [
+            (429, {}, '{"error": {"message": "You exceeded quota, insufficient_quota"}}'),
+        ]
+        provider = OpenAIProvider(
+            model="gpt-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            env_key="TEST_OPENAI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_OPENAI_KEY": "fake-key-123"}):
+            with self.assertRaises(ProviderError) as cm:
+                provider.complete({}, [{"role": "user", "content": "hi"}])
+        self.assertNotIsInstance(cm.exception, ProviderTransportError)
+        self.assertEqual(len(_StubHttpHandler.received_requests), 1)
+
+        # Anthropic enforced_spend_limit_reached with no Retry-After
+        _StubHttpHandler.response_map["*"] = [
+            (429, {}, '{"error": {"type": "error", "message": "enforced_spend_limit_reached"}}'),
+        ]
+        _StubHttpHandler.received_requests.clear()
+        provider_anthropic = AnthropicProvider(
+            model="claude-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/messages",
+            env_key="TEST_ANTHROPIC_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-123"}):
+            with self.assertRaises(ProviderError) as cm:
+                provider_anthropic.complete({}, [{"role": "user", "content": "hi"}])
+        self.assertNotIsInstance(cm.exception, ProviderTransportError)
+        self.assertEqual(len(_StubHttpHandler.received_requests), 1)
+
+    def test_auth_headers_and_keys_are_redacted_in_errors_and_logs(self):
+        secret_key = "sk-super-secret-key-123456789-test"
+        _StubHttpHandler.response_map["*"] = [
+            (400, {}, f'{{"error": "Unauthorized key: {secret_key}"}}'),
+        ]
+        provider = OpenAIProvider(
+            model="gpt-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            env_key="TEST_OPENAI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_OPENAI_KEY": secret_key}):
+            with self.assertRaises(ProviderError) as cm:
+                provider.complete({}, [{"role": "user", "content": "hi"}])
+        err_msg = str(cm.exception)
+        self.assertNotIn(secret_key, err_msg)
+        self.assertIn("[REDACTED]", err_msg)
+
+    def test_live_fallback_works_end_to_end(self):
+        # Set up two endpoints on the stub server: /p1 (503s) and /p2 (200 OK)
+        _StubHttpHandler.response_map["/p1"] = [
+            (503, {}, '{"error": "p1 down"}'),
+            (503, {}, '{"error": "p1 down"}'),
+            (503, {}, '{"error": "p1 down"}'),
+            (503, {}, '{"error": "p1 down"}'),
+        ]
+        _StubHttpHandler.response_map["/p2"] = [
+            (200, {"Content-Type": "application/json"}, '{"choices":[{"message":{"content":"success from p2"}}],"model":"model-p2"}'),
+        ]
+
+        p1 = AnthropicProvider(
+            model="p1-model",
+            base_url=f"http://127.0.0.1:{self.port}/p1",
+            env_key="TEST_KEY_P1",
+            sleep_fn=self.mock_sleep,
+        )
+        p2 = OpenAIProvider(
+            model="p2-model",
+            base_url=f"http://127.0.0.1:{self.port}/p2",
+            env_key="TEST_KEY_P2",
+            sleep_fn=self.mock_sleep,
+        )
+
+        router = Router(PROTOTYPE_ROOT / "ai.config.yaml")
+        with mock.patch.dict(os.environ, {"TEST_KEY_P1": "key1", "TEST_KEY_P2": "key2"}):
+            with mock.patch.object(router, "select_chain_names", return_value=["p1", "p2"]):
+                with mock.patch.object(router, "instantiate", side_effect=lambda name: p1 if name == "p1" else p2):
+                    res = router.run_with_fallback({"task": "TestTask"}, [{"role": "user", "content": "hi"}])
+                    self.assertEqual(res["text"], "success from p2")
+                    self.assertEqual(res["model"], "model-p2")
+
+
+class TestExplicitProviderSelection(unittest.TestCase):
+    """Tests for P2-11: explicit provider selection and Router.chain_for error propagation (G7)."""
+
+    def setUp(self):
+        self.router = Router(PROTOTYPE_ROOT / "ai.config.yaml")
+
+    def test_explicit_provider_builds_single_provider_chain(self):
+        for p in ["fixture", "anthropic", "gemini", "openai"]:
+            chain = self.router.select_chain_names({"task": "TestTask"}, provider=p)
+            self.assertEqual(chain, [p])
+        with mock.patch.dict(self.router.providers_cfg["local"], {"enabled": True}):
+            chain = self.router.select_chain_names({"task": "TestTask"}, provider="local")
+            self.assertEqual(chain, ["local"])
+
+    def test_no_provider_preserves_default_chain(self):
+        default_chain = self.router.select_chain_names({"task": "TestTask"})
+        self.assertEqual(self.router.select_chain_names({"task": "TestTask"}, provider=None), default_chain)
+        self.assertEqual(default_chain[0], "fixture")
+
+    def test_privacy_private_with_cloud_provider_raises_privacy_routing_error(self):
+        for cloud_p in ["anthropic", "gemini", "openai", "fixture"]:
+            with self.assertRaises(PrivacyRoutingError):
+                self.router.select_chain_names({"privacy": "private"}, provider=cloud_p)
+
+        # But local is allowed for private when enabled
+        with mock.patch.dict(self.router.providers_cfg["local"], {"enabled": True}):
+            chain = self.router.select_chain_names({"privacy": "private"}, provider="local")
+            self.assertEqual(chain, ["local"])
+
+    def test_disabled_or_unknown_provider_raises_routing_error(self):
+        with self.assertRaises(RoutingError):
+            self.router.select_chain_names({"task": "TestTask"}, provider="unknown_provider")
+
+        # 'local' is disabled by default in ai.config.yaml
+        with self.assertRaises(RoutingError):
+            self.router.select_chain_names({"task": "TestTask"}, provider="local")
+
+        with mock.patch.dict(self.router.providers_cfg, {"anthropic": {"enabled": False}}):
+            with self.assertRaises(RoutingError):
+                self.router.select_chain_names({"task": "TestTask"}, provider="anthropic")
+
+    def test_chain_for_reraises_missing_key_and_model_error(self):
+        with mock.patch.object(self.router, "instantiate", side_effect=MissingKeyError("key missing")):
+            with self.assertRaises(MissingKeyError):
+                self.router.chain_for({"task": "TestTask"}, provider="anthropic")
+
+        with mock.patch.object(self.router, "instantiate", side_effect=MissingModelError("model missing")):
+            with self.assertRaises(MissingModelError):
+                self.router.chain_for({"task": "TestTask"}, provider="anthropic")
+
+    def test_generate_page_cli_dry_run_with_explicit_provider(self):
+        res = subprocess.run(
+            [
+                sys.executable,
+                str(PROTOTYPE_ROOT / "scripts" / "generate_page.py"),
+                "--contract", "GenerateRecruiterPage",
+                "--target", "architecture-system-overview",
+                "--provider", "anthropic",
+                "--dry-run",
+            ],
+            cwd=str(PROTOTYPE_ROOT),
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(res.returncode, 0, f"stdout: {res.stdout}\nstderr: {res.stderr}")
+        self.assertIn("Provider chain (from ai.config.yaml): anthropic", res.stdout)
+        self.assertIn("DRY RUN: assembled prompt", res.stdout)
+
+
+class TestProviderSchemaDerivation(unittest.TestCase):
+    """P2-01: Provider-facing schema derivation (REQ-005, NV-REQ-019)."""
+
+    def setUp(self):
+        self.schema_path = PROTOTYPE_ROOT / "schemas" / "interview.schema.json"
+        self.orig_bytes = self.schema_path.read_bytes()
+        self.raw_schema = json.loads(self.orig_bytes.decode("utf-8"))
+
+    def tearDown(self):
+        # Assert schema file byte-identical afterwards
+        post_bytes = self.schema_path.read_bytes()
+        self.assertEqual(self.orig_bytes, post_bytes, "interview.schema.json was modified on disk!")
+
+    def _collect_keys(self, node):
+        keys = set()
+        if isinstance(node, dict):
+            for k, v in node.items():
+                keys.add(k)
+                keys.update(self._collect_keys(v))
+        elif isinstance(node, list):
+            for item in node:
+                keys.update(self._collect_keys(item))
+        return keys
+
+    def _check_objects(self, node, check_fn):
+        if isinstance(node, dict):
+            if node.get("type") == "object" or "properties" in node:
+                check_fn(node)
+            for v in node.values():
+                self._check_objects(v, check_fn)
+        elif isinstance(node, list):
+            for item in node:
+                self._check_objects(item, check_fn)
+
+    def test_anthropic_schema_derivation(self):
+        derived = adapt_schema(self.raw_schema, "anthropic")
+        used_keys = self._collect_keys(derived)
+        for rejected in ["minLength", "maxLength", "minimum", "maximum", "multipleOf", "$schema", "$id"]:
+            self.assertNotIn(rejected, used_keys, f"Anthropic schema contains rejected keyword: {rejected}")
+        # Objects must have additionalProperties: False
+        self._check_objects(derived, lambda obj: self.assertIs(obj.get("additionalProperties"), False))
+
+    def test_openai_schema_derivation(self):
+        derived = adapt_schema(self.raw_schema, "openai")
+        used_keys = self._collect_keys(derived)
+        for rejected in ["minLength", "maxLength", "pattern", "format", "minimum", "maximum", "multipleOf", "minItems", "maxItems", "$schema", "$id"]:
+            self.assertNotIn(rejected, used_keys, f"OpenAI schema contains rejected keyword: {rejected}")
+        # Objects must have additionalProperties: False and full required matching properties
+        def check_openai_obj(obj):
+            self.assertIs(obj.get("additionalProperties"), False)
+            if "properties" in obj:
+                self.assertEqual(sorted(obj.get("required", [])), sorted(obj["properties"].keys()))
+        self._check_objects(derived, check_openai_obj)
+
+    def test_gemini_schema_derivation(self):
+        derived = adapt_schema(self.raw_schema, "gemini")
+        used_keys = self._collect_keys(derived)
+        for rejected in ["minLength", "maxLength", "pattern", "if", "then", "else", "$defs", "$schema", "$id"]:
+            self.assertNotIn(rejected, used_keys, f"Gemini schema contains rejected keyword: {rejected}")
+
+    def test_local_schema_derivation(self):
+        derived = adapt_schema(self.raw_schema, "local")
+        used_keys = self._collect_keys(derived)
+        for rejected in ["minLength", "maxLength", "pattern", "minimum", "maximum", "$defs", "$schema", "$id"]:
+            self.assertNotIn(rejected, used_keys, f"Local schema contains rejected keyword: {rejected}")
+
+    def test_get_provider_schema_applies_only_to_structured_output_contracts(self):
+        interview_contract = load_contract("GenerateInterviewPrep")
+        schema = get_provider_schema(interview_contract, "anthropic", root_dir=PROTOTYPE_ROOT)
+        self.assertIsNotNone(schema)
+        self.assertIn("elevator_pitch", schema["properties"])
+
+        recruiter_contract = load_contract("GenerateRecruiterPage")
+        schema_none = get_provider_schema(recruiter_contract, "anthropic", root_dir=PROTOTYPE_ROOT)
+        self.assertIsNone(schema_none)
+
+
+class TestAdapterRequestShapes(unittest.TestCase):
+    """P2-02: Native structured-output request shapes, model fallback, refusals (REQ-005, NV-REQ-005, NV-REQ-019)."""
+
+    def setUp(self):
+        _StubHttpHandler.response_map = {}
+        _StubHttpHandler.received_requests = []
+        self.server = http.server.HTTPServer(("127.0.0.1", 0), _StubHttpHandler)
+        self.port = self.server.server_port
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.mock_sleep = lambda s: None
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(timeout=1.0)
+
+    def test_anthropic_request_shape_and_model_fallback(self):
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"content":[{"type":"text","text":"{\\"id\\":\\"test\\"}"}],"model":"claude-3-7-sonnet-20250219"}'),
+            (200, {"Content-Type": "application/json"},
+             '{"content":[{"type":"text","text":"hello"}]}'),
+        ]
+        provider = AnthropicProvider(
+            model="claude-configured-alias",
+            base_url=f"http://127.0.0.1:{self.port}/v1/messages",
+            env_key="TEST_ANTHROPIC_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-123"}):
+            # Call 1 with schema
+            res = provider.complete({}, [{"role": "user", "content": "hi"}],
+                                    opts={"schema": {"type": "object", "properties": {"id": {"type": "string"}}}})
+            # Returned model from body (gap G3)
+            self.assertEqual(res["model"], "claude-3-7-sonnet-20250219")
+            self.assertEqual(res["text"], '{"id":"test"}')
+
+            req1 = _StubHttpHandler.received_requests[0]
+            self.assertEqual(req1["path"], "/v1/messages")
+            header_keys = [k.lower() for k in req1["headers"].keys()]
+            self.assertIn("content-type", header_keys)
+            self.assertIn("x-api-key", header_keys)
+            self.assertIn("anthropic-version", header_keys)
+            body1 = json.loads(req1["body"].decode("utf-8"))
+            self.assertIn("output_config", body1)
+            self.assertEqual(body1["output_config"]["format"]["type"], "json_schema")
+            self.assertEqual(body1["output_config"]["format"]["schema"]["type"], "object")
+
+            # Call 2 without model in body -> falls back to configured alias
+            res2 = provider.complete({}, [{"role": "user", "content": "hi"}])
+            self.assertEqual(res2["model"], "claude-configured-alias")
+
+    def test_anthropic_refusal_raises_content_error_and_does_not_fall_back(self):
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"stop_reason":"refusal","content":[]}'),
+        ]
+        provider = AnthropicProvider(
+            model="claude-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/messages",
+            env_key="TEST_ANTHROPIC_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-123"}):
+            with self.assertRaises(ProviderContentError):
+                provider.complete({}, [{"role": "user", "content": "hi"}])
+
+    def test_openai_request_shape_and_model_fallback(self):
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"choices":[{"message":{"content":"{\\"id\\":\\"test\\"}"}}],"model":"gpt-4o-2024-08-06"}'),
+            (200, {"Content-Type": "application/json"},
+             '{"choices":[{"message":{"content":"hello"}}]}'),
+        ]
+        provider = OpenAIProvider(
+            model="gpt-configured-alias",
+            base_url=f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            env_key="TEST_OPENAI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_OPENAI_KEY": "fake-key-123"}):
+            res = provider.complete({}, [{"role": "user", "content": "hi"}],
+                                    opts={"schema": {"type": "object", "properties": {"id": {"type": "string"}}}})
+            self.assertEqual(res["model"], "gpt-4o-2024-08-06")
+
+            req1 = _StubHttpHandler.received_requests[0]
+            self.assertEqual(req1["path"], "/v1/chat/completions")
+            header_keys = [k.lower() for k in req1["headers"].keys()]
+            self.assertIn("content-type", header_keys)
+            self.assertIn("authorization", header_keys)
+            body1 = json.loads(req1["body"].decode("utf-8"))
+            self.assertIn("response_format", body1)
+            self.assertEqual(body1["response_format"]["type"], "json_schema")
+            self.assertTrue(body1["response_format"]["json_schema"]["strict"])
+            self.assertEqual(body1["response_format"]["json_schema"]["schema"]["type"], "object")
+
+            # Call 2 fallback model
+            res2 = provider.complete({}, [{"role": "user", "content": "hi"}])
+            self.assertEqual(res2["model"], "gpt-configured-alias")
+
+    def test_openai_refusal_raises_content_error(self):
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"choices":[{"message":{"refusal":"Refused due to policy"}}]}'),
+        ]
+        provider = OpenAIProvider(
+            model="gpt-test",
+            base_url=f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            env_key="TEST_OPENAI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_OPENAI_KEY": "fake-key-123"}):
+            with self.assertRaises(ProviderContentError):
+                provider.complete({}, [{"role": "user", "content": "hi"}])
+
+    def test_gemini_request_shape_and_model_fallback(self):
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"candidates":[{"content":{"parts":[{"text":"{\\"id\\":\\"test\\"}"}]}}],"modelVersion":"gemini-1.5-pro-002"}'),
+            (200, {"Content-Type": "application/json"},
+             '{"candidates":[{"content":{"parts":[{"text":"hello"}]}}]}'),
+        ]
+        provider = GeminiProvider(
+            model="gemini-configured-alias",
+            base_url=f"http://127.0.0.1:{self.port}/v1beta/models/gemini-configured-alias:generateContent",
+            env_key="TEST_GEMINI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_GEMINI_KEY": "fake-key-123"}):
+            res = provider.complete({}, [{"role": "user", "content": "hi"}],
+                                    opts={"schema": {"type": "object", "properties": {"id": {"type": "string"}}}})
+            self.assertEqual(res["model"], "gemini-1.5-pro-002")
+
+            req1 = _StubHttpHandler.received_requests[0]
+            header_keys = [k.lower() for k in req1["headers"].keys()]
+            self.assertIn("content-type", header_keys)
+            self.assertIn("x-goog-api-key", header_keys)
+            body1 = json.loads(req1["body"].decode("utf-8"))
+            self.assertIn("generationConfig", body1)
+            self.assertEqual(body1["generationConfig"]["responseMimeType"], "application/json")
+            self.assertEqual(body1["generationConfig"]["responseJsonSchema"]["type"], "object")
+
+            # Call 2 fallback model
+            res2 = provider.complete({}, [{"role": "user", "content": "hi"}])
+            self.assertEqual(res2["model"], "gemini-configured-alias")
+
+    def test_gemini_safety_refusal_raises_content_error(self):
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"candidates":[{"finishReason":"SAFETY","content":{"parts":[]}}]}'),
+        ]
+        provider = GeminiProvider(
+            model="gemini-test",
+            base_url=f"http://127.0.0.1:{self.port}/generate",
+            env_key="TEST_GEMINI_KEY",
+            sleep_fn=self.mock_sleep,
+        )
+        with mock.patch.dict(os.environ, {"TEST_GEMINI_KEY": "fake-key-123"}):
+            with self.assertRaises(ProviderContentError):
+                provider.complete({}, [{"role": "user", "content": "hi"}])
+
+    def test_local_request_shapes_and_native_fallback(self):
+        # OpenAI format
+        _StubHttpHandler.response_map["/v1/chat/completions"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"choices":[{"message":{"content":"{\\"id\\":\\"test\\"}"}}],"model":"qwen-served"}'),
+        ]
+        provider = LocalProvider(
+            model="local-model",
+            endpoint=f"http://127.0.0.1:{self.port}/v1",
+            sleep_fn=self.mock_sleep,
+        )
+        res = provider.complete({}, [{"role": "user", "content": "hi"}],
+                                opts={"schema": {"type": "object"}})
+        self.assertEqual(res["model"], "qwen-served")
+        req1 = _StubHttpHandler.received_requests[0]
+        body1 = json.loads(req1["body"].decode("utf-8"))
+        self.assertEqual(body1["response_format"]["type"], "json_schema")
+
+        # Native Ollama /api/chat fallback on 404
+        _StubHttpHandler.response_map["/v1/chat/completions"] = [
+            (404, {}, '{"error": "not found"}'),
+        ]
+        _StubHttpHandler.response_map["/api/chat"] = [
+            (200, {"Content-Type": "application/json"},
+             '{"message":{"content":"ok from ollama"},"model":"ollama-served"}'),
+        ]
+        _StubHttpHandler.received_requests.clear()
+        res_native = provider.complete({}, [{"role": "user", "content": "hi"}],
+                                       opts={"schema": {"type": "object"}})
+        self.assertEqual(res_native["model"], "ollama-served")
+        self.assertEqual(res_native["text"], "ok from ollama")
+        req_native = _StubHttpHandler.received_requests[1]
+        self.assertEqual(req_native["path"], "/api/chat")
+        body_native = json.loads(req_native["body"].decode("utf-8"))
+        self.assertFalse(body_native["stream"])
+        self.assertEqual(body_native["format"]["type"], "object")
+
+
+class TestSamplingOptIn(unittest.TestCase):
+    """P2-03: Sampling parameters opt-in and OpenAI token-limit field per provider (KB C1.10, C2.2)."""
+
+    def test_no_params_sends_no_sampling_keys(self):
+        _, ant_payload = build_anthropic_request("m", [], {}, "key", params=None)
+        self.assertNotIn("temperature", ant_payload)
+        self.assertNotIn("top_p", ant_payload)
+        self.assertNotIn("top_k", ant_payload)
+
+        _, oai_payload = build_openai_request("m", [], {}, "key", params=None)
+        self.assertNotIn("temperature", oai_payload)
+        self.assertNotIn("top_p", oai_payload)
+
+        _, gem_payload = build_gemini_request("m", [], {}, "key", params=None)
+        self.assertNotIn("temperature", gem_payload["generationConfig"])
+        self.assertNotIn("topP", gem_payload["generationConfig"])
+        self.assertNotIn("topK", gem_payload["generationConfig"])
+
+        _, loc_payload = build_local_request("m", [], {}, "key", params=None)
+        self.assertNotIn("temperature", loc_payload)
+        self.assertNotIn("top_p", loc_payload)
+
+    def test_configured_params_are_sent(self):
+        _, ant_payload = build_anthropic_request("m", [], {}, "key", params={"temperature": 0.5, "top_p": 0.9})
+        self.assertEqual(ant_payload["temperature"], 0.5)
+        self.assertEqual(ant_payload["top_p"], 0.9)
+
+        _, oai_payload = build_openai_request("m", [], {}, "key", params={"temperature": 0.3})
+        self.assertEqual(oai_payload["temperature"], 0.3)
+
+        _, gem_payload = build_gemini_request("m", [], {}, "key", params={"temperature": 0.2, "topK": 40})
+        self.assertEqual(gem_payload["generationConfig"]["temperature"], 0.2)
+        self.assertEqual(gem_payload["generationConfig"]["topK"], 40)
+
+        _, loc_payload = build_local_request("m", [], {}, "key", params={"temperature": 0.4})
+        self.assertEqual(loc_payload["temperature"], 0.4)
+
+    def test_token_param_switches_openai_field(self):
+        # Default / max_tokens
+        _, def_payload = build_openai_request("m", [], {"max_tokens": 2048}, "key", token_param="max_tokens")
+        self.assertEqual(def_payload["max_tokens"], 2048)
+        self.assertNotIn("max_completion_tokens", def_payload)
+
+        # max_completion_tokens
+        _, cmp_payload = build_openai_request("m", [], {"max_tokens": 2048}, "key", token_param="max_completion_tokens")
+        self.assertEqual(cmp_payload["max_completion_tokens"], 2048)
+        self.assertNotIn("max_tokens", cmp_payload)
 
 
 if __name__ == "__main__":
