@@ -57,6 +57,13 @@ class PrivacyRoutingConfigError(RoutingError):
     """A routing rule for privacy: private violates T12 by including non-local providers."""
 
 
+class BudgetExceededError(RuntimeError):
+    """Per-run call or token budget exceeded."""
+
+
+BudgetError = BudgetExceededError
+
+
 class SecretScanViolation(RuntimeError):
     """A secret or credential pattern was detected in the prompt context (T6)."""
 
@@ -103,13 +110,29 @@ def _resolve_env_ref(value: Any) -> Any:
 
 
 class Router:
-    def __init__(self, config_path: str | Path = "ai.config.yaml"):
+    def __init__(self, config_path: str | Path = "ai.config.yaml", budget: Dict[str, Any] | None = None):
         raw = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
         self.cfg: Dict[str, Any] = raw["ai"]
         validate_routing_config(self.cfg)
         self.providers_cfg: Dict[str, Dict[str, Any]] = self.cfg["providers"]
         self.rules: List[Dict[str, Any]] = self.cfg.get("routing", [])
         self.root: Path = Path(config_path).resolve().parent
+        self.budget_cfg: Dict[str, Any] = budget if budget is not None else self.cfg.get("budget", {})
+        self.max_tokens_per_run: int | None = self.budget_cfg.get("max_tokens_per_run")
+        self.max_calls_per_run: int | None = self.budget_cfg.get("max_calls_per_run")
+        self.calls_count: int = 0
+        self.tokens_used: int = 0
+
+    def check_budget_before_call(self, estimated_tokens: int = 0) -> None:
+        """Check call and token limits before making a provider call."""
+        if self.max_calls_per_run is not None and self.calls_count + 1 > self.max_calls_per_run:
+            raise BudgetExceededError(
+                f"Per-run call budget exceeded: calls {self.calls_count} + 1 > max_calls_per_run {self.max_calls_per_run}"
+            )
+        if self.max_tokens_per_run is not None and self.tokens_used + estimated_tokens > self.max_tokens_per_run:
+            raise BudgetExceededError(
+                f"Per-run token budget exceeded: tokens {self.tokens_used} + {estimated_tokens} > max_tokens_per_run {self.max_tokens_per_run}"
+            )
 
     # -- rule matching -----------------------------------------------------
     @staticmethod
@@ -208,7 +231,15 @@ class Router:
         errors: List[str] = []
         chain_names = self.select_chain_names(task_meta, provider=provider)
         privacy_pinned = task_meta.get("privacy") == "private"
+
+        est_tokens = int(task_meta.get("context_tokens", 0))
+        if est_tokens <= 0 and messages:
+            est_tokens = sum(len(str(m.get("content", ""))) // 4 for m in messages if isinstance(m, dict))
+        if est_tokens <= 0 and opts and "max_tokens" in opts:
+            est_tokens = int(opts["max_tokens"])
+
         for name in chain_names:
+            self.check_budget_before_call(est_tokens)
             try:
                 p = self.instantiate(name)
                 call_opts = dict(opts) if opts else {}
@@ -217,8 +248,20 @@ class Router:
                     schema = get_provider_schema(contract, name, root_dir=self.root)
                     if schema:
                         call_opts["schema"] = schema
-                return p.complete(task_meta, messages, call_opts)
+                self.calls_count += 1
+                result = p.complete(task_meta, messages, call_opts)
+                usage = result.get("usage") or {}
+                call_tokens = (
+                    usage.get("total_tokens")
+                    or (usage.get("prompt_tokens", 0) + usage.get("completion_tokens", 0))
+                    or est_tokens
+                )
+                self.tokens_used += int(call_tokens)
+                return result
             except Exception as e:
+                if isinstance(e, BudgetExceededError):
+                    raise
+                self.tokens_used += int(est_tokens)
                 errors.append(f"{name}: {e}")
                 if privacy_pinned:
                     raise PrivacyRoutingError(

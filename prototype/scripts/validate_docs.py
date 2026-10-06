@@ -39,6 +39,9 @@ from typing import Any, Dict, List, Tuple
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from check_grounding import check_grounding_document, check_grounding_interview
+
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 SCHEMAS = ROOT / "schemas"
@@ -62,6 +65,36 @@ MD_LINK_RE = re.compile(r"\]\((/(?:docs|views)(?:/[^)\s]*)?)(?:\s+\"[^\"]*\")?\)
 EVIDENCE_LINK_RE = re.compile(r"<EvidenceLink\b[^>]*?\bto=[\"']([^\"']*)[\"']")
 CODE_FENCE_RE = re.compile(r"^(```|~~~).*?^\1[^\n]*$", re.DOTALL | re.MULTILINE)
 INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
+
+
+def check_mdx_security(body: str, allowed_domains: set[str] | None = None) -> List[str]:
+    """Check MDX body for unsafe patterns, imports/exports, disallowed JSX components, and external links."""
+    errs: List[str] = []
+    if allowed_domains is None:
+        allowed_domains = load_link_allowlist()
+
+    for pattern in UNSAFE_PATTERNS:
+        if pattern.search(body):
+            errs.append(f"SECURITY: Unsafe executable pattern matched in generated MDX: {pattern.pattern}")
+
+    prose = INLINE_CODE_RE.sub("", CODE_FENCE_RE.sub("", body))
+
+    if IMPORT_EXPORT_RE.search(prose):
+        errs.append("SECURITY: import/export statement forbidden in generated MDX (T3)")
+
+    for m in JSX_COMPONENT_RE.finditer(prose):
+        tag = m.group(1)
+        if tag not in ALLOWED_JSX_COMPONENTS:
+            errs.append(f"SECURITY: Unallowlisted JSX component <{tag}> forbidden in generated MDX (T3)")
+
+    for m in EXTERNAL_LINK_RE.finditer(prose):
+        url = m.group(1) or m.group(2)
+        parsed = urllib.parse.urlparse(url)
+        hostname = (parsed.hostname or "").lower()
+        if hostname and hostname not in allowed_domains:
+            errs.append(f"SECURITY: External link domain '{hostname}' not in contracts/link-allowlist.yaml (T4)")
+
+    return errs
 
 
 def load_link_allowlist() -> set[str]:
@@ -260,26 +293,14 @@ def main() -> int:
         prose = INLINE_CODE_RE.sub("", CODE_FENCE_RE.sub("", body))  # code samples are not citations
         check_citations(rel, MD_LINK_RE.findall(prose) + EVIDENCE_LINK_RE.findall(prose))
 
-        # Security check on generated files (AD-15, T3, T4)
+        # Security and Grounding checks on generated files (AD-15, T3, T4, P2-06)
         if in_generated:
-            for pattern in UNSAFE_PATTERNS:
-                if pattern.search(body):
-                    problems.append(f"{rel}: SECURITY: Unsafe executable pattern matched in generated MDX: {pattern.pattern}")
+            for sec_err in check_mdx_security(body, allowed_domains):
+                problems.append(f"{rel}: {sec_err}")
 
-            if IMPORT_EXPORT_RE.search(prose):
-                problems.append(f"{rel}: SECURITY: import/export statement forbidden in generated MDX (T3)")
-
-            for m in JSX_COMPONENT_RE.finditer(prose):
-                tag = m.group(1)
-                if tag not in ALLOWED_JSX_COMPONENTS:
-                    problems.append(f"{rel}: SECURITY: Unallowlisted JSX component <{tag}> forbidden in generated MDX (T3)")
-
-            for m in EXTERNAL_LINK_RE.finditer(prose):
-                url = m.group(1) or m.group(2)
-                parsed = urllib.parse.urlparse(url)
-                hostname = (parsed.hostname or "").lower()
-                if hostname and hostname not in allowed_domains:
-                    problems.append(f"{rel}: SECURITY: External link domain '{hostname}' not in contracts/link-allowlist.yaml (T4)")
+            if fm.get("type") == "generated":
+                for g_err in check_grounding_document(fm, body, root_dir=ROOT):
+                    problems.append(f"{rel}: {g_err}")
 
         if isinstance(fm.get("generation"), dict):
             hash_checks.append((rel, fm["generation"]))
@@ -306,6 +327,8 @@ def main() -> int:
             problems.append(f"{rel}: interview schema: {err}")
         check_citations(rel, [link.get("to", "") for link in data.get("evidence_links", [])
                               if isinstance(link, dict)])
+        for g_err in check_grounding_interview(data, root_dir=ROOT):
+            problems.append(f"{rel}: {g_err}")
         if isinstance(data.get("generation"), dict):
             hash_checks.append((rel, data["generation"]))
 

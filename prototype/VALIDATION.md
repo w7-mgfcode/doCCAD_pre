@@ -1,22 +1,24 @@
 # DOCCAD Prototype Validation Report
 
-**Run Date**: 2026-10-01  
+**Run Date**: 2026-10-06  
 **Environment**: Linux x86_64, Node v24.19.0 (`engines.node: >=24.14`), Python 3.14.4  
 **Dependencies**: `PyYAML 6.0.3`, `jsonschema 4.19.2`, `referencing 0.36.2`  
-**Execution Context**: Branch `next-version`, Phase 0 baseline stabilization  
+**Execution Context**: Branch `phase-2-live-ai`, Phase 2 (Live AI Behind Fixture Default)  
 
 ---
 
 ## 1. Executive Summary
 
-This document records the definitive validation results for the DOCCAD prototype at the conclusion of Phase 1 (Deployable & Governed GitHub Automation). Every check is categorized as **PASS**, **FAIL**, or **NOT RUN**. No assumed or historical test results are reported; every passing entry represents a command executed in this run with exit code 0.
+This document records the definitive validation results for the DOCCAD prototype at the conclusion of Phase 2 (Live AI Generation Behind Fixture Default, Checkpoint 2B). Every check is categorized as **PASS**, **FAIL**, or **NOT RUN**. No assumed or historical test results are reported; every passing entry represents a command executed in this run with exit code 0.
 
-- **Total Automated Python Unit Tests**: 91 tests across 24 test classes (**91 PASS, 0 FAIL, 0 EXPECTED FAILURES**).
-- **Core Governance Scripts**: `validate_docs.py`, `detect_changes.py`, `generate_page.py`, `generate_question.py`, `review_governance.py`, `build_filter.py`, `github_approval.py` all verified with exposed `build_parser()` CLI endpoints.
-- **GitHub Automation & Workflows**: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, and `dependabot.yml` statically validated, action pins pinned to full commit SHAs, zero `pull_request_target`, and all CLI script invocations verified against script argparse definitions.
-- **Governance & CODEOWNERS (E3)**: Real human approval replaces simulated approval for production: `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation. End-to-end production approval is noted as BLOCKED on E8 (GitHub App) because the sole CODEOWNER cannot approve their own pull requests.
+- **Total Automated Python Unit Tests**: 147 tests across 39 test classes (**147 PASS, 0 FAIL, 0 EXPECTED FAILURES**).
+- **Core Governance Scripts**: `validate_docs.py`, `detect_changes.py`, `generate_page.py`, `generate_question.py`, `review_governance.py`, `build_filter.py`, `github_approval.py`, and `check_grounding.py` all verified with exposed `build_parser()` CLI endpoints.
+- **AI Abstraction & Providers**: Standard library HTTP transport helper (`ai/http.py`) with exponential backoff and jitter, provider-facing JSON schema derivation (`ai/schema_adapt.py`), sampling parameter opt-in (`TestSamplingOptIn`), explicit provider selection (`--provider`, `TestExplicitProviderSelection`), and per-run token/call budget (`TestRunBudget`).
+- **Grounding & Security Gates**: Deterministic grounding gate (`scripts/check_grounding.py`) verifying citation existence, exact quote span containment (>= 15 chars), and recruiter technology claims against fact set; prompt injection rejection suite (`TestPromptInjectionFixtures`) verifying refusal of exfiltration links, fabricated citations, ungrounded tech claims, and executable MDX.
+- **GitHub Automation & Workflows**: `ci.yml`, `publish.yml`, `generate.yml`, `drift.yml`, and `dependabot.yml` statically validated, action pins pinned to full commit SHAs, zero `pull_request_target`, CLI script invocations verified against argparse, and `.github/workflows/generate.yml` updated with `provider` choice input and protected `generation` environment job with scoped secrets (`TestGenerateWorkflowProviderInput`).
+- **Governance & CODEOWNERS (E3)**: Real human approval replaces simulated approval for production: `approval_record` schema, body hash stamping, offline mockable GitHub API verifier, fail-closed permission error handling, draft reset on generation.
 - **Frontend & Static Build**: TypeScript compilation (`tsc`) and Docusaurus dual-locale build (`en`, `hu`) exit 0 with search index generation.
-- **Security & Quality Gates (T1–T6, T12, T14)**: AST safety, link allowlisting, secret scanning, strict Mermaid rendering, private routing hard-pinning, private content isolation, and CODEOWNER approval verification verified.
+- **Live Smoke Calls (P2-08)**: Documented with exact owner execution commands and clean-up command (`git restore docs/generated`), marked **NOT RUN** per run budget rules.
 - **Browser Testing**: Marked **NOT RUN** per run rules (interactive `/browser` slash command in Antigravity 2.0 app and unapproved Playwright dependency per decision E6).
 
 ---
@@ -25,14 +27,18 @@ This document records the definitive validation results for the DOCCAD prototype
 
 | Gate ID | Check Description | Exact Command | Exit Code | Date | Result | Evidence / Output Note |
 |---|---|---|---|---|---|---|
-| **GATE-VAL** | Schema, plane, hash, link & AST validation | `npm run validate` | 0 | 2026-10-01 | **PASS** | `OK — frontmatter schemas valid, planes intact, IDs unique, 37 provenance hashes verified, link/security checks passed.` |
-| **GATE-DRIFT** | Change impact & drift detection | `npm run detect` | 0 | 2026-10-01 | **PASS** | `stale generated: 0; nothing to regenerate — all provenance hashes current.` |
-| **GATE-TEST** | Comprehensive Python unit test suite | `npm run test` | 0 | 2026-10-01 | **PASS** | `Ran 91 tests in 4.430s ... OK (0 failures, 0 errors, 0 expected failures)` |
-| **GATE-TYPE** | TypeScript static type verification | `npm run typecheck` | 0 | 2026-10-01 | **PASS** | `tsc --noEmit` exits 0 cleanly. |
-| **GATE-BUILD** | Dual-locale static production build | `npm run build` | 0 | 2026-10-01 | **PASS** | `Generated static files in "build"` and `Generated static files in "build/hu"`. |
+| **GATE-VAL** | Schema, plane, hash, link, MDX & grounding validation | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate` | 0 | 2026-10-06 | **PASS** | `Validated 40 pages, 4 interview datasets, 25 provenance hashes. OK — frontmatter schemas valid, planes intact, provenance hashes current, security checks passed.` |
+| **GATE-DRIFT** | Change impact & drift detection | `npm run detect` | 0 | 2026-10-06 | **PASS** | `stale generated: 0; nothing to regenerate — all provenance hashes current.` |
+| **GATE-TEST** | Comprehensive Python unit test suite | `python3 -m unittest discover tests -v` | 0 | 2026-10-06 | **PASS** | `Ran 147 tests in 12.470s ... OK (0 failures, 0 errors, 0 expected failures)` |
+| **GATE-TYPE** | TypeScript static type verification | `npm run typecheck` | 0 | 2026-10-06 | **PASS** | `tsc --noEmit` exits 0 cleanly. |
+| **GATE-BUILD** | Dual-locale static production build | `npm run build` | 0 | 2026-10-06 | **PASS** | `Generated static files in "build"` and `Generated static files in "build/hu"`. |
 | **GATE-PROD-ROUND** | Production build filter & demo restoration | `npm run build:production && npm run build:demo` | 0 | 2026-10-01 | **PASS** | Production filter stashes unapproved files with hold stubs; demo build cleanly restores. |
+| **GATE-BUDGET** | Per-run token and call budget enforcement | `python3 -m unittest tests.test_doccad.TestRunBudget -v` | 0 | 2026-10-06 | **PASS** | Ran 5 tests ... OK (token budget accumulation, pre-call aborts, repair retry counting). |
+| **GATE-GROUNDING** | Deterministic citation, quote & tech grounding | `python3 -m unittest tests.test_doccad.TestGroundingGate -v` | 0 | 2026-10-06 | **PASS** | Ran 6 tests ... OK (Rule 1 hash/existence, Rule 2 quote spans, Rule 3 recruiter tech, golden set). |
+| **GATE-INJECTION** | Prompt injection rejection fixtures | `python3 -m unittest tests.test_doccad.TestPromptInjectionFixtures -v` | 0 | 2026-10-06 | **PASS** | Ran 6 tests ... OK (exfiltration link, fabricated citation, invented tech, executable MDX). |
+| **GATE-WORKFLOW-PROV** | Workflow provider input & environment scoping | `python3 -m unittest tests.test_doccad.TestGenerateWorkflowProviderInput -v` | 0 | 2026-10-06 | **PASS** | Ran 4 tests ... OK (default fixture, environment: generation, scoped secrets, env: pass-through). |
 | **GATE-WORKFLOW-VAL** | Workflow YAML syntax & action SHA pin checks | `python3 -c "import yaml,sys;[yaml.safe_load(open(f)) for f in sys.argv[1:]]" .github/workflows/*.yml .github/dependabot.yml` | 0 | 2026-10-01 | **PASS** | All workflows & dependabot parse cleanly; 16/16 `uses:` lines pinned with 40-char SHA; 0 `pull_request_target`. |
-| **GATE-WORKFLOW-ARG** | Dynamic workflow CLI invocation parsing vs argparse | `python3 -m unittest tests.test_doccad.TestWorkflowScriptInvocations -v` | 0 | 2026-10-01 | **PASS** | Ran 3 tests in 0.014s ... OK (workflow shell & subprocess calls match CLI parser definitions). |
+| **GATE-WORKFLOW-ARG** | Dynamic workflow CLI invocation parsing vs argparse | `python3 -m unittest tests.test_doccad.TestWorkflowScriptInvocations -v` | 0 | 2026-10-06 | **PASS** | Ran 3 tests ... OK (workflow shell & subprocess calls match CLI parser definitions including provider). |
 | **GATE-APP-REC** | E3 Approval Record schema and hash verification | `python3 -m unittest tests.test_doccad.TestApprovalRecord -v` | 0 | 2026-10-01 | **PASS** | Ran 13 tests in 0.041s ... OK (stamped body hash, tamper rejection, draft reset). |
 | **GATE-SRCH-EN** | English local search index generation | `ls -lh build/search-index.json` | 0 | 2026-10-01 | **PASS** | File exists (350 KB, generated by `@easyops-cn/docusaurus-search-local`). |
 | **GATE-SRCH-HU** | Hungarian local search index generation | `ls -lh build/hu/search-index.json` | 0 | 2026-10-01 | **PASS** | File exists (343 KB, generated by `@easyops-cn/docusaurus-search-local`). |
@@ -119,13 +125,21 @@ Interactive browser verification was specified in `docs/next-phase/05_ANTIGRAVIT
 
 ---
 
-## 7. Live AI Provider Smoke Verification (Phase 2 Preview — NOT RUN)
+## 7. Live AI Provider Smoke Verification (Phase 2 Owner Execution — NOT RUN)
 
-Per run rules and decision E5, live provider calls are deferred to Phase 2 and require owner credentials and spend caps. No API keys were read, written, or transmitted during Phase 0.
+Per run rules and decision E5, live provider calls require owner credentials, model choices, and spend caps. No external API requests were made during this agent run; all provider adapters have been verified against local loopback mock servers (`TestHttpRetryPolicy`, `TestAdapterRequestShapes`, `TestProviderSchemaDerivation`, `TestSamplingOptIn`).
 
-| Provider | Model Flag / Target | Command Template | Status |
-|---|---|---|---|
-| Anthropic Claude | `${AI_MODEL_ANTHROPIC}` | `AI_PROVIDER=anthropic python3 scripts/generate_page.py --contract contracts/GenerateRecruiterPage.yaml --target architecture-system-overview` | **NOT RUN** (Owner credentials required) |
-| OpenAI GPT | `${AI_MODEL_OPENAI}` | `AI_PROVIDER=openai python3 scripts/generate_page.py --contract contracts/GenerateRecruiterPage.yaml --target architecture-system-overview` | **NOT RUN** (Owner credentials required) |
-| Google Gemini | `${AI_MODEL_GEMINI}` | `AI_PROVIDER=gemini python3 scripts/generate_page.py --contract contracts/GenerateRecruiterPage.yaml --target architecture-system-overview` | **NOT RUN** (Owner credentials required) |
-| Local Ollama / vLLM | `local` | `AI_PROVIDER=local python3 scripts/generate_page.py --contract contracts/GenerateRecruiterPage.yaml --target architecture-system-overview` | **NOT RUN** (Local server required) |
+The table below records the exact command sequence for owner-executed live smoke testing. Execute from `prototype/` with the appropriate provider API key and model environment variable exported in the shell. Kept output must proceed through a `docs-gen/*` branch and pull request, never a direct commit to `main`.
+
+| Provider | Required Credentials & Env | Generation Commands (InterviewPrep & RecruiterPage) | Post-Run Validation & Clean-Up | Status | Owner Record Fields |
+|---|---|---|---|---|---|
+| **Anthropic Claude** | `export ANTHROPIC_API_KEY="sk-ant-..."`<br/>`export AI_MODEL_ANTHROPIC="claude-3-7-sonnet-..."` | `python3 scripts/generate_page.py --contract GenerateInterviewPrep --target architecture-system-overview --provider anthropic`<br/>`python3 scripts/generate_page.py --contract GenerateRecruiterPage --target architecture-system-overview --provider anthropic` | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate`<br/>`git restore docs/generated` | **NOT RUN** | Model returned: `__________`<br/>Exit codes: `__________`<br/>Validation: `__________`<br/>Tokens (in/out): `__________` |
+| **Google Gemini** | `export GEMINI_API_KEY="AIza..."`<br/>`export AI_MODEL_GEMINI="gemini-2.5-flash-..."` | `python3 scripts/generate_page.py --contract GenerateInterviewPrep --target architecture-system-overview --provider gemini`<br/>`python3 scripts/generate_page.py --contract GenerateRecruiterPage --target architecture-system-overview --provider gemini` | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate`<br/>`git restore docs/generated` | **NOT RUN** | Model returned: `__________`<br/>Exit codes: `__________`<br/>Validation: `__________`<br/>Tokens (in/out): `__________` |
+| **OpenAI GPT** | `export OPENAI_API_KEY="sk-proj-..."`<br/>`export AI_MODEL_OPENAI="gpt-4o-..."` | `python3 scripts/generate_page.py --contract GenerateInterviewPrep --target architecture-system-overview --provider openai`<br/>`python3 scripts/generate_page.py --contract GenerateRecruiterPage --target architecture-system-overview --provider openai` | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate`<br/>`git restore docs/generated` | **NOT RUN** | Model returned: `__________`<br/>Exit codes: `__________`<br/>Validation: `__________`<br/>Tokens (in/out): `__________` |
+| **Local (Ollama / vLLM)** | Live local server on `http://localhost:11434/v1`<br/>`export AI_MODEL_LOCAL="llama3.1:..."` | `python3 scripts/generate_page.py --contract GenerateInterviewPrep --target architecture-system-overview --provider local`<br/>`python3 scripts/generate_page.py --contract GenerateRecruiterPage --target architecture-system-overview --provider local` | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate`<br/>`git restore docs/generated` | **NOT RUN** | Model returned: `__________`<br/>Exit codes: `__________`<br/>Validation: `__________`<br/>Tokens (in/out): `__________` |
+
+### Owner Post-Execution Procedure
+1. Execute the paired generation commands for the chosen provider.
+2. Confirm that `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate` exits 0.
+3. If discarding generation test output, run `git restore docs/generated`.
+4. If keeping generated output, do NOT commit directly to `main` or `next-version`. Create a branch `docs-gen/<contract>-<target>` and open a PR with the required provenance metadata.

@@ -24,7 +24,8 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, check_path_containment, _normalize  # noqa: E402
+from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, check_path_containment, _normalize, check_mdx_security  # noqa: E402
+from check_grounding import check_grounding_document  # noqa: E402
 from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
 from review_governance import reset_to_draft  # noqa: E402
 
@@ -289,8 +290,8 @@ def main() -> int:
     fm["generated"] = True
     fm["generation"] = {
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 2),
-        "prompt_version": contract.get("prompt_version", "question-page.v2"),
+        "contract_version": contract.get("version", 3),
+        "prompt_version": contract.get("prompt_version", "question-page.v3"),
         "source_documents": source_docs,
         "repo_evidence": [
             f.relative_to(ROOT).as_posix()
@@ -311,6 +312,18 @@ def main() -> int:
     val_errors = validate(fm, "document")
     if val_errors:
         print(f"[ERROR] Generated frontmatter validation failed: {val_errors}", file=sys.stderr)
+        return 1
+
+    # Pre-write MDX restriction gate and link allowlist
+    sec_errors = check_mdx_security(body)
+    if sec_errors:
+        print(f"[ERROR] Generated MDX security check failed: {sec_errors}", file=sys.stderr)
+        return 1
+
+    # Pre-write Grounding Gate
+    grounding_errors = check_grounding_document(fm, body, root_dir=ROOT)
+    if grounding_errors:
+        print(f"[ERROR] Grounding validation failed: {grounding_errors}", file=sys.stderr)
         return 1
 
     doc_id = fm.get("id", f"q-{abs(hash(question)) % 1000:03d}")
@@ -334,8 +347,8 @@ def main() -> int:
     run_record = {
         "run_id": f"run-{int(datetime.datetime.now().timestamp())}",
         "contract": contract["contract"],
-        "contract_version": contract.get("version", 2),
-        "prompt_version": contract.get("prompt_version", "question-page.v2"),
+        "contract_version": contract.get("version", 3),
+        "prompt_version": contract.get("prompt_version", "question-page.v3"),
         "provider": provider_name,
         "model": model_name,
         "mode": gen_mode,

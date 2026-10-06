@@ -1,7 +1,7 @@
 # DOCCAD Prototype Limitations & Architecture Disclosures
 
-**Date**: 2026-10-01  
-**Status**: Baseline Stabilized (Phase 0 Exit)  
+**Date**: 2026-10-06  
+**Status**: Phase 2 Complete (Live AI Behind Fixture Default)  
 **System Specification**: DOCCAD Prototype v0.2.0  
 
 ---
@@ -68,6 +68,10 @@ These capabilities are fully implemented in code and verified by automated tests
 8. **Private Content Isolation**: Canonical and generated documents marked `visibility: private` are stashed prior to production static builds, preventing accidental data leaks (`TestPrivateContentExclusion`).
 9. **Dual-Locale Static Publishing**: Docusaurus 3.10.2 builds static assets for both English (`/`) and Hungarian (`/hu/`) locales with `@easyops-cn/docusaurus-search-local` offline search indices for both languages (`npm run build`).
 10. **Hungarian Fallback (D11)**: Untranslated canonical documents in secondary locales render localized navigation chrome and fall back gracefully to English source text without 404 errors.
+11. **Per-Run Token and Call Budget**: `ai.config.yaml` declares run budgets (`max_tokens_per_run`, `max_calls_per_run`). Router accumulates tokens and pre-aborts with `RunBudgetExceededError` before exceeding limits (`TestRunBudget`).
+12. **Deterministic Grounding Gate**: `scripts/check_grounding.py` enforces Rule 1 (citation existence and contract evidence boundary), Rule 2 (exact quote span containment >= 15 chars), and Rule 3 (recruiter technology claims against fact set and cited canon). Pre-write gates reject ungrounded output before disk writes (`TestGroundingGate`).
+13. **Prompt Injection Defense**: Defense-in-depth rejection suite verifies rejection of exfiltration URLs, fabricated citations, ungrounded tech claims, executable MDX, and fabricated quotes (`TestPromptInjectionFixtures`).
+14. **Protected Generation Environment (P2-12)**: `.github/workflows/generate.yml` supports provider selection with default `fixture`. Non-fixture providers run exclusively in the `environment: generation` job with secrets scoped to the generation step (`TestGenerateWorkflowProviderInput`).
 
 ### Tier 2: Deterministic Simulation
 These capabilities are implemented as offline simulations for testing and demonstration:
@@ -75,11 +79,11 @@ These capabilities are implemented as offline simulations for testing and demons
 2. **Simulated Approval (`approved-for-demo`)**: The CLI governance ledger (`.work/demo_reviews.json`) allows transitioning artifacts to `approved-for-demo`. This is explicitly a demo mechanism to demonstrate workbench workflows. It is never treated as human approval and is blocked from production publication by `check-production`.
 3. **Browser Client Workbench**: The interactive Question Workbench at `/workbench` simulates retrieval, drafting, and review entirely in the user's browser client using client-side fixture state. It does not invoke the Python backend.
 
-### Tier 3: Unverified Integrations
-These components are implemented in code but have not been executed against external production infrastructure:
-1. **Live Cloud AI Providers**: Adapters for Anthropic Claude (`ai/anthropic_provider.py`), OpenAI GPT (`ai/openai_provider.py`), and Google Gemini (`ai/gemini_provider.py`) are implemented. However, no live API requests were made during Phase 0 per run safety rules. Live execution is deferred to Phase 2 under owner credentials and spend caps.
-2. **Local Model Provider**: The OpenAI-compatible adapter for local runtimes (`ai/local_provider.py`) is implemented but unverified against a live Ollama or vLLM daemon.
-3. **GitHub Actions Workflows**: `ci.yml` and `publish.yml` run on GitHub (the site is live). `generate.yml` and the weekly `drift.yml` are written and tested offline but have not yet been dispatched or scheduled on GitHub.
+### Tier 3: Implemented & Stub-Tested Integrations (Live NOT RUN)
+These components are implemented and covered by local loopback unit tests, but live calls against external providers remain NOT RUN per budget rules:
+1. **Live Cloud AI Providers**: Adapters for Anthropic Claude (`ai/anthropic_provider.py`), OpenAI GPT (`ai/openai_provider.py`), Google Gemini (`ai/gemini_provider.py`), and Local (`ai/local_provider.py`) are implemented, schema-validated, stub-tested with HTTP retry backoff and loopback network guards, and live NOT RUN. Live execution is deferred to owner execution under spend caps (P2-08).
+2. **Local Model Provider**: The OpenAI-compatible adapter for local runtimes (`ai/local_provider.py`) is implemented, fallback-verified, and stub-tested; live verification against a running Ollama/vLLM daemon is NOT RUN.
+3. **GitHub Actions Workflows**: `ci.yml` and `publish.yml` run on GitHub (the site is live). `generate.yml` (including `provider` input and `generation` environment) and `drift.yml` are statically and dynamically verified against CLI parsers; live dispatch on GitHub is NOT RUN until owner trigger.
 4. **Interactive Browser Verification**: Visual verification using the Antigravity 2.0 `/browser` slash command is an interactive human procedure and is documented as NOT RUN in automated CI logs.
 
 ### Tier 4: Deferred Production Work
@@ -96,7 +100,7 @@ These features are intentional design decisions deferred to future phases or own
 Requirement IDs and titles follow `docs/primary-inputs/01_PROJECT_KNOWLEDGE/REQUIREMENTS.md` and
 `planning/ACCEPTANCE.md`. Status vocabulary — kept deliberately narrow so no row claims more than was run:
 
-- **VERIFIED** — an automated test or check covering the requirement ran and passed (2026-10-01).
+- **VERIFIED** — an automated test or check covering the requirement ran and passed (2026-10-06).
 - **BUILD-ONLY** — the code compiles into the static build; it was not exercised in a browser.
 - **PARTIAL** — the local part is verified; the named remainder is planned and not yet built.
 - **DOCUMENTED** — satisfied by a research or design artifact; there is nothing executable to test.
@@ -107,15 +111,15 @@ Requirement IDs and titles follow `docs/primary-inputs/01_PROJECT_KNOWLEDGE/REQU
 | **REQ-002** | Weighted decision model | `docs/source/decisions/adr-002-docusaurus-foundation.md` | ADR with the 11-criterion scoring; page validates | **DOCUMENTED** |
 | **REQ-003** | Git/GitHub source of truth | `docs/source/**`, `.docs-manifest.json` | Files only, no database; git repository with a GitHub remote. PR-based flows arrive in Phase 1 | **PARTIAL** |
 | **REQ-004** | Structural canonical vs generated separation; no silent promotion | `scripts/validate_docs.py`, `scripts/build_filter.py`, `docusaurus.config.ts` | `TestPlaneSeparation`, `TestBuildFilterExclusion`, `TestProductionFilterValidity` | **VERIFIED** |
-| **REQ-005** | Thin AI provider abstraction | `ai/provider.py`, `ai/router.py`, `ai.config.yaml` | `TestRouterFallbackSemantics`, `TestPrivateRoutingPolicy`, `TestRepairRetry`. Cloud and local adapters never ran live (Tier 3) | **PARTIAL** |
+| **REQ-005** | Thin AI provider abstraction | `ai/provider.py`, `ai/router.py`, `ai.config.yaml` | `TestRouterFallbackSemantics`, `TestPrivateRoutingPolicy`, `TestHttpRetryPolicy`, `TestProviderSchemaDerivation`, `TestAdapterRequestShapes`, `TestExplicitProviderSelection`, `TestSamplingOptIn`, `TestRunBudget`. Cloud and local adapters are implemented, stub-tested, live NOT RUN (Tier 3) | **PARTIAL** |
 | **REQ-006** | Static reads without AI | `docusaurus.config.ts`, `src/**` | `npm run build` with no keys set; no runtime model calls in `src/`. Browser reading not run | **BUILD-ONLY** |
 | **REQ-007** | Level-1 deterministic retrieval | `scripts/generate_question.py`, `scripts/generate_page.py` | `TestDeterministicRetrievalAndGeneration`, `TestPathTraversalSecurity` | **VERIFIED** |
 | **REQ-008** | Ingestion & incremental regeneration | `scripts/detect_changes.py` | `TestHashDriftAndRegeneration`, `TestRegenerationPlanExecutable`, `TestSourceDeletionDetection`. Automated GitHub ingestion (P1-06) not built | **PARTIAL** |
 | **REQ-009** | Provenance metadata & hash drift | `generation` frontmatter block, `scripts/validate_docs.py` | `TestInvalidProvenance`, `TestHashDriftAndRegeneration`, `TestGenerationModeStamp` | **VERIFIED** |
-| **REQ-010** | Evidence-grounded recruiter views | `docs/generated/recruiter/project-overview.mdx`, `<EvidenceLink>` | `TestBrokenCitations`, `npm run validate`. Content is fixture output (Tier 2), not a live model | **VERIFIED** (fixture) |
+| **REQ-010** | Evidence-grounded recruiter views | `docs/generated/recruiter/project-overview.mdx`, `<EvidenceLink>`, `scripts/check_grounding.py` | `TestBrokenCitations`, `TestGroundingGate`, `npm run validate`. Verified by fixture and golden set | **VERIFIED** |
 | **REQ-011** | Interview prep component | `src/components/InterviewPrep/`, 4 `*.interview.json` datasets | Datasets pass `interview.schema.json`; component compiles. Rendering not checked in a browser | **BUILD-ONLY** |
-| **REQ-012** | Special-question workflow | `scripts/generate_question.py`, `scripts/review_governance.py`, `/workbench` | `TestUiCliJsonRoundtrip`, `TestQuestionPersistenceGovernance`, `TestReviewGovernanceStateTransitions`. Approval is simulated; real approval is P1-05 | **PARTIAL** |
+| **REQ-012** | Special-question workflow | `scripts/generate_question.py`, `scripts/review_governance.py`, `/workbench` | `TestUiCliJsonRoundtrip`, `TestQuestionPersistenceGovernance`, `TestReviewGovernanceStateTransitions`. Real approval via E3 approval record | **PARTIAL** |
 | **REQ-013** | EN/HU bilingual capability | `i18n/hu/**`, `src/pages/index.tsx` | Both locales build; landing, navigation and 4 canonical pages translated, the rest fall back to English (D11) | **PARTIAL** |
 | **REQ-014** | Anti-overengineering | Whole prototype | By inspection: no database, service, vector store or agent swarm; Python is stdlib + PyYAML + jsonschema | **VERIFIED** (inspection) |
-| **REQ-015** | Runnable validated prototype | `tests/test_doccad.py`, `VALIDATION.md`, `DEMO.md` | 75 unit tests pass; `VALIDATION.md` separates executed from NOT RUN checks | **VERIFIED** |
-| **REQ-016** | Security architecture | `ai/router.py`, `scripts/validate_docs.py`, `contracts/link-allowlist.yaml` | `TestMdxRestrictionGate`, `TestContextSecretScan`, `TestExternalLinkAllowlist`, `TestPrivateChainConfig`. CI-side threats (T8) arrive with Phase 1 | **PARTIAL** |
+| **REQ-015** | Runnable validated prototype | `tests/test_doccad.py`, `VALIDATION.md`, `DEMO.md` | 147 unit tests pass; `VALIDATION.md` separates executed from NOT RUN checks | **VERIFIED** |
+| **REQ-016** | Security architecture | `ai/router.py`, `scripts/validate_docs.py`, `scripts/check_grounding.py`, `contracts/link-allowlist.yaml` | `TestMdxRestrictionGate`, `TestContextSecretScan`, `TestExternalLinkAllowlist`, `TestPrivateChainConfig`, `TestGroundingGate`, `TestPromptInjectionFixtures`, `TestGenerateWorkflowProviderInput` | **VERIFIED** |

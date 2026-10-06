@@ -62,8 +62,8 @@
   ],
   "generation": {
     "contract": "GenerateInterviewPrep",
-    "contract_version": 1,
-    "prompt_version": "interview.v1",
+    "contract_version": 2,
+    "prompt_version": "interview.v2",
     "source_documents": [
       {
         "id": "architecture-content-planes",

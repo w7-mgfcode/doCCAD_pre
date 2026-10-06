@@ -1,7 +1,7 @@
 # Task contract (AD-6): recruiter-facing project overview, evidence-linked.
 contract: GenerateRecruiterPage
-version: 1
-prompt_version: recruiter.v1
+version: 2
+prompt_version: recruiter.v2
 prompt_template: recruiter.md
 
 inputs:

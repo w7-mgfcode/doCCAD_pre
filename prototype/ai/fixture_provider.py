@@ -53,6 +53,28 @@ class FixtureProvider:
         tid = target_id or "project-overview"
         recruiter_id = "recruiter-project-overview" if tid == "project-overview" else f"recruiter-{tid}"
         slug = f"/recruiter/{tid}"
+
+        if tid == "architecture-system-overview":
+            highlights = """- <EvidenceLink to="/docs/architecture/content-planes">Structural plane separation</EvidenceLink> preventing unverified AI hallucination from laundering into canonical documents.
+- <EvidenceLink to="/docs/decisions/adr-002-docusaurus-foundation">88.6/100 weighted platform selection</EvidenceLink> favoring offline reproducibility and independent operation over vendor lock-in.
+- <EvidenceLink to="/docs/architecture/ai-generation-plane">Governed generation plane</EvidenceLink> assembling evidence deterministically."""
+            table = """| Competency | Implementation in DOCCAD | Canonical Verification |
+|---|---|---|
+| **System Architecture & Decomposition** | 6-component decoupled topology separating authoring, static serving, and CI generation. | <EvidenceLink to="/docs/architecture/system-overview">System Architecture Overview</EvidenceLink> |
+| **Structural Plane Isolation** | Two independent Docusaurus docs plugins physically separating `/docs` and `/views`. | <EvidenceLink to="/docs/architecture/content-planes">Content Planes Separation</EvidenceLink> |
+| **Offline Governed Generation** | Contract-driven generation pipeline with Level-1 deterministic retrieval and provenance hashes. | <EvidenceLink to="/docs/architecture/ai-generation-plane">AI Generation Plane</EvidenceLink> |
+| **Publishing Platform Foundation** | Evaluated 6 platforms; Docusaurus 3.x selected (88.6/100) for dual-plugin support and offline build. | <EvidenceLink to="/docs/decisions/adr-002-docusaurus-foundation">ADR-002: Docusaurus Foundation</EvidenceLink> |"""
+        else:
+            highlights = """- <EvidenceLink to="/docs/architecture/content-planes">Structural plane separation</EvidenceLink> preventing unverified AI hallucination from laundering into canonical documents.
+- <EvidenceLink to="/docs/decisions/adr-002-docusaurus-foundation">88.6/100 weighted platform selection</EvidenceLink> favoring offline reproducibility and independent operation over vendor lock-in.
+- <EvidenceLink to="/docs/validation/drift-detection">Deterministic sha256 hash tracking</EvidenceLink> ensuring only out-of-date derived pages regenerate upon source edits."""
+            table = """| Competency | Implementation in DOCCAD | Canonical Verification |
+|---|---|---|
+| **System Security & Threat Modeling** | 6-zone trust boundary model, strict demarcation of untrusted user input as inert data, and link allowlist gating. | <EvidenceLink to="/docs/security/trust-boundaries">Security Trust Boundaries</EvidenceLink> |
+| **Drift & Invalidation Engineering** | Bidirectional dependency manifest (`.docs-manifest.json`) recomputing file hashes to drive targeted, non-full-corpus regeneration. | <EvidenceLink to="/docs/validation/drift-detection">Drift Detection Specification</EvidenceLink> |
+| **Privacy Hard-Pinning** | Tasks flagged `privacy: private` route strictly to local models; fallback to cloud providers is prohibited and raises fatal exceptions. | <EvidenceLink to="/docs/decisions/adr-004-provider-abstraction">ADR-004: Provider Abstraction</EvidenceLink> |
+| **Bilingual Architecture** | Filesystem-based Docusaurus i18n (`en` and `hu`), maintaining canonical English parity while providing localized UI and core onboarding. | <EvidenceLink to="/docs/overview/vision-and-goals">Vision & Goals: Bilingual Tenet</EvidenceLink> |"""
+
         return f"""---
 id: {recruiter_id}
 slug: {slug}
@@ -64,8 +86,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateRecruiterPage
-  contract_version: 1
-  prompt_version: recruiter.v1
+  contract_version: 2
+  prompt_version: recruiter.v2
   source_documents:
     - id: overview-index
       path: docs/source/overview/index.md
@@ -92,9 +114,7 @@ An evidence-backed briefing on DOCCAD's architecture, design decisions, and engi
 DOCCAD is a GitHub-native documentation ecosystem designed for rigorous engineering organizations. It separates human-authored canonical knowledge (`/docs`) from AI-generated derived views (`/views`), enforcing docs-as-code principles where version-controlled files in Git remain the single source of truth. Built with Docusaurus 3.x, deterministic Level-1 retrieval, and hash-based drift detection, it delivers zero-AI-dependency static documentation that never leaves readers stranded if AI services fail.
 
 Key verified accomplishments:
-- <EvidenceLink to="/docs/architecture/content-planes">Structural plane separation</EvidenceLink> preventing unverified AI hallucination from laundering into canonical documents.
-- <EvidenceLink to="/docs/decisions/adr-002-docusaurus-foundation">88.6/100 weighted platform selection</EvidenceLink> favoring offline reproducibility and independent operation over vendor lock-in.
-- <EvidenceLink to="/docs/validation/drift-detection">Deterministic sha256 hash tracking</EvidenceLink> ensuring only out-of-date derived pages regenerate upon source edits.
+{highlights}
 
 ## 2. Two-Minute Technical Walkthrough
 
@@ -106,12 +126,7 @@ Readers access a static site generated via `docusaurus build`. External search, 
 
 ## 3. Deep Dive: Architectural Competency Mapping
 
-| Competency | Implementation in DOCCAD | Canonical Verification |
-|---|---|---|
-| **System Security & Threat Modeling** | 6-zone trust boundary model, strict demarcation of untrusted user input as inert data, and link allowlist gating. | <EvidenceLink to="/docs/security/trust-boundaries">Security Trust Boundaries</EvidenceLink> |
-| **Drift & Invalidation Engineering** | Bidirectional dependency manifest (`.docs-manifest.json`) recomputing file hashes to drive targeted, non-full-corpus regeneration. | <EvidenceLink to="/docs/validation/drift-detection">Drift Detection Specification</EvidenceLink> |
-| **Privacy Hard-Pinning** | Tasks flagged `privacy: private` route strictly to local models; fallback to cloud providers is prohibited and raises fatal exceptions. | <EvidenceLink to="/docs/decisions/adr-004-provider-abstraction">ADR-004: Provider Abstraction</EvidenceLink> |
-| **Bilingual Architecture** | Filesystem-based Docusaurus i18n (`en` and `hu`), maintaining canonical English parity while providing localized UI and core onboarding. | <EvidenceLink to="/docs/overview/vision-and-goals">Vision & Goals: Bilingual Tenet</EvidenceLink> |
+{table}
 """
 
     def _generate_interview(self, prompt: str, target_id: str) -> str:
@@ -138,17 +153,17 @@ Readers access a static site generated via `docusaurus build`. External search, 
     {{
       "decision": "Docusaurus 3.x selected as publishing foundation",
       "rationale": "Scored 88.6/100 on weighted evaluation; offers full offline build, local search, React MDX flexibility, and multi-instance docs plugin support.",
-      "evidence": "adr-002-docusaurus-foundation"
+      "evidence": "decisions-adr-002-docusaurus-foundation"
     }},
     {{
-      "decision": "Git repository as sole source of truth with no runtime datastore",
-      "rationale": "Prevents split-brain state between documentation and external databases; eliminates database infrastructure and operational cost.",
-      "evidence": "adr-001-github-source-of-truth"
-    }},
-    {{
-      "decision": "Structural content plane separation (/docs vs /views)",
+      "decision": "Two-plane structural content separation (/docs vs /views)",
       "rationale": "Two independent docs-plugin instances guarantee that unreviewed or bot-generated content cannot be served under canonical routes.",
-      "evidence": "adr-003-canonical-generated-separation"
+      "evidence": "architecture-content-planes"
+    }},
+    {{
+      "decision": "Offline governed AI generation plane with Level-1 deterministic retrieval",
+      "rationale": "Zero runtime AI dependencies ensure complete offline independence and auditable PR diffs.",
+      "evidence": "architecture-ai-generation-plane"
     }}
   ],
   "tradeoffs": [
@@ -192,12 +207,16 @@ Readers access a static site generated via `docusaurus build`. External search, 
       "to": "/docs/architecture/system-overview"
     }},
     {{
-      "label": "ADR-003: Content Plane Separation",
-      "to": "/docs/decisions/adr-003-canonical-generated-separation"
+      "label": "Content Planes Separation",
+      "to": "/docs/architecture/content-planes"
     }},
     {{
-      "label": "ADR-006: Level-1 Retrieval Boundary",
-      "to": "/docs/decisions/adr-006-retrieval-level1"
+      "label": "AI Generation Plane",
+      "to": "/docs/architecture/ai-generation-plane"
+    }},
+    {{
+      "label": "Docusaurus Foundation",
+      "to": "/docs/decisions/adr-002-docusaurus-foundation"
     }}
   ]
 }}"""
@@ -222,8 +241,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 2
-  prompt_version: question-page.v2
+  contract_version: 3
+  prompt_version: question-page.v3
   source_documents:
     - id: decisions-adr-009-deployment-github-pages
       path: docs/source/decisions/adr-009-deployment-github-pages.md
@@ -265,8 +284,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 2
-  prompt_version: question-page.v2
+  contract_version: 3
+  prompt_version: question-page.v3
   source_documents:
     - id: architecture-content-planes
       path: docs/source/architecture/content-planes.md
@@ -298,7 +317,7 @@ A bot PR touching any path under `docs/source/` is automatically rejected by CI 
 ### 2. Unidirectional Citation Rule
 - Generated views can cite canonical documentation using relative links or `<EvidenceLink>` components.
 - Canonical pages are strictly forbidden from importing or citing generated views (except from a dedicated index page).
-- AI generation scripts are prohibited from using generated pages as context, preventing recursive "AI hallucinating on AI" feedback loops.
+- AI generation scripts are prohibited from using generated pages as context, preventing recursive AI hallucinating on AI feedback loops.
 
 ### 3. Human PR Approval Gate
 All generated files persist only through pull requests into `docs-gen/*` branches. Branch protection requires human review before any generated artifact can merge into the default branch.
@@ -320,8 +339,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 2
-  prompt_version: question-page.v2
+  contract_version: 3
+  prompt_version: question-page.v3
   source_documents:
     - id: validation-drift-detection
       path: docs/source/validation/drift-detection.md
@@ -379,8 +398,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 2
-  prompt_version: question-page.v2
+  contract_version: 3
+  prompt_version: question-page.v3
   source_documents:
     - id: security-trust-boundaries
       path: docs/source/security/trust-boundaries.md
@@ -425,8 +444,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 2
-  prompt_version: question-page.v2
+  contract_version: 3
+  prompt_version: question-page.v3
   source_documents:
     - id: decisions-adr-002-docusaurus-foundation
       path: docs/source/decisions/adr-002-docusaurus-foundation.md
@@ -474,8 +493,8 @@ last_validated: 2026-09-21
 generated: true
 generation:
   contract: GenerateQuestionPage
-  contract_version: 2
-  prompt_version: question-page.v2
+  contract_version: 3
+  prompt_version: question-page.v3
   source_documents:
     - id: decisions-adr-004-provider-abstraction
       path: docs/source/decisions/adr-004-provider-abstraction.md

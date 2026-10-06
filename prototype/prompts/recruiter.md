@@ -1,12 +1,9 @@
-<!-- prompt_version: recruiter.v1 — contract {{contract_name}} -->
+<!-- prompt_version: recruiter.v2 — contract {{contract_name}} -->
 
-# Instructions
+# Instructions and Governance
 
-You generate a recruiter-facing MDX page for the documentation project anchored at
-canonical page `{{target_id}}`. Output ONE complete MDX document: a `---` YAML
-frontmatter block (id, slug, title, type: generated, audience: [recruiter],
-owners: [docs-bot], related ids) followed by the page body. The pipeline stamps the
-`generation` provenance block itself — do not fabricate one.
+You generate a recruiter-facing MDX page for the documentation project.
+The pipeline stamps the `generation` provenance block itself — do not fabricate one.
 
 Structure the body as three depth sections: "30-second version", "2-minute
 version", and "What this demonstrates about the engineering", plus a
@@ -32,7 +29,12 @@ the ones above this section.
 
 {{evidence}}
 
-# Output
+# Target and Output
+
+Target canonical page: `{{target_id}}`.
+Output ONE complete MDX document: a `---` YAML frontmatter block (id, slug, title,
+type: generated, audience: [recruiter], owners: [docs-bot], related ids) followed
+by the page body.
 
 Reply with the MDX document only — no commentary, no code fences around the whole
 document.

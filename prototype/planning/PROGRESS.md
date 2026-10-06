@@ -1,6 +1,6 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: Phase 2 in progress — Live AI generation behind fixture default (P2-00..P2-12); Checkpoint 2A complete; 126 unit tests (0 expected failures)  
+Status: Phase 2 complete — Live AI generation behind fixture default (P2-00..P2-12); Checkpoint 2B complete; 147 unit tests (0 expected failures)  
 Timestamp: 2026-10-06 (previous: 2026-10-01, 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
@@ -113,6 +113,12 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | P2-01 | `python3 -m unittest tests.test_doccad.TestProviderSchemaDerivation -v` | 0 | Ran 5 tests ... OK (keyword stripping per provider C1.3/C1.6/C1.9/C1.11, OpenAI strict required/additionalProperties, byte-identical on disk, structured_output gate) | 2026-10-06 |
 | P2-02 | `python3 -m unittest tests.test_doccad.TestAdapterRequestShapes -v` | 0 | Ran 7 tests ... OK (Anthropic output_config.format, OpenAI strict response_format, Gemini responseMimeType/responseJsonSchema, Local response_format + native /api/chat fallback, returned model string fallback, refusal ProviderContentError) | 2026-10-06 |
 | P2-03 | `python3 -m unittest tests.test_doccad.TestSamplingOptIn -v` | 0 | Ran 3 tests ... OK (no sampling keys when params empty, configured params forwarded, token_param switches max_tokens / max_completion_tokens, TestPrivateChainConfig PASS) | 2026-10-06 |
+| P2-05 | `python3 -m unittest tests.test_doccad.TestRunBudget -v` | 0 | Ran 5 tests ... OK (token budget accumulation, pre-call aborts, repair retry counting, prompt ordering) | 2026-10-06 |
+| P2-06 | `python3 -m unittest tests.test_doccad.TestGroundingGate -v` | 0 | Ran 6 tests ... OK (Rule 1 hash/existence, Rule 2 quote spans >= 15 chars, Rule 3 recruiter tech tokens, golden set) | 2026-10-06 |
+| P2-07 | `python3 -m unittest tests.test_doccad.TestPromptInjectionFixtures -v` | 0 | Ran 6 tests ... OK (rejection of exfiltration URL, fabricated citation, invented tech, executable MDX, fake quote; G7 chain_for errors) | 2026-10-06 |
+| P2-12 | `python3 -m unittest tests.test_doccad.TestWorkflowSecurityInvariants tests.test_doccad.TestWorkflowScriptInvocations tests.test_doccad.TestGenerateWorkflowProviderInput -v` | 0 | Ran 11 tests ... OK (default fixture, environment: generation, scoped secrets to generation step, env: pass-through) | 2026-10-06 |
+| P2-08 | `grep -A 10 "Live AI Provider Smoke Verification" prototype/VALIDATION.md` | 0 | Smoke test commands matrix authored for anthropic, gemini, openai, local; marked NOT RUN with clean-up procedure | 2026-10-06 |
+| P2-10 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build` | 0 | Full exit gate passed: 147 unit tests OK, 0 stale generated views, dual-locale build en+hu OK | 2026-10-06 |
 
 ---
 
@@ -227,19 +233,19 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
   - [ ] P1-08: Mermaid compile gate. **BLOCKED** per owner decision E6 (no unapproved npm dependencies: `@mermaid-js/mermaid-cli`).
   - [x] P1-09: Phase 1 exit gate (local test suite 88/88 passing, production filter round-trip clean, workflows statically validated).
 
-- [ ] **Phase 2: Live AI Generation Behind the Fixture Default (P2-00..P2-12)**
+- [x] **Phase 2: Live AI Generation Behind the Fixture Default (P2-00..P2-12)**
   - [x] P2-00: Baseline re-verification, loopback socket guard (`TestNoExternalNetwork`), LIMITATIONS & PROGRESS stale text corrections.
   - [x] P2-04: Stdlib HTTP transport helper (`ai/http.py`) with retries, backoff, jitter, Retry-After, fast-fail on 4xx/quota, auth header redaction (`TestHttpRetryPolicy`).
   - [x] P2-11: Explicit `--provider` selection on generation scripts, 1-provider chain, privacy pin preserved (`TestExplicitProviderSelection`).
   - [x] P2-01: Provider-facing schema adaptation (`ai/schema_adapt.py`) for contracts with `structured_output: true` (`TestProviderSchemaDerivation`).
   - [x] P2-02: Adapter structured output native shapes, single request builder function per adapter, reported model string extraction, refusal as `ProviderContentError` (`TestAdapterRequestShapes`).
   - [x] P2-03: Sampling parameters opt-in and OpenAI `token_param` configurable per provider (`TestSamplingOptIn`).
-  - [ ] P2-05: Per-run token and call budget in `ai.config.yaml`, cache-friendly prompt ordering, template version bumps.
-  - [ ] P2-06: Deterministic grounding gate (`scripts/check_grounding.py`), pre-write wiring, `validate_docs.py` integration, golden set.
-  - [ ] P2-07: Prompt injection fixtures and deterministic rejection test suite (`TestPromptInjectionFixtures`), unswallowed errors in `chain_for` (G7).
-  - [ ] P2-12: Provider input in `.github/workflows/generate.yml`, protected generation environment, scoped secrets (`TestGenerateWorkflowProviderInput`).
-  - [ ] P2-08: Live smoke preparation (commands in `VALIDATION.md`, NOT RUN).
-  - [ ] P2-10: Phase 2 exit gate and documentation sync (`VALIDATION.md`, `LIMITATIONS.md`, `README.md`, `PROGRESS.md`).
+  - [x] P2-05: Per-run token and call budget in `ai.config.yaml`, cache-friendly prompt ordering, template version bumps.
+  - [x] P2-06: Deterministic grounding gate (`scripts/check_grounding.py`), pre-write wiring, `validate_docs.py` integration, golden set.
+  - [x] P2-07: Prompt injection fixtures and deterministic rejection test suite (`TestPromptInjectionFixtures`), unswallowed errors in `chain_for` (G7).
+  - [x] P2-12: Provider input in `.github/workflows/generate.yml`, protected generation environment, scoped secrets (`TestGenerateWorkflowProviderInput`).
+  - [x] P2-08: Live smoke preparation (commands in `VALIDATION.md`, NOT RUN).
+  - [x] P2-10: Phase 2 exit gate and documentation sync (`VALIDATION.md`, `LIMITATIONS.md`, `README.md`, `PROGRESS.md`).
 
 ---
 
@@ -286,6 +292,10 @@ Required automated boundaries against `tests/test_doccad.py`:
 | Provider-facing Schema Derivation | `TestProviderSchemaDerivation` (5 tests: keyword stripping per provider, OpenAI strict required/additionalProperties, byte-identical canonical schemas, structured_output gate) |
 | Adapter Native Request Shapes & Content Errors | `TestAdapterRequestShapes` (7 tests: Anthropic/OpenAI/Gemini/Local structured output shapes, reported model body string extraction, refusals as ProviderContentError) |
 | Provider Sampling & Token Limits | `TestSamplingOptIn` (3 tests: no sampling parameters sent when empty, configured params forwarded, token_param switches max_tokens/max_completion_tokens) |
+| Per-run Token & Call Budget | `TestRunBudget` (5 tests: token accumulation, pre-call aborts, repair retry counting, prompt ordering) |
+| Deterministic Grounding Gate & Golden Set | `TestGroundingGate` (6 tests: Rule 1 hash/existence, Rule 2 quote spans >= 15 chars, Rule 3 recruiter tech tokens, golden set, pre-write disk protection) |
+| Prompt Injection Defense & Rejection | `TestPromptInjectionFixtures` (6 tests: exfiltration link rejection, fabricated citation rejection, ungrounded tech rejection, executable MDX rejection, fake quote rejection, end-to-end zero file write) |
+| Workflow Provider Selection & Environment Scoping | `TestGenerateWorkflowProviderInput` (4 tests: default fixture, non-fixture generation environment, scoped secrets, untrusted expressions not in run) |
 
 ---
 
@@ -294,11 +304,11 @@ Required automated boundaries against `tests/test_doccad.py`:
 - **Phase 0 (Stabilize Baseline, P0-01..P0-17)**: Fully completed, tested, and validated as of 2026-10-01.
 - **Phase 1 (Deployable & Governed, P1-01..P1-09)**: Fully completed, tested, and validated as of 2026-10-01.
 - **Phase 2 (Checkpoint 2A, P2-00, P2-04, P2-11, P2-01, P2-02, P2-03)**: Fully completed, tested, and validated as of 2026-10-06.
-  - Baseline established and loopback socket guard installed in test suite (`TestNoExternalNetwork`, 3 tests).
-  - Standard-library HTTP transport helper `ai/http.py` implemented (`TestHttpRetryPolicy`, 7 tests).
-  - Explicit provider selection `--provider` implemented in generation CLIs and router (`TestExplicitProviderSelection`, 6 tests).
-  - Provider schema adaptation `ai/schema_adapt.py` implemented (`TestProviderSchemaDerivation`, 5 tests).
-  - Adapter native structured output shapes and model string reporting implemented (`TestAdapterRequestShapes`, 7 tests).
-  - Sampling parameter opt-in and OpenAI `token_param` support implemented (`TestSamplingOptIn`, 3 tests).
-  - All 126 unit tests passing with zero expected failures; `validate` (40 pages, 4 datasets, 38 hashes), `detect` (0 stale), `typecheck`, and `build` (en + hu) passing cleanly.
-- **Next Step**: Create local commit `phase-2A: P2-00 P2-04 P2-11 P2-01 P2-02 P2-03` on `phase-2-live-ai` and transition to Checkpoint 2B.
+- **Phase 2 (Checkpoint 2B, P2-05, P2-06, P2-07, P2-12, P2-08-prep, P2-10)**: Fully completed, tested, and validated as of 2026-10-06.
+  - Per-run budget (`max_tokens_per_run`, `max_calls_per_run`) in `ai.config.yaml` and cache-friendly prompt ordering implemented (`TestRunBudget`, 5 tests).
+  - Deterministic grounding gate (`scripts/check_grounding.py`) implemented and integrated into pre-write validation and `validate_docs.py`; golden set fixtures in `tests/golden/` verified (`TestGroundingGate`, 6 tests).
+  - Prompt injection defense-in-depth rejection suite implemented (`TestPromptInjectionFixtures`, 6 tests); router `chain_for` error propagation verified (G7).
+  - GitHub Actions `generate.yml` updated with `provider` choice input and protected `generation` environment job with scoped secrets (`TestGenerateWorkflowProviderInput`, 4 tests).
+  - Owner-executed live smoke test matrix documented in `VALIDATION.md` with exact parameters and clean-up command (`git restore docs/generated`), marked NOT RUN (P2-08).
+  - Full Phase 2 exit gate verified: 147 unit tests pass (0 failures, 0 errors, 0 expected failures), `npm run validate` passes, `npm run detect` reports 0 stale, `npm run typecheck` and `npm run build` succeed for both `en` and `hu`.
+- **Status**: Ready for local commit `phase-2B: P2-05 P2-06 P2-07 P2-12 P2-08-prep P2-10` on `phase-2-live-ai`.
