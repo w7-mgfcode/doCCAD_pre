@@ -10,7 +10,7 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/w7-mgfcode/doCCAD_pre/actions/workflows/ci.yml)
 [![Pages](https://img.shields.io/github/actions/workflow/status/w7-mgfcode/doCCAD_pre/publish.yml?branch=main&style=flat-square&label=pages)](https://w7-mgfcode.github.io/doCCAD_pre/)
-[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%202%20merged,%20live%20calls%20pending-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
+[![Status](https://img.shields.io/badge/status-prototype%20·%20Phase%202,%20first%20live%20call%20passed-8250df?style=flat-square)](prototype/planning/PROGRESS.md)
 [![Docusaurus](https://img.shields.io/badge/Docusaurus-3.10.2-3ECC5F?style=flat-square&logo=docusaurus&logoColor=white)](prototype/package.json)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](prototype/package.json)
 [![Node](https://img.shields.io/badge/node-%E2%89%A524.14-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](prototype/.nvmrc)
@@ -140,7 +140,8 @@ flowchart LR
 | **Verified by tests** | Plane separation, deterministic retrieval, hash drift and targeted regeneration, the review state machine, the production filter, private-routing hard-fail, MDX, link and secret gates, the grounding gate, prompt-injection fixtures, and provider retry, fallback, request shapes and budgets against loopback stub servers |
 | **Simulated** | The `fixture` provider (not an LLM), `approved-for-demo` review, and the in-browser workbench |
 | **Running on GitHub** | CI gate (`validate-and-build`) on every PR, Pages deployment with a smoke check, weekly drift check, Dependabot |
-| **Not yet run** | Live cloud and local model calls (owner smoke test waits on decision E5 and the `generation` environment), automated browser and mobile checks, real approval of a generated view (workflow ready; waits on the owner creating the DOCCAD GitHub App, E8) |
+| **Run once by the owner** | Live Gemini generation (`gemini-3.1-flash-lite`, 2026-10-06): both contracts passed validation and the build ([`VALIDATION.md` §7](prototype/VALIDATION.md)) |
+| **Not yet run** | Live Anthropic, OpenAI and local model calls, live generation in CI (waits on decision E5 and the `generation` environment), automated browser and mobile checks, real approval of a generated view (workflow ready; waits on the owner creating the DOCCAD GitHub App, E8) |
 
 The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATIONS.md`](prototype/LIMITATIONS.md#3-requirement-to-evidence-matrix).
 
@@ -152,7 +153,8 @@ The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATI
   - [ ] First real approval of a generated view, end to end (bot-PR workflow ready; waits on the DOCCAD GitHub App, E8)
 - [ ] **Phase 2: live AI behind the fixture default.** ([handoff pack](docs/phase-2/README.md))
   - [x] Implemented and stub-tested: provider adapters, retry and fallback, structured output, budgets, grounding gate, injection fixtures, `generate.yml` provider input (PR #7)
-  - [ ] First live provider call (owner smoke test; waits on decision E5 and the `generation` environment)
+  - [x] First live provider call: Gemini owner smoke test passed; its two findings fixed (PR #9)
+  - [ ] Remaining providers and live generation in CI (decision E5, `generation` environment)
 - [ ] **Phase 3: beyond the prototype.** Scoped in [`docs/next-phase/`](docs/next-phase/README.md)
 
 ## 📁 Repository map

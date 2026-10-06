@@ -19,17 +19,17 @@ Design intent: [`planning/CONCEPT.md`](planning/CONCEPT.md). Requirements mappin
 
 ## Status
 
-Verified on 2026-10-06 (Node 24.19, Python 3.14, branch `phase-2-live-ai`):
+Verified on 2026-10-06 (Node 24.19, Python 3.14, `main` after PR #9):
 
 | Area | Works today | Not yet |
 | --- | --- | --- |
 | Static site | Builds in `en` and `hu`; landing page, navbar, footer, and search index localized; all 29 canonical and 11 generated pages | Untranslated canonical docs fall back to English source (D11 verified) |
-| Checks | `validate`, `detect`, 147 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
+| Checks | `validate`, `detect`, 155 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
 | Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip, forced draft, pre-write grounding gate | — |
 | Page pipeline | `generate_page.py` live pipeline verified with date normalization, grounding gate, link allowlist, and strict schema adherence (`TestLivePagePipeline`, `TestGroundingGate`) | — |
 | Regeneration | Targeted deduplicated regeneration through `generate_page.py` and `generate_question.py`; `seed_generated_views.py` | — |
 | Review | Simulated review ledger with strict state machine; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (Phase 1 P1-05) |
-| Cloud / local models | Secret scanning (T6), transport vs content error fallback semantics, privacy hard-pinning (T12), HTTP retry backoff, provider JSON schema derivation, sampling opt-in, per-run budget, grounding gate, prompt injection rejection, workflow generation environment | Live cloud provider calls deferred to owner execution with API keys (P2-08, NOT RUN) |
+| Cloud / local models | Secret scanning (T6), transport vs content error fallback semantics, privacy hard-pinning (T12), HTTP retry backoff, provider JSON schema derivation, sampling opt-in, per-run budget, grounding gate, prompt injection rejection, workflow generation environment | Gemini passed an owner-run live smoke test (P2-08, `VALIDATION.md` §7); Anthropic, OpenAI and local live calls NOT RUN |
 
 ## Requirements
 
@@ -289,4 +289,4 @@ Contributor and agent conventions: [`../AGENTS.md`](../AGENTS.md).
 - **Question regeneration plans are not directly executable.** For a stale question page, `impact.json` lists only `--target <source id>`, not the original question, so running it literally creates a different page. Regenerate a question page with its original question: `python3 scripts/generate_question.py --question "<original question>" --persist` (for `q-002`: "How does DOCCAD detect drift?").
 - **`detect_changes.py --range`** needs git history; until the repository has remote commits, use `--all` for a full-workspace scan.
 - **The test suite exercises the production filter.** An interrupted test run can leave unapproved views stashed in `.work/stashed_unapproved/`; `npm run build:demo` restores them.
-- **Not verified in CI:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a live browser (interactive `/browser` available in Antigravity 2.0 app), and live cloud provider calls with real API keys (owner-executed under spend caps, P2-08 NOT RUN).
+- **Not verified in CI:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a live browser (interactive `/browser` available in Antigravity 2.0 app), and live provider calls with real API keys (owner-executed under spend caps, P2-08: Gemini PASS, others NOT RUN).
