@@ -29,8 +29,10 @@ instead of repeating it.
   their own PR, so admins merge through a PR-only bypass.
 - **Automation** (`.github/workflows/`). `ci.yml` (`validate-and-build`, on PRs and pushes to `main`);
   `publish.yml` (push to `main` → production filter → GitHub Pages at
-  `https://w7-mgfcode.github.io/doCCAD_pre/`); `generate.yml` (manual; pushes a `docs-gen/*` branch, and opens the PR as the DOCCAD GitHub App only
-  when the App token step produced a token and the push step reported changes — otherwise the owner opens it, E8);
+  `https://w7-mgfcode.github.io/doCCAD_pre/`); `generate.yml` (manual; `provider` input defaults to `fixture`, and any other provider runs in a separate job
+  bound to the `generation` environment, `.github/workflows/generate.yml:34-45,246`; pushes a `docs-gen/*`
+  branch, and opens the PR as the DOCCAD GitHub App only when the App token step produced a token and the push
+  step reported changes — otherwise the owner opens it, E8);
   `drift.yml` (weekly). Dependabot (`.github/dependabot.yml`, not a workflow) opens weekly grouped
   updates for Actions and npm.
 - **Not tracked.** `.claude/`, `.agents/`, `.kb/` and local session notes are git-ignored, so git never
@@ -47,13 +49,13 @@ instead of repeating it.
 | `prototype/docs/source/` | Canonical pages (`type: canonical`), served at `/docs` |
 | `prototype/docs/generated/` | AI-derived views (`type: generated`), served at `/views` |
 | `prototype/ai/`, `prototype/ai.config.yaml` | Provider router and adapters; `fixture` is the default provider |
-| `prototype/scripts/` | validate, detect drift, generate page/question, seed generated views, review governance, build filter |
+| `prototype/scripts/` | validate, detect drift, generate page/question, seed generated views, review governance, build filter, grounding gate (`check_grounding.py`, also run by `validate_docs.py`), GitHub approval check (`github_approval.py`) |
 | `prototype/contracts/`, `prototype/schemas/`, `prototype/prompts/` | Generation contracts, JSON schemas, prompt templates |
 | `prototype/src/` | Site components and pages (workbench, inspector, explorer) |
-| `prototype/tests/` | `unittest` suite |
+| `prototype/tests/` | `unittest` suite; `tests/golden/` holds the grounding-gate golden set |
 | `prototype/planning/` | `CONCEPT.md`, `ACCEPTANCE.md` (REQ-001…016), `PROGRESS.md` |
 | `docs/next-phase/` | Plan, acceptance (NV-REQ) and research for the next-version run (phases 0–3) |
-| `docs/phase-2/` | Handoff pack for the Phase 2 Antigravity run (live AI behind the fixture default); read-only for the run |
+| `docs/phase-2/` | Handoff pack and dated record of the Phase 2 run (live AI behind the fixture default; merged in PR #7); do not modify |
 | `.github/` | Workflows, `CODEOWNERS`, `dependabot.yml`, README banner assets |
 
 ## Setup
@@ -118,6 +120,10 @@ S=<scratch>/doccad && mkdir -p "$S" && rsync -a .github "$S/" && \
   approval.
 - **AI layer.** `fixture` stays the deterministic default; `privacy: private` routes only to the
   local provider and must fail rather than fall back to cloud; model IDs only via `${AI_MODEL_*}`.
+  `--provider` on the generation scripts (`scripts/generate_page.py:158`, `scripts/generate_question.py:198`)
+  selects one provider explicitly and never overrides the private pin. Tests never leave 127.0.0.1
+  (`TestNoExternalNetwork`). Live provider keys belong only in secrets of the `generation` environment,
+  which the owner has not created yet (2026-10-06: the repo has only `github-pages`).
 - **Static site.** No runtime model calls from the site.
 - **Dependencies.** Python: standard library + PyYAML, plus `jsonschema` and `referencing` (owner
   decision E6, declared in `prototype/requirements.txt`). Do not add packages without asking.
