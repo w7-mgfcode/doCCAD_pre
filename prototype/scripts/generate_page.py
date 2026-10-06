@@ -142,6 +142,13 @@ def stamp_provenance(fm: Dict[str, Any], contract: Dict[str, Any],
     return fm
 
 
+def report_rejection(attempt: int, errors: List[str]) -> None:
+    """Say why an attempt was rejected before the repair retry, so live runs are diagnosable."""
+    print(f"  [repair] attempt {attempt} rejected ({len(errors)} error(s)); retrying:", file=sys.stderr)
+    for err in errors:
+        print(f"    - {err[:300]}", file=sys.stderr)
+
+
 def split_model_output(text: str) -> tuple[Dict[str, Any], str]:
     m = re.match(r"\A(?:```(?:mdx|markdown)?\s*\n)?---\r?\n(.*?)\r?\n---\r?\n(.*)\Z",
                  text.strip(), re.DOTALL)
@@ -256,6 +263,7 @@ def main() -> int:
 
             if val_errors:
                 if attempts <= max_retries:
+                    report_rejection(attempts, val_errors)
                     messages.append({"role": "assistant", "content": result["text"]})
                     messages.append({
                         "role": "user",
@@ -287,6 +295,10 @@ def main() -> int:
                 gen_mode = "demo" if provider_name == "fixture" else "production"
                 fm = stamp_provenance(fm, contract, evidence, provider_name, result.get("model", ""),
                                       mode=gen_mode)
+                # The pipeline owns page identity. A model-chosen slug can land outside the
+                # contract's route (live Gemini smoke test, 2026-10-06: /views/views/...).
+                fm["id"] = f"{contract['output']['dir']}-{args.target}"
+                fm["slug"] = f"/{contract['output']['dir']}/{args.target}"
                 errors = validate(fm, "document")
                 # Pre-write MDX restriction gate and link allowlist
                 errors.extend(check_mdx_security(body))
@@ -297,6 +309,7 @@ def main() -> int:
 
             if errors:
                 if attempts <= max_retries:
+                    report_rejection(attempts, errors)
                     messages.append({"role": "assistant", "content": result["text"]})
                     messages.append({
                         "role": "user",
