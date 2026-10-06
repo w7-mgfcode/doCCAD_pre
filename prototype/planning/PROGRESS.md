@@ -1,7 +1,7 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: Phase 2 complete — Live AI generation behind fixture default (P2-00..P2-12); Checkpoint 2B complete; first live call (Gemini, owner-run) PASS; 155 unit tests (0 expected failures)  
-Timestamp: 2026-10-06 (previous: 2026-10-01, 2026-09-29, 2026-09-21)  
+Status: Phase 2 complete — Live AI generation behind fixture default (P2-00..P2-12); Checkpoint 2B complete; first live call (Gemini, owner-run) PASS; first live CI generation run (Gemini, `generate.yml`) PASS; 155 unit tests (0 expected failures)  
+Timestamp: 2026-10-07 (previous: 2026-10-06, 2026-10-01, 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
 Items are ticked only where the artifact exists on disk and, for checks, where the command was re-run
@@ -121,6 +121,7 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | P2-10 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run detect && npm run build` | 0 | Full exit gate passed: 147 unit tests OK, 0 stale generated views, dual-locale build en+hu OK | 2026-10-06 |
 | P2-08 (owner live) | `AI_MODEL_GEMINI=gemini-3.1-flash-lite python3 scripts/generate_page.py --contract GenerateInterviewPrep\|GenerateRecruiterPage --target architecture-system-overview --provider gemini` (owner-run, scratch copy) | 0 | Both contracts written; interview needed 1 repair retry; tokens in/out 3617/1235 + 5014/1242 and 3652/1033; strict validate and en+hu build exit 0; findings fixed in PR #9 (`TestLiveSmokeFindings`) | 2026-10-06 |
 | Post-PR #9 gate | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run detect && npm run test && npm run typecheck && npm run build` (scratch copy of `main`) | 0 | `Validated 40 pages, 4 interview datasets, 25 provenance hashes`; `stale generated: 0`; `Ran 155 tests ... OK`; typecheck and build exit 0 | 2026-10-06 |
+| P2-12 (live CI) | `gh workflow run generate.yml --ref main -f contract=GenerateRecruiterPage -f target=architecture-system-overview -f privacy=public -f provider=gemini` (run 37541030510; `generation` environment, protected-branches policy, `GEMINI_API_KEY` secret, `AI_MODEL_GEMINI` variable) | 0 | `generate-live` success; `Provider chain (from ai.config.yaml): gemini`; `Validated 41 pages, 4 interview datasets, 29 provenance hashes`; pushed `docs-gen/generaterecruiterpage-architecture-system-overview` (`32a9cb7`, `approval_status: draft`); no PR (no App, E8); token usage not logged in CI | 2026-10-06 |
 
 ---
 
@@ -137,7 +138,7 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 |---|---|---|
 | P1-08 | Mermaid compile gate dependency approval (E6) | Owner approves new dependency or alternative check |
 | E3 (prod) | DOCCAD GitHub App credentials (E8 decided 2026-10-01; workflow ready) | Owner creates the App and sets `DOCCAD_APP_CLIENT_ID` + `DOCCAD_APP_PRIVATE_KEY` (`prototype/README.md` §Governance) |
-| P2-08 | Provider API keys and spend caps (E5, H-9) | Owner executes live smoke tests locally |
+| P2-08 (Anthropic, OpenAI, local) | Provider API keys and spend caps (E5, H-9). Gemini done locally and in CI (2026-10-06) | Owner decides E5, then runs the remaining `VALIDATION.md` §7 rows |
 
 ---
 
@@ -313,4 +314,5 @@ Required automated boundaries against `tests/test_doccad.py`:
   - GitHub Actions `generate.yml` updated with `provider` choice input and protected `generation` environment job with scoped secrets (`TestGenerateWorkflowProviderInput`, 4 tests).
   - Owner-executed live smoke test matrix documented in `VALIDATION.md` with exact parameters and clean-up command (`git restore docs/generated`), marked NOT RUN (P2-08).
   - Full Phase 2 exit gate verified: 147 unit tests pass (0 failures, 0 errors, 0 expected failures), `npm run validate` passes, `npm run detect` reports 0 stale, `npm run typecheck` and `npm run build` succeed for both `en` and `hu`.
-- **Status**: Ready for local commit `phase-2B: P2-05 P2-06 P2-07 P2-12 P2-08-prep P2-10` on `phase-2-live-ai`.
+- **After the merge (2026-10-06)**: Phase 2 merged in PR #7; live-smoke findings fixed in PR #9 (`TestLiveSmokeFindings`, 155 tests). Gemini passed the owner-run local smoke test and the first live CI generation run (`generate.yml`, run 37541030510), which pushed the draft branch `docs-gen/generaterecruiterpage-architecture-system-overview`.
+- **Status**: Phase 2 merged on `main`. Open: E5 (Anthropic/OpenAI/local live runs), the DOCCAD GitHub App for bot-authored PRs (E8), P1-08 (E6).

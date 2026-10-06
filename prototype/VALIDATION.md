@@ -131,6 +131,18 @@ Per run rules and decision E5, live provider calls require owner credentials, mo
 
 The Gemini row was executed by the owner on 2026-10-06 on a scratch copy of `.github/` + `prototype/` (output discarded, repository untouched). It was the first live provider call; its two findings (model-chosen `slug` doubled the `/views` route; repair-retry reasons were not printed) are fixed in `scripts/generate_page.py` and covered by `TestLiveSmokeFindings`.
 
+**Live generation in CI (Gemini, 2026-10-06 22:31 UTC) — PASS.** The owner created the `generation`
+environment (deployment branches: protected branches only), set the environment secret `GEMINI_API_KEY`
+and variable `AI_MODEL_GEMINI=gemini-3.1-flash-lite`, and dispatched `generate.yml` from `main` with
+`contract=GenerateRecruiterPage target=architecture-system-overview privacy=public provider=gemini`
+([run 37541030510](https://github.com/w7-mgfcode/doCCAD_pre/actions/runs/37541030510)). The
+`generate-live` job passed every step: provider chain `gemini` only, key masked in the log, 4 evidence files
+(2 dropped as outside `allowed_evidence`), strict `validate` exit 0 (41 pages, 29 provenance hashes). It
+pushed `docs-gen/generaterecruiterpage-architecture-system-overview` (`32a9cb7`, one new file, 70 lines;
+`approval_status: draft`). No DOCCAD App is configured, so no PR was opened (branch-only fallback, E8). The
+CI log shows no token-usage or request-ID line, so this run's token count is not recorded here. Not tested:
+that a non-protected branch is refused by the environment's branch policy.
+
 The table below records the exact command sequence for owner-executed live smoke testing. Execute from `prototype/` with the appropriate provider API key and model environment variable exported in the shell. Kept output must proceed through a `docs-gen/*` branch and pull request, never a direct commit to `main`.
 
 | Provider | Required Credentials & Env | Generation Commands (InterviewPrep & RecruiterPage) | Post-Run Validation & Clean-Up | Status | Owner Record Fields |
