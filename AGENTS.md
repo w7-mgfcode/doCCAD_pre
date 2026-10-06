@@ -56,6 +56,7 @@ instead of repeating it.
 | `prototype/planning/` | `CONCEPT.md`, `ACCEPTANCE.md` (REQ-001…016), `PROGRESS.md` |
 | `docs/next-phase/` | Plan, acceptance (NV-REQ) and research for the next-version run (phases 0–3) |
 | `docs/phase-2/` | Handoff pack and dated record of the Phase 2 run (live AI behind the fixture default; merged in PR #7); do not modify |
+| `docs/phase-2-closeout/` | Handoff pack for the Phase 2 closeout run (P2-13…P2-20, checkpoints 2C and 2D); read-only for the run; not Phase 3 |
 | `.github/` | Workflows, `CODEOWNERS`, `dependabot.yml`, README banner assets |
 
 ## Setup
@@ -120,7 +121,7 @@ S=<scratch>/doccad && mkdir -p "$S" && rsync -a .github "$S/" && \
   approval.
 - **AI layer.** `fixture` stays the deterministic default; `privacy: private` routes only to the
   local provider and must fail rather than fall back to cloud; model IDs only via `${AI_MODEL_*}`.
-  `--provider` on the generation scripts (`scripts/generate_page.py:158`, `scripts/generate_question.py:198`)
+  `--provider` on the generation scripts (`scripts/generate_page.py:165`, `scripts/generate_question.py:198`)
   selects one provider explicitly and never overrides the private pin. Tests never leave 127.0.0.1
   (`TestNoExternalNetwork`). Live provider keys belong only in secrets of the `generation` environment
   (created 2026-10-06, deployment limited to protected branches; so far it holds only `GEMINI_API_KEY`
