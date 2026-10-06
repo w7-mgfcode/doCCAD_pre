@@ -3368,6 +3368,44 @@ class TestQuestionPromptAndFixtureClosure(unittest.TestCase):
                 )
 
 
+class TestLiveSmokeFindings(unittest.TestCase):
+    """Findings of the first live Gemini smoke test (2026-10-06): page identity, repair diagnostics."""
+
+    GOOD = {
+        "text": "---\nid: whatever\nslug: /views/model-chosen\ntitle: Live\ntype: generated\ngenerated: true\n"
+                "audience:\n  - recruiter\nowners:\n  - architecture-team\n---\n"
+                "Body with [link](/docs/architecture/system-overview).",
+        "provider": "gemini",
+        "model": "stub-model",
+    }
+
+    def _run(self, side_effect):
+        import scripts.generate_page as gp
+        stderr = io.StringIO()
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch.object(Path, "write_text") as mock_write, redirect_stderr(stderr):
+            MockRouter.return_value.run_with_fallback.side_effect = side_effect
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview"]
+            with mock.patch.object(sys, "argv", args):
+                ret = gp.main()
+        return ret, mock_write, stderr.getvalue()
+
+    def test_pipeline_stamps_id_and_slug_over_model_choice(self):
+        ret, mock_write, _ = self._run([self.GOOD])
+        self.assertEqual(ret, 0)
+        written = mock_write.call_args_list[0][0][0]
+        fm = yaml.safe_load(re.match(r"\A---\r?\n(.*?)\r?\n---", written, re.DOTALL).group(1))
+        self.assertEqual(fm["id"], "recruiter-architecture-system-overview")
+        self.assertEqual(fm["slug"], "/recruiter/architecture-system-overview")
+
+    def test_rejected_attempt_is_reported_before_retry(self):
+        bad = dict(self.GOOD, text="no frontmatter here")
+        ret, _, err = self._run([bad, self.GOOD])
+        self.assertEqual(ret, 0)
+        self.assertIn("[repair] attempt 1 rejected", err)
+        self.assertIn("no frontmatter block", err)
+
+
 if __name__ == "__main__":
     unittest.main()
 
