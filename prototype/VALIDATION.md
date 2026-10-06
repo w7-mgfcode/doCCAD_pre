@@ -125,7 +125,7 @@ Interactive browser verification was specified in `docs/next-phase/05_ANTIGRAVIT
 
 ---
 
-## 7. Live AI Provider Smoke Verification (Phase 2 Owner Execution — NOT RUN)
+## 7. Live AI Provider Smoke Verification (Phase 2 Owner Execution — Partial: Gemini PASS; Anthropic, OpenAI, Local NOT RUN)
 
 Per run rules and decision E5, live provider calls require owner credentials, model choices, and spend caps. No external API requests were made during this agent run; all provider adapters have been verified against local loopback mock servers (`TestHttpRetryPolicy`, `TestAdapterRequestShapes`, `TestProviderSchemaDerivation`, `TestSamplingOptIn`).
 
