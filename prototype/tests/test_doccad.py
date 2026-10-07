@@ -102,6 +102,7 @@ import scripts.generate_question as generate_question_module
 import scripts.build_filter as build_filter_module
 import scripts.detect_changes as detect_changes_module
 import scripts.review_governance as review_governance_module
+import scripts.dispatch_generation as dispatch_generation_module
 from github_approval import (
     ApprovalVerifier,
     MockGitHubApiClient,
@@ -115,6 +116,7 @@ from scripts.build_filter import (
     filter_for_demo,
     restore_stashed,
     STASH,
+    STASH_PRIVATE,
     GENERATED,
 )
 from scripts.generate_question import (
@@ -539,6 +541,331 @@ class TestPrivateContentExclusion(unittest.TestCase):
                 private_canonical.unlink()
             if source_dir.is_dir() and not list(source_dir.iterdir()):
                 source_dir.rmdir()
+
+
+class _AcceptingVerifier(ApprovalVerifier):
+    """Approval verifier stub that accepts every claim, so only the visibility rule can hold a page."""
+
+    def verify(self, doc_path, frontmatter, require_api_gate=True):
+        return None
+
+
+class TestVisibilityFailsClosed(unittest.TestCase):
+    """P2-15: Absent visibility fails closed to private (T12, NV-REQ-008, NV-REQ-028)."""
+
+    def setUp(self):
+        restore_stashed()
+
+    def tearDown(self):
+        restore_stashed()
+
+    def test_canonical_page_without_visibility_excluded_in_production(self):
+        """Case 1: A canonical page without visibility is excluded in production."""
+        source_dir = PROTOTYPE_ROOT / "docs" / "source" / "internal"
+        source_dir.mkdir(parents=True, exist_ok=True)
+        no_vis_canonical = source_dir / "unclassified-doc.md"
+        no_vis_canonical.write_text(
+            "---\n"
+            "id: unclassified-doc\n"
+            "title: Unclassified Doc\n"
+            "type: canonical\n"
+            "audience:\n  - developer\n"
+            "owners:\n  - core-team\n"
+            "last_validated: '2026-09-21'\n"
+            "---\n\n"
+            "Unclassified content without visibility field.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production()
+            self.assertFalse(no_vis_canonical.is_file(), "Unclassified canonical page must be excluded from docs/source/")
+            stashed_private = PROTOTYPE_ROOT / ".work" / "stashed_private" / "source" / "internal" / "unclassified-doc.md"
+            self.assertTrue(stashed_private.is_file(), "Unclassified canonical page must fail closed into stashed_private")
+        finally:
+            restore_stashed()
+            if no_vis_canonical.is_file():
+                no_vis_canonical.unlink()
+            if source_dir.is_dir() and not list(source_dir.iterdir()):
+                source_dir.rmdir()
+
+    def test_generated_page_without_visibility_excluded_in_production(self):
+        """Case 2: A generated page without it is excluded."""
+        no_vis_gen = GENERATED / "questions" / "test-unclassified-gen.mdx"
+        no_vis_gen.write_text(
+            "---\n"
+            "id: test-unclassified-gen\n"
+            "title: Unclassified Generated\n"
+            "type: generated\n"
+            "audience:\n  - developer\n"
+            "owners:\n  - dev\n"
+            "last_validated: '2026-09-21'\n"
+            "generated: true\n"
+            "generation:\n"
+            "  contract: GenerateQuestionPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: question-page.v1\n"
+            "  source_documents: []\n"
+            "  provider: fixture\n"
+            "  model: deterministic-demo-fixture\n"
+            "  generation_mode: production\n"
+            "  generated_at: '2026-09-21T07:00:00Z'\n"
+            "  approval_status: draft\n"
+            "---\n\n"
+            "Generated content missing visibility.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production()
+            stashed_file = STASH / "questions" / "test-unclassified-gen.mdx"
+            self.assertTrue(stashed_file.is_file(), "Generated page without visibility must be stashed")
+            tombstone_text = no_vis_gen.read_text(encoding="utf-8")
+            self.assertIn("Private Content Hold", tombstone_text)
+            self.assertNotIn("Generated content missing visibility", tombstone_text)
+        finally:
+            restore_stashed()
+            if no_vis_gen.is_file():
+                no_vis_gen.unlink()
+
+    def test_validate_rejects_generated_page_without_visibility(self):
+        """Case 3: Validate rejects a generated page without it."""
+        from scripts.validate_docs import make_validator
+        validate = make_validator()
+        fm = {
+            "id": "test-no-vis",
+            "title": "Test",
+            "type": "generated",
+            "audience": ["developer"],
+            "owners": ["dev"],
+            "generated": True,
+            "generation": {
+                "contract": "GenerateRecruiterPage",
+                "contract_version": 1,
+                "prompt_version": "recruiter.v1",
+                "source_documents": [{"id": "s1", "path": "p1", "content_hash": "sha256:" + "0" * 64}],
+                "provider": "fixture",
+                "model": "deterministic-demo-fixture",
+                "generation_mode": "demo",
+                "generated_at": "2026-09-21T00:00:00Z",
+                "approval_status": "draft",
+            },
+        }
+        errs = validate(fm, "document")
+        self.assertTrue(any("visibility" in e for e in errs), f"Expected missing visibility error, got {errs}")
+
+    def test_generate_page_stamps_visibility_public_and_private(self):
+        """Case 4: generate_page.py output for a public task carries visibility: public, and for a private-evidence task carries private."""
+        import scripts.generate_page as gp
+        # 1. Public task with public evidence
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch.object(Path, "write_text") as mock_write:
+            MockRouter.return_value.run_with_fallback.return_value = {
+                "text": "---\nid: test-pub\ntitle: Pub\ntype: generated\ngenerated: true\naudience:\n  - recruiter\nowners:\n  - arch\n---\nBody with [link](/docs/architecture/system-overview).",
+                "provider": "fixture",
+                "model": "deterministic-demo-fixture",
+            }
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview"]
+            with mock.patch.object(sys, "argv", args):
+                ret = gp.main()
+            self.assertEqual(ret, 0)
+            written = mock_write.call_args_list[0][0][0]
+            fm = yaml.safe_load(re.match(r"\A---\r?\n(.*?)\r?\n---", written, re.DOTALL).group(1))
+            self.assertEqual(fm.get("visibility"), "public")
+
+        # 2. Private task via --privacy private
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch.object(Path, "write_text") as mock_write:
+            MockRouter.return_value.run_with_fallback.return_value = {
+                "text": "---\nid: test-priv\ntitle: Priv\ntype: generated\ngenerated: true\naudience:\n  - recruiter\nowners:\n  - arch\n---\nBody with [link](/docs/architecture/system-overview).",
+                "provider": "local",
+                "model": "local-model",
+            }
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview", "--privacy", "private"]
+            with mock.patch.object(sys, "argv", args):
+                ret = gp.main()
+            self.assertEqual(ret, 0)
+            written = mock_write.call_args_list[0][0][0]
+            fm = yaml.safe_load(re.match(r"\A---\r?\n(.*?)\r?\n---", written, re.DOTALL).group(1))
+            self.assertEqual(fm.get("visibility"), "private")
+
+    def test_live_draft_shape_held_in_production(self):
+        """Case 5: A page shaped like the live draft is held in production: provider: gemini, generation_mode: production, approval_status: draft, no visibility."""
+        live_draft = GENERATED / "recruiter" / "test-live-draft-shape.mdx"
+        live_draft.write_text(
+            "---\n"
+            "id: recruiter-architecture-system-overview\n"
+            "slug: /recruiter/architecture-system-overview\n"
+            "title: Recruiter Overview\n"
+            "type: generated\n"
+            "audience:\n  - recruiter\n"
+            "owners:\n  - architecture\n"
+            "generated: true\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 2\n"
+            "  prompt_version: recruiter.v2\n"
+            "  source_documents:\n"
+            "    - id: architecture-system-overview\n"
+            "      path: docs/source/architecture/system-overview.md\n"
+            "      content_hash: sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499\n"
+            "  provider: gemini\n"
+            "  model: gemini-3.1-flash-lite\n"
+            "  generation_mode: production\n"
+            "  approval_status: draft\n"
+            "  generated_at: '2026-10-06T12:00:00Z'\n"
+            "---\n\n"
+            "Live candidate recruiter view.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production()
+            stashed_target = STASH / "recruiter" / "test-live-draft-shape.mdx"
+            self.assertTrue(stashed_target.is_file(), "Live draft shaped page must be stashed out of production")
+            stub_content = live_draft.read_text(encoding="utf-8")
+            self.assertIn("Production Publication Hold", stub_content)
+            # A draft is held by AD-9 anyway; only the visibility rule produces this reason.
+            self.assertIn('hold_reason: "Private Content Hold"', stub_content)
+            self.assertNotIn("Live candidate recruiter view", stub_content)
+        finally:
+            restore_stashed()
+            if live_draft.is_file():
+                live_draft.unlink()
+
+    def test_approved_page_without_visibility_held_even_when_approval_verifies(self):
+        """Case 5b: with approval verified, only the visibility rule can hold a page that has no visibility."""
+        page = GENERATED / "recruiter" / "test-approved-no-vis.mdx"
+        page.write_text(
+            "---\nid: test-approved-no-vis\ntitle: Approved without visibility\ntype: generated\n"
+            "audience:\n  - recruiter\nowners:\n  - architecture\ngenerated: true\n"
+            "generation:\n  contract: GenerateRecruiterPage\n  contract_version: 2\n"
+            "  prompt_version: recruiter.v2\n  source_documents: []\n  provider: gemini\n"
+            "  model: m\n  generation_mode: production\n  approval_status: approved\n"
+            "  generated_at: '2026-10-06T12:00:00Z'\n---\n\nApproved body without visibility.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production(verifier=_AcceptingVerifier())
+            self.assertTrue((STASH / "recruiter" / "test-approved-no-vis.mdx").is_file())
+            self.assertIn('hold_reason: "Private Content Hold"', page.read_text(encoding="utf-8"))
+        finally:
+            restore_stashed()
+            if page.is_file():
+                page.unlink()
+
+    def _write_dataset_pair(self, name, page_visibility, dataset_visibility=None):
+        page = GENERATED / "interview" / f"{name}.mdx"
+        page.write_text(
+            f"---\nid: {name}\ntitle: Pair\ntype: generated\nvisibility: {page_visibility}\n"
+            "audience:\n  - developer\nowners:\n  - dev\ngenerated: true\n"
+            "generation:\n  contract: GenerateInterviewPrep\n  contract_version: 1\n"
+            "  prompt_version: interview.v1\n  source_documents: []\n  provider: local\n"
+            "  model: m\n  generation_mode: production\n  approval_status: approved\n"
+            "  generated_at: '2026-10-06T12:00:00Z'\n---\n\nPair page.\n",
+            encoding="utf-8",
+        )
+        data = {"id": name, "generation": {"approval_status": "approved"}}
+        if dataset_visibility:
+            data["visibility"] = dataset_visibility
+        dataset = GENERATED / "interview" / f"{name}.interview.json"
+        dataset.write_text(json.dumps(data), encoding="utf-8")
+        return page, dataset
+
+    def test_dataset_follows_stashed_companion_not_hold_stub(self):
+        """Case 7 (review M1a): the companion MDX is stashed first and replaced by a stub saying
+        "visibility: public"; the dataset must still take the real page's "private"."""
+        page, dataset = self._write_dataset_pair("test-vis-pair", "private")
+        orig_rglob = Path.rglob
+
+        def mdx_first(self_path, pattern):
+            return sorted(orig_rglob(self_path, pattern), key=lambda p: (p.suffix != ".mdx", str(p)))
+
+        try:
+            with mock.patch.object(Path, "rglob", mdx_first):
+                filter_for_production(verifier=_AcceptingVerifier())
+            self.assertTrue((STASH / "interview" / "test-vis-pair.interview.json").is_file(),
+                            "Dataset of a private page must not inherit the hold stub's public")
+        finally:
+            restore_stashed()
+            for f in (page, dataset):
+                if f.is_file():
+                    f.unlink()
+
+    def test_dataset_public_stamp_loses_to_private_companion(self):
+        """Case 8 (review M1): when the dataset and its page both carry visibility, the stricter wins."""
+        page, dataset = self._write_dataset_pair("test-vis-stamp", "private", dataset_visibility="public")
+        try:
+            filter_for_production(verifier=_AcceptingVerifier())
+            self.assertTrue((STASH / "interview" / "test-vis-stamp.interview.json").is_file())
+        finally:
+            restore_stashed()
+            for f in (page, dataset):
+                if f.is_file():
+                    f.unlink()
+
+    def test_generate_page_stamps_dataset_visibility_over_model_value(self):
+        """Case 9 (review M1b): a private InterviewPrep run writes visibility: private into the dataset,
+        even when the model emitted "public"."""
+        import scripts.generate_page as gp
+        model_json = json.dumps({"id": "architecture-system-overview", "visibility": "public", "elevator_pitch": "x"})
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch("scripts.generate_page.make_validator", return_value=lambda data, kind: []), \
+             mock.patch("scripts.generate_page.check_grounding_interview", return_value=[]), \
+             mock.patch.object(Path, "write_text") as mock_write, \
+             redirect_stdout(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.return_value = {"text": model_json, "provider": "local", "model": "m"}
+            args = ["generate_page.py", "--contract", "GenerateInterviewPrep", "--target", "architecture-system-overview",
+                    "--privacy", "private"]
+            with mock.patch.object(sys, "argv", args):
+                self.assertEqual(gp.main(), 0)
+        written = [c[0][0] for c in mock_write.call_args_list if '"elevator_pitch"' in str(c[0][0])]
+        self.assertEqual(len(written), 1)
+        self.assertEqual(json.loads(written[0])["visibility"], "private")
+
+    def test_expected_excluded_set_literal(self):
+        """Case 6: Expected-set check asserting literal list on the real tree; interview datasets follow their pages."""
+        expected = sorted([
+            "generated/interview/architecture-content-planes.interview.json",
+            "generated/interview/architecture-content-planes.mdx",
+            "generated/interview/architecture-system-overview.interview.json",
+            "generated/interview/architecture-system-overview.mdx",
+            "generated/interview/security-trust-boundaries.interview.json",
+            "generated/interview/security-trust-boundaries.mdx",
+            "generated/interview/validation-drift-detection.interview.json",
+            "generated/interview/validation-drift-detection.mdx",
+            "generated/questions/q-001-canonical-separation.mdx",
+            "generated/questions/q-002-drift-detection.mdx",
+            "generated/questions/q-003-security-trust-zones.mdx",
+            "generated/questions/q-004-docusaurus-selection.mdx",
+            "generated/questions/q-005-private-routing.mdx",
+            "generated/questions/q-006-kubernetes-topology.mdx",
+            "generated/recruiter/project-overview.mdx",
+        ])
+        try:
+            stashed_count = filter_for_production()
+            self.assertEqual(stashed_count, len(expected))
+            actual_stashed = []
+            if STASH.is_dir():
+                for f in STASH.rglob("*"):
+                    if f.is_file():
+                        actual_stashed.append("generated/" + f.relative_to(STASH).as_posix())
+            if STASH_PRIVATE.is_dir():
+                for f in STASH_PRIVATE.rglob("*"):
+                    if f.is_file():
+                        actual_stashed.append(f.relative_to(STASH_PRIVATE).as_posix())
+            self.assertEqual(sorted(actual_stashed), expected)
+
+            # Assert that the four interview datasets followed their companion pages
+            for dataset_name in [
+                "architecture-content-planes",
+                "architecture-system-overview",
+                "security-trust-boundaries",
+                "validation-drift-detection",
+            ]:
+                json_stashed = f"generated/interview/{dataset_name}.interview.json"
+                mdx_stashed = f"generated/interview/{dataset_name}.mdx"
+                self.assertIn(json_stashed, actual_stashed)
+                self.assertIn(mdx_stashed, actual_stashed)
+        finally:
+            restore_stashed()
 
 
 class TestHashDriftAndRegeneration(unittest.TestCase):
@@ -1457,6 +1784,7 @@ class TestApprovalRecord(unittest.TestCase):
             "id": "test-view",
             "title": "Test View",
             "type": "generated",
+            "visibility": "public",
             "generated": True,
             "audience": ["developer"],
             "owners": ["developer"],
@@ -1876,6 +2204,7 @@ class TestApprovalRecord(unittest.TestCase):
             "id: test-approved-api-fail\n"
             "title: Approved Fail\n"
             "type: generated\n"
+            "visibility: public\n"
             "generated: true\n"
             "audience: [developer]\n"
             "owners: [developer]\n"
@@ -1899,9 +2228,9 @@ class TestApprovalRecord(unittest.TestCase):
             with self.assertRaises(ApiPermissionError):
                 filter_for_production(verifier=FailingVerifier(), require_api=True)
         finally:
+            restore_stashed()
             if test_gen.is_file():
                 test_gen.unlink()
-            restore_stashed()
 
 
 class TestWorkflowScriptInvocations(unittest.TestCase):
@@ -1915,6 +2244,7 @@ class TestWorkflowScriptInvocations(unittest.TestCase):
             "build_filter.py": build_filter_module.build_parser,
             "detect_changes.py": detect_changes_module.build_parser,
             "review_governance.py": review_governance_module.build_parser,
+            "dispatch_generation.py": dispatch_generation_module.build_parser,
         }
 
     def test_generate_question_cli_argparse_rules(self):
@@ -2073,6 +2403,25 @@ class TestWorkflowSecurityInvariants(unittest.TestCase):
     def test_top_level_permissions_declared(self):
         for name, wf in self.workflows.items():
             self.assertIn("permissions", wf, f"{name}: declare top-level least-privilege permissions")
+
+    def test_no_top_level_permissions_grant_write(self):
+        """P2-19 (G16): Least privilege: top-level permissions must stay read-only (never grant write)."""
+        for name, wf in self.workflows.items():
+            perms = wf.get("permissions")
+            self.assertIsNotNone(perms, f"{name}: missing top-level permissions")
+            if isinstance(perms, dict):
+                for scope, perm_val in perms.items():
+                    self.assertNotEqual(
+                        perm_val,
+                        "write",
+                        f"{name}: top-level permission '{scope}' grants 'write'; must be read-only (grant write at job level)",
+                    )
+            elif isinstance(perms, str):
+                self.assertNotEqual(
+                    perms,
+                    "write-all",
+                    f"{name}: top-level permissions grant 'write-all'",
+                )
 
 
 class TestGenerateWorkflowProviderInput(unittest.TestCase):
@@ -2447,6 +2796,11 @@ class TestExplicitProviderSelection(unittest.TestCase):
             with self.assertRaises(MissingModelError):
                 self.router.chain_for({"task": "TestTask"}, provider="anthropic")
 
+    def test_chain_for_reraises_arbitrary_adapter_error(self):
+        with mock.patch.object(self.router, "instantiate", side_effect=ValueError("adapter init failed")):
+            with self.assertRaises(ValueError):
+                self.router.chain_for({"task": "TestTask"}, provider="anthropic")
+
     def test_generate_page_cli_dry_run_with_explicit_provider(self):
         res = subprocess.run(
             [
@@ -2462,7 +2816,7 @@ class TestExplicitProviderSelection(unittest.TestCase):
             text=True,
         )
         self.assertEqual(res.returncode, 0, f"stdout: {res.stdout}\nstderr: {res.stderr}")
-        self.assertIn("Provider chain (from ai.config.yaml): anthropic", res.stdout)
+        self.assertIn("Provider chain (--provider): anthropic", res.stdout)
         self.assertIn("DRY RUN: assembled prompt", res.stdout)
 
 
@@ -3404,6 +3758,465 @@ class TestLiveSmokeFindings(unittest.TestCase):
         self.assertEqual(ret, 0)
         self.assertIn("[repair] attempt 1 rejected", err)
         self.assertIn("no frontmatter block", err)
+
+
+class TestRunUsageReport(unittest.TestCase):
+    """P2-14: Observable generation: usage report and step summary (REQ-005, NV-REQ-020, NV-REQ-027)."""
+
+    def setUp(self):
+        _StubHttpHandler.response_map = {}
+        _StubHttpHandler.received_requests = []
+        self.server = http.server.HTTPServer(("127.0.0.1", 0), _StubHttpHandler)
+        self.port = self.server.server_port
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(timeout=1.0)
+
+    def test_loopback_stub_with_request_id_and_usage(self):
+        """Case 1: A loopback stub returns a body with usage and a request-id header; the printed line carries those exact numbers and that ID."""
+        from ai.router import Router
+        body = json.dumps({
+            "content": [{"type": "text", "text": "generated-text"}],
+            "model": "claude-test-model",
+            "usage": {"input_tokens": 128, "output_tokens": 256},
+        })
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json", "request-id": "req-stub-test-12345"}, body)
+        ]
+        router = Router(
+            PROTOTYPE_ROOT / "ai.config.yaml",
+            adapter_kwargs={
+                "anthropic": {
+                    "base_url": f"http://127.0.0.1:{self.port}",
+                    "model": "claude-test-model",
+                    "env_key": "TEST_ANTHROPIC_KEY",
+                }
+            },
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-test"}):
+            res = router.run_with_fallback(
+                {"task": "test-task", "privacy": "public"},
+                [{"role": "user", "content": "hello"}],
+                provider="anthropic",
+            )
+            self.assertEqual(res["model"], "claude-test-model")
+            self.assertEqual(res["request_id"], "req-stub-test-12345")
+            usage_line = router.format_usage_line()
+            self.assertEqual(
+                usage_line,
+                "Run usage: provider=anthropic model=claude-test-model calls=1 input_tokens=128 output_tokens=256 request_ids=req-stub-test-12345",
+            )
+
+    def test_response_without_request_id_header_reports_unavailable(self):
+        """Case 2: A response without a request-ID header prints request_ids=unavailable."""
+        from ai.router import Router
+        body = json.dumps({
+            "content": [{"type": "text", "text": "generated-text"}],
+            "model": "claude-test-no-req-id",
+            "usage": {"input_tokens": 50, "output_tokens": 100},
+        })
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"}, body)
+        ]
+        router = Router(
+            PROTOTYPE_ROOT / "ai.config.yaml",
+            adapter_kwargs={
+                "anthropic": {
+                    "base_url": f"http://127.0.0.1:{self.port}",
+                    "model": "claude-test-no-req-id",
+                    "env_key": "TEST_ANTHROPIC_KEY",
+                }
+            },
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-test"}):
+            res = router.run_with_fallback(
+                {"task": "test-task", "privacy": "public"},
+                [{"role": "user", "content": "hello"}],
+                provider="anthropic",
+            )
+            self.assertIsNone(res.get("request_id"))
+            usage_line = router.format_usage_line()
+            self.assertEqual(
+                usage_line,
+                "Run usage: provider=anthropic model=claude-test-no-req-id calls=1 input_tokens=50 output_tokens=100 request_ids=unavailable",
+            )
+
+    def test_github_step_summary_written_without_secrets_or_prompts(self):
+        """Case 3: With GITHUB_STEP_SUMMARY pointed at a temp file, the report is written. It contains no sentinel string planted in the evidence and no fake key-shaped value set in the environment. This case fails if the report includes prompt text."""
+        from ai.router import Router
+        sentinel_prompt = "SUPER_SECRET_SENTINEL_PROMPT_12345"
+        fake_key_env = "sk-fakekeyinenv999999999999999"
+
+        with tempfile.NamedTemporaryFile("w+", delete=False) as tf:
+            summary_path = tf.name
+
+        try:
+            with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": summary_path, "TEST_SECRET_ENV": fake_key_env}):
+                router = Router(PROTOTYPE_ROOT / "ai.config.yaml")
+                router.calls_count = 1
+                router.tokens_used = 200
+                router.input_tokens = 120
+                router.output_tokens = 80
+                router.request_ids = ["req-summary-123"]
+                router.last_provider = "anthropic"
+                router.last_model = "claude-3-7-sonnet"
+
+                router.write_step_summary(
+                    contract="GenerateRecruiterPage",
+                    target="test-target",
+                    privacy="public",
+                    generation_mode="production",
+                    evidence_ids=["evidence-doc-1"],
+                    gate_results="PASS (schema, mdx, grounding)",
+                    output_path="docs/generated/recruiter/test-target.mdx",
+                    approval_status="draft",
+                )
+
+                content = Path(summary_path).read_text(encoding="utf-8")
+                self.assertIn("### DOCCAD Generation Run Report", content)
+                self.assertIn("- **Contract:** GenerateRecruiterPage", content)
+                self.assertIn("- **Target:** `test-target`", content)
+                self.assertIn("- **Provider:** anthropic", content)
+                self.assertIn("- **Returned Model:** claude-3-7-sonnet", content)
+                self.assertIn("- **Request IDs:** req-summary-123", content)
+                self.assertIn("- **Gate Results:** PASS (schema, mdx, grounding)", content)
+
+                # Security / Leak checks:
+                self.assertNotIn(sentinel_prompt, content, "Prompt sentinel string leaked into GITHUB_STEP_SUMMARY!")
+                self.assertNotIn(fake_key_env, content, "Fake environment secret key leaked into GITHUB_STEP_SUMMARY!")
+                self.assertNotIn("messages", content.lower())
+                self.assertNotIn("content-type", content.lower())
+                self.assertNotIn("authorization", content.lower())
+        finally:
+            if os.path.exists(summary_path):
+                os.remove(summary_path)
+
+    def test_step_summary_of_real_fixture_run_contains_no_prompt_text(self):
+        """Case 3b (review M3): drive a real fixture generation and check that evidence text which was in
+        the prompt never reaches the step summary."""
+        from ai.router import Router
+        captured: list = []
+        orig_run = Router.run_with_fallback
+
+        def spy(self_router, task_meta, messages, *a, **k):
+            captured.extend(str(m.get("content", "")) for m in messages)
+            return orig_run(self_router, task_meta, messages, *a, **k)
+
+        with tempfile.NamedTemporaryFile("w+", delete=False) as tf:
+            summary_path = tf.name
+        try:
+            with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": summary_path}), \
+                 mock.patch.object(Router, "run_with_fallback", spy), \
+                 mock.patch.object(Path, "write_text"), \
+                 redirect_stdout(io.StringIO()):
+                args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview"]
+                with mock.patch.object(sys, "argv", args):
+                    self.assertEqual(generate_page_module.main(), 0)
+            prompt = "\n".join(captured)
+            source = (PROTOTYPE_ROOT / "docs" / "source" / "architecture" / "system-overview.md").read_text(encoding="utf-8")
+            sentinels = [ln.strip() for ln in source.split("\n") if len(ln.strip()) >= 40 and ln.strip() in prompt]
+            self.assertTrue(sentinels, "the prompt must carry evidence text for this check to mean anything")
+            summary = Path(summary_path).read_text(encoding="utf-8")
+            self.assertIn("### DOCCAD Generation Run Report", summary)
+            for s in sentinels:
+                self.assertNotIn(s, summary)
+            self.assertNotIn("EVIDENCE-DATA", summary)
+        finally:
+            os.remove(summary_path)
+
+    def test_usage_report_on_failed_page_run(self):
+        """Case 3c (review M2): a run that fails after the repair retry still prints one usage line and
+        writes a FAIL run report; a successful run reports exactly once."""
+        with mock.patch("scripts.generate_page.Router") as MockRouter, redirect_stdout(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.return_value = {"text": "no frontmatter", "provider": "gemini", "model": "m"}
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview",
+                    "--provider", "gemini"]
+            with mock.patch.object(sys, "argv", args), self.assertRaises(PageContractViolation):
+                generate_page_module.main()
+        MockRouter.return_value.format_usage_line.assert_called_once()
+        summary_kw = MockRouter.return_value.write_step_summary.call_args.kwargs
+        self.assertTrue(summary_kw["gate_results"].startswith("FAIL"), summary_kw)
+        self.assertEqual(summary_kw["approval_status"], "n/a")
+
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch.object(Path, "write_text"), redirect_stdout(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.return_value = {
+                "text": "---\nid: x\ntitle: X\ntype: generated\ngenerated: true\naudience:\n  - recruiter\nowners:\n  - arch\n---\nBody with [link](/docs/architecture/system-overview).",
+                "provider": "fixture", "model": "deterministic-demo-fixture"}
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview"]
+            with mock.patch.object(sys, "argv", args):
+                self.assertEqual(generate_page_module.main(), 0)
+        MockRouter.return_value.format_usage_line.assert_called_once()
+        self.assertTrue(MockRouter.return_value.write_step_summary.call_args.kwargs["gate_results"].startswith("PASS"))
+
+    def test_usage_report_on_failed_question_run(self):
+        """Case 3d (review M2): a question run whose provider call fails reports FAIL (provider call)."""
+        with mock.patch("scripts.generate_question.Router") as MockRouter, \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.side_effect = RuntimeError("provider down")
+            args = ["generate_question.py", "--question", "How does DOCCAD detect drift?"]
+            with mock.patch.object(sys, "argv", args):
+                self.assertEqual(generate_question_module.main(), 1)
+        MockRouter.return_value.format_usage_line.assert_called_once()
+        self.assertEqual(MockRouter.return_value.write_step_summary.call_args.kwargs["gate_results"], "FAIL (provider call)")
+
+    def test_log_safe_keeps_untrusted_text_on_one_line(self):
+        """Review L1: a returned model string cannot start a ::workflow-command:: line in the Actions log."""
+        from ai.router import Router, log_safe
+        self.assertEqual(log_safe("a\n::add-mask::b\r\x1b[31m"), "a ::add-mask::b [31m")
+        self.assertEqual(len(log_safe("x" * 500)), 200)
+        router = Router(PROTOTYPE_ROOT / "ai.config.yaml")
+        router.last_model = "m\n::stop-commands::tok"
+        router.request_ids = ["r1\n::add-mask::x"]
+        line = router.format_usage_line()
+        self.assertNotIn("\n", line)
+        report = router.format_run_report("C", "t`]\n![x](http://e)", "public", "demo", [], "PASS", "none", "draft")
+        self.assertNotIn("\n::", report)
+        self.assertIn("- **Target:** `t']", report)
+
+    def test_provider_flag_changes_chain_label(self):
+        """Case 4: --provider changes the chain label."""
+        res_explicit = subprocess.run(
+            [
+                sys.executable,
+                str(PROTOTYPE_ROOT / "scripts" / "generate_page.py"),
+                "--contract", "GenerateRecruiterPage",
+                "--target", "architecture-system-overview",
+                "--provider", "anthropic",
+                "--dry-run",
+            ],
+            cwd=str(PROTOTYPE_ROOT),
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(res_explicit.returncode, 0)
+        self.assertIn("Provider chain (--provider): anthropic", res_explicit.stdout)
+        self.assertNotIn("Provider chain (from ai.config.yaml):", res_explicit.stdout)
+
+        res_default = subprocess.run(
+            [
+                sys.executable,
+                str(PROTOTYPE_ROOT / "scripts" / "generate_page.py"),
+                "--contract", "GenerateRecruiterPage",
+                "--target", "architecture-system-overview",
+                "--dry-run",
+            ],
+            cwd=str(PROTOTYPE_ROOT),
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(res_default.returncode, 0)
+        self.assertIn("Provider chain (from ai.config.yaml): fixture", res_default.stdout)
+        self.assertNotIn("Provider chain (--provider):", res_default.stdout)
+
+
+
+class TestDispatchGeneration(unittest.TestCase):
+    """P2-17 (G17) and P2-18 (G15): Single tested dispatcher for generate.yml with unique branch naming."""
+
+    def test_run_identity_appends_attempt_on_rerun(self):
+        """Review L2: "Re-run all jobs" keeps GITHUB_RUN_ID, so the attempt must make the branch unique."""
+        ri = dispatch_generation_module.run_identity
+        self.assertEqual(ri({"GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "1"}), "123")
+        self.assertEqual(ri({"GITHUB_RUN_ID": "123"}), "123")
+        self.assertEqual(ri({"GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "2"}), "123-2")
+        self.assertEqual(ri({}), "")
+        cbn = dispatch_generation_module.compute_branch_name
+        first = cbn("GenerateRecruiterPage", "architecture-system-overview", ri({"GITHUB_RUN_ID": "9", "GITHUB_RUN_ATTEMPT": "1"}))
+        rerun = cbn("GenerateRecruiterPage", "architecture-system-overview", ri({"GITHUB_RUN_ID": "9", "GITHUB_RUN_ATTEMPT": "2"}))
+        self.assertNotEqual(first, rerun)
+
+    def test_workflow_push_steps_use_run_identity(self):
+        """Both push steps pass GITHUB_RUN_ATTEMPT through env: and name the branch via run_identity()."""
+        wf = (PROTOTYPE_ROOT.parent / ".github" / "workflows" / "generate.yml").read_text(encoding="utf-8")
+        self.assertEqual(wf.count("GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}"), 2)
+        self.assertEqual(wf.count("run_id = run_identity()"), 2)
+        self.assertNotIn('os.environ.get("GITHUB_RUN_ID"', wf)
+
+    def test_dispatch_echo_keeps_target_on_one_line(self):
+        """Review L1: a dispatched target with a newline cannot inject a workflow command into the log."""
+        out = io.StringIO()
+        with redirect_stdout(out):
+            dispatch_generation_module.dispatch(
+                contract="GenerateQuestionPage",
+                target="q\n::stop-commands::tok",
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: 0,
+            )
+        self.assertNotIn("\n::", out.getvalue())
+        self.assertIn("q ::stop-commands::tok", out.getvalue())
+
+    def test_invalid_contract_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="InvalidContract",
+                    target="system-overview",
+                    privacy="public",
+                    provider="fixture",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_invalid_privacy_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="system-overview",
+                    privacy="secret",
+                    provider="fixture",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_invalid_provider_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="system-overview",
+                    privacy="public",
+                    provider="unsupported_provider",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_empty_target_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="",
+                    privacy="public",
+                    provider="fixture",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_private_with_cloud_provider_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="system-overview",
+                    privacy="private",
+                    provider="gemini",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_valid_input_produces_exact_argv(self):
+        runner_calls = []
+        with redirect_stdout(io.StringIO()):
+            ret = dispatch_generation_module.dispatch(
+                contract="GenerateRecruiterPage",
+                target="architecture-system-overview",
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: runner_calls.append(cmd),
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(len(runner_calls), 1)
+        expected_cmd = [
+            "python3",
+            "scripts/generate_page.py",
+            "--contract", "GenerateRecruiterPage",
+            "--target", "architecture-system-overview",
+            "--privacy", "public",
+            "--provider", "fixture",
+        ]
+        self.assertEqual(runner_calls[0], expected_cmd)
+
+    def test_question_contract_produces_exact_argv(self):
+        runner_calls = []
+        with redirect_stdout(io.StringIO()):
+            ret = dispatch_generation_module.dispatch(
+                contract="GenerateQuestionPage",
+                target="How does DOCCAD detect drift?",
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: runner_calls.append(cmd),
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(len(runner_calls), 1)
+        expected_cmd = [
+            "python3",
+            "scripts/generate_question.py",
+            "--question", "How does DOCCAD detect drift?",
+            "--privacy", "public",
+            "--provider", "fixture",
+            "--persist",
+        ]
+        self.assertEqual(runner_calls[0], expected_cmd)
+
+    def test_metacharacter_target_stays_single_element(self):
+        runner_calls = []
+        metachar_target = 'system-overview; rm -rf / && echo "pwned" | cat $VAR `date`'
+        with redirect_stdout(io.StringIO()):
+            ret = dispatch_generation_module.dispatch(
+                contract="GenerateRecruiterPage",
+                target=metachar_target,
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: runner_calls.append(cmd),
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(len(runner_calls), 1)
+        cmd = runner_calls[0]
+        self.assertEqual(cmd[4], "--target")
+        self.assertEqual(cmd[5], metachar_target)
+        self.assertEqual(len(cmd), 10)
+
+    def test_branch_name_two_run_ids_give_distinct_names(self):
+        branch1 = dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "architecture-system-overview", "1001")
+        branch2 = dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "architecture-system-overview", "1002")
+        self.assertNotEqual(branch1, branch2)
+        self.assertTrue(branch1.endswith("-1001"))
+        self.assertTrue(branch2.endswith("-1002"))
+
+    def test_branch_name_starts_with_docs_gen_and_bounded_length(self):
+        long_target = "a" * 150
+        branch = dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", long_target, "37541030510")
+        self.assertTrue(branch.startswith("docs-gen/"))
+        self.assertLessEqual(len(branch), 100)
+
+    def test_branch_name_missing_run_id_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "system-overview", None)
+        with self.assertRaises(ValueError):
+            dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "system-overview", "")
+        with self.assertRaises(ValueError):
+            dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "system-overview", "   ")
+
+    def test_cli_branch_only_flag(self):
+        out = io.StringIO()
+        with redirect_stdout(out):
+            ret = dispatch_generation_module.main(
+                argv=[
+                    "--contract", "GenerateRecruiterPage",
+                    "--target", "architecture-system-overview",
+                    "--run-id", "9999",
+                    "--branch-only",
+                ]
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(out.getvalue().strip(), "docs-gen/generaterecruiterpage-architecture-system-overview-9999")
 
 
 if __name__ == "__main__":

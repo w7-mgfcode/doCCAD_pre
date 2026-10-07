@@ -87,7 +87,7 @@ class OpenAIProvider:
             token_param=self.token_param,
         )
 
-        body, _ = http_post_json(
+        body, resp_headers = http_post_json(
             url=self.base_url,
             payload=payload,
             headers=headers,
@@ -108,10 +108,17 @@ class OpenAIProvider:
 
         usage = body.get("usage", {})
         returned_model = body.get("model") or model
+        req_id = (
+            resp_headers.get("request-id")
+            or resp_headers.get("x-request-id")
+            or resp_headers.get("x-goog-request-id")
+            or None
+        )
         return {
             "text": text,
             "usage": {"input_tokens": usage.get("prompt_tokens", 0),
                       "output_tokens": usage.get("completion_tokens", 0)},
             "provider": self.name,
             "model": returned_model,
+            "request_id": req_id,
         }

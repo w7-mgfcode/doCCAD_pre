@@ -1,6 +1,6 @@
 # DOCCAD Prototype Limitations & Architecture Disclosures
 
-**Date**: 2026-10-06  
+**Date**: 2026-10-07  
 **Status**: Phase 2 Complete (Live AI Behind Fixture Default)  
 **System Specification**: DOCCAD Prototype v0.2.0  
 
@@ -83,7 +83,7 @@ These capabilities are implemented as offline simulations for testing and demons
 These components are implemented and covered by local loopback unit tests. Live calls are owner-executed; only Gemini has been run so far:
 1. **Live Cloud AI Providers**: Adapters for Anthropic Claude (`ai/anthropic_provider.py`), OpenAI GPT (`ai/openai_provider.py`), Google Gemini (`ai/gemini_provider.py`), and Local (`ai/local_provider.py`) are implemented, schema-validated, and stub-tested with HTTP retry backoff and loopback network guards. Gemini passed an owner-run live smoke test on 2026-10-06 (`gemini-3.1-flash-lite`, both contracts, `VALIDATION.md` §7); Anthropic and OpenAI live calls are NOT RUN (P2-08).
 2. **Local Model Provider**: The OpenAI-compatible adapter for local runtimes (`ai/local_provider.py`) is implemented, fallback-verified, and stub-tested; live verification against a running Ollama/vLLM daemon is NOT RUN.
-3. **GitHub Actions Workflows**: `ci.yml` and `publish.yml` run on GitHub (the site is live). `generate.yml` (including `provider` input and `generation` environment) and `drift.yml` are statically and dynamically verified against CLI parsers; live dispatch on GitHub is NOT RUN until owner trigger.
+3. **GitHub Actions Workflows**: `ci.yml` and `publish.yml` run on GitHub (the site is live). `generate.yml` (including `provider` input and `generation` environment) executed live on GitHub with Gemini on 2026-10-06 (run 37541030510); other providers and scheduled `drift.yml` are NOT RUN until owner trigger.
 4. **Interactive Browser Verification**: Visual verification using the Antigravity 2.0 `/browser` slash command is an interactive human procedure and is documented as NOT RUN in automated CI logs.
 
 ### Tier 4: Deferred Production Work
@@ -109,17 +109,17 @@ Requirement IDs and titles follow `docs/primary-inputs/01_PROJECT_KNOWLEDGE/REQU
 |---|---|---|---|---|
 | **REQ-001** | Six-platform research | `docs/primary-inputs/02_RESEARCH/`, `docs/source/architecture/platform-research.md` | Archive research set; canonical summary page validates | **DOCUMENTED** |
 | **REQ-002** | Weighted decision model | `docs/source/decisions/adr-002-docusaurus-foundation.md` | ADR with the 11-criterion scoring; page validates | **DOCUMENTED** |
-| **REQ-003** | Git/GitHub source of truth | `docs/source/**`, `.docs-manifest.json` | Files only, no database; git repository with a GitHub remote. PR-based flows arrive in Phase 1 | **PARTIAL** |
+| **REQ-003** | Git/GitHub source of truth | `docs/source/**`, `.docs-manifest.json` | Files only, no database; git repository with a GitHub remote. PR-based flows implemented (P1-05, P1-06); GitHub App pending owner creation | **PARTIAL** |
 | **REQ-004** | Structural canonical vs generated separation; no silent promotion | `scripts/validate_docs.py`, `scripts/build_filter.py`, `docusaurus.config.ts` | `TestPlaneSeparation`, `TestBuildFilterExclusion`, `TestProductionFilterValidity` | **VERIFIED** |
 | **REQ-005** | Thin AI provider abstraction | `ai/provider.py`, `ai/router.py`, `ai.config.yaml` | `TestRouterFallbackSemantics`, `TestPrivateRoutingPolicy`, `TestHttpRetryPolicy`, `TestProviderSchemaDerivation`, `TestAdapterRequestShapes`, `TestExplicitProviderSelection`, `TestSamplingOptIn`, `TestRunBudget`. Cloud and local adapters are implemented, stub-tested, live NOT RUN (Tier 3) | **PARTIAL** |
 | **REQ-006** | Static reads without AI | `docusaurus.config.ts`, `src/**` | `npm run build` with no keys set; no runtime model calls in `src/`. Browser reading not run | **BUILD-ONLY** |
 | **REQ-007** | Level-1 deterministic retrieval | `scripts/generate_question.py`, `scripts/generate_page.py` | `TestDeterministicRetrievalAndGeneration`, `TestPathTraversalSecurity` | **VERIFIED** |
-| **REQ-008** | Ingestion & incremental regeneration | `scripts/detect_changes.py` | `TestHashDriftAndRegeneration`, `TestRegenerationPlanExecutable`, `TestSourceDeletionDetection`. Automated GitHub ingestion (P1-06) not built | **PARTIAL** |
+| **REQ-008** | Ingestion & incremental regeneration | `scripts/detect_changes.py` | `TestHashDriftAndRegeneration`, `TestRegenerationPlanExecutable`, `TestSourceDeletionDetection`. Automated GitHub generation workflow implemented in `generate.yml` (P1-06 / P2-12 / P2-17) | **PARTIAL** |
 | **REQ-009** | Provenance metadata & hash drift | `generation` frontmatter block, `scripts/validate_docs.py` | `TestInvalidProvenance`, `TestHashDriftAndRegeneration`, `TestGenerationModeStamp` | **VERIFIED** |
 | **REQ-010** | Evidence-grounded recruiter views | `docs/generated/recruiter/project-overview.mdx`, `<EvidenceLink>`, `scripts/check_grounding.py` | `TestBrokenCitations`, `TestGroundingGate`, `npm run validate`. Verified by fixture and golden set | **VERIFIED** |
 | **REQ-011** | Interview prep component | `src/components/InterviewPrep/`, 4 `*.interview.json` datasets | Datasets pass `interview.schema.json`; component compiles. Rendering not checked in a browser | **BUILD-ONLY** |
 | **REQ-012** | Special-question workflow | `scripts/generate_question.py`, `scripts/review_governance.py`, `/workbench` | `TestUiCliJsonRoundtrip`, `TestQuestionPersistenceGovernance`, `TestReviewGovernanceStateTransitions`. Real approval via E3 approval record | **PARTIAL** |
 | **REQ-013** | EN/HU bilingual capability | `i18n/hu/**`, `src/pages/index.tsx` | Both locales build; landing, navigation and 4 canonical pages translated, the rest fall back to English (D11) | **PARTIAL** |
 | **REQ-014** | Anti-overengineering | Whole prototype | By inspection: no database, service, vector store or agent swarm; Python is stdlib + PyYAML + jsonschema | **VERIFIED** (inspection) |
-| **REQ-015** | Runnable validated prototype | `tests/test_doccad.py`, `VALIDATION.md`, `DEMO.md` | 155 unit tests pass; `VALIDATION.md` separates executed from NOT RUN checks | **VERIFIED** |
+| **REQ-015** | Runnable validated prototype | `tests/test_doccad.py`, `VALIDATION.md`, `DEMO.md` | 190 unit tests pass; `VALIDATION.md` separates executed from NOT RUN checks | **VERIFIED** |
 | **REQ-016** | Security architecture | `ai/router.py`, `scripts/validate_docs.py`, `scripts/check_grounding.py`, `contracts/link-allowlist.yaml` | `TestMdxRestrictionGate`, `TestContextSecretScan`, `TestExternalLinkAllowlist`, `TestPrivateChainConfig`, `TestGroundingGate`, `TestPromptInjectionFixtures`, `TestGenerateWorkflowProviderInput` | **VERIFIED** |

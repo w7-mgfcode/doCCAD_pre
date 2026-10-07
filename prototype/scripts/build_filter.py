@@ -85,7 +85,8 @@ def filter_for_production(verifier: Optional[ApprovalVerifier] = None, require_a
             continue
         fm = parse_frontmatter(page) or {}
         visibility = fm.get("visibility") or fm.get("privacy")
-        if visibility == "private":
+        # Absent visibility or privacy fails closed to private (T12, NV-REQ-028)
+        if visibility != "public":
             rel = page.relative_to(SOURCE)
             dest = STASH_PRIVATE / "source" / rel
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -115,7 +116,24 @@ def filter_for_production(verifier: Optional[ApprovalVerifier] = None, require_a
                 pass
 
         visibility = fm.get("visibility") or fm.get("privacy")
-        is_private = (visibility == "private")
+        if page.suffix == ".json":
+            # Option (a): a dataset takes the visibility of the companion MDX page that loads it. When both
+            # carry one, the stricter wins (public only if both say public). The stashed copy is the real
+            # page: the live file may already be a hold stub, which always says "public".
+            companion_mdx = page.parent / f"{doc_id}.mdx"
+            companion_in_stash = STASH / companion_mdx.relative_to(GENERATED)
+            comp_path = companion_in_stash if companion_in_stash.is_file() else (companion_mdx if companion_mdx.is_file() else None)
+            comp_fm = (parse_frontmatter(comp_path) or {}) if comp_path else {}
+            if comp_fm.get("type") == "stub":
+                comp_fm = {}
+            comp_visibility = comp_fm.get("visibility") or comp_fm.get("privacy")
+            if not visibility:
+                visibility = comp_visibility
+            elif comp_path and comp_visibility != "public":
+                visibility = comp_visibility or "private"
+
+        # Absent visibility or privacy fails closed to private (T12, NV-REQ-028)
+        is_private = (visibility != "public")
 
         approval = gen_block.get("approval_status", "draft")
         review_rec = reviews.get(doc_id, {})

@@ -19,16 +19,17 @@ Design intent: [`planning/CONCEPT.md`](planning/CONCEPT.md). Requirements mappin
 
 ## Status
 
-Verified on 2026-10-06 (Node 24.19, Python 3.14, `main` after PR #9):
+Verified on 2026-10-07 (Node 24.19, Python 3.14, branch `phase-2-closeout` after the review fixes):
 
 | Area | Works today | Not yet |
 | --- | --- | --- |
 | Static site | Builds in `en` and `hu`; landing page, navbar, footer, and search index localized; all 29 canonical and 11 generated pages | Untranslated canonical docs fall back to English source (D11 verified) |
-| Checks | `validate`, `detect`, 155 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
+| Checks | `validate`, `detect`, 190 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
+| Run reporting | Every generation run prints one `Run usage:` line (provider, returned model, calls, tokens, request IDs or `unavailable`), also when it fails; in Actions the same facts go to the step summary. Generated pages and interview datasets carry an explicit `visibility`, and the production filter treats an absent one as private | Step summary and run-ID branch names not yet observed on GitHub (owner action H3-5) |
 | Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip, forced draft, pre-write grounding gate | — |
 | Page pipeline | `generate_page.py` live pipeline verified with date normalization, grounding gate, link allowlist, and strict schema adherence (`TestLivePagePipeline`, `TestGroundingGate`) | — |
 | Regeneration | Targeted deduplicated regeneration through `generate_page.py` and `generate_question.py`; `seed_generated_views.py` | — |
-| Review | Simulated review ledger with strict state machine; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (Phase 1 P1-05) |
+| Review | Simulated review ledger with strict state machine; production check blocks simulated approval | Real approval via GitHub PRs and branch protection (P1-05 code verified; DOCCAD GitHub App pending owner creation) |
 | Cloud / local models | Secret scanning (T6), transport vs content error fallback semantics, privacy hard-pinning (T12), HTTP retry backoff, provider JSON schema derivation, sampling opt-in, per-run budget, grounding gate, prompt injection rejection, workflow generation environment | Gemini passed an owner-run live smoke test (P2-08, `VALIDATION.md` §7); Anthropic, OpenAI and local live calls NOT RUN |
 
 ## Requirements
@@ -45,7 +46,7 @@ No API keys, database or network access are needed.
 ```bash
 cd prototype
 npm ci
-npm run validate      # → "Validated 40 pages, 4 interview datasets, 37 provenance hashes." + OK
+npm run validate      # → "Validated 40 pages, 4 interview datasets, 25 provenance hashes." + OK
 npm run build         # → [SUCCESS] for en, then for build/hu
 npm run serve         # → http://localhost:3000/doCCAD_pre/
 ```
@@ -159,7 +160,7 @@ python3 scripts/generate_page.py --contract GenerateRecruiterPage --target archi
 
 This prints the filtered evidence and the assembled prompt without calling a model or writing anything.
 The contracts are `GenerateRecruiterPage`, `GenerateInterviewPrep` and `GenerateQuestionPage`
-(`contracts/*.yaml`). Live runs currently fail; see Known issues.
+(`contracts/*.yaml`).
 
 ### Production vs demo build
 
@@ -180,7 +181,7 @@ Routing is configured in `ai.config.yaml` and implemented in `ai/router.py`:
   variables.
 - The provider chain falls back only on transport or HTTP failures, never on content.
 
-For live generation (not yet exercised): copy `.env.example` to `.env`, which is git-ignored, and fill in
+For live generation (exercised locally and in CI with Gemini; Anthropic, OpenAI and local NOT RUN): copy `.env.example` to `.env`, which is git-ignored, and fill in
 the keys and `AI_MODEL_*` values. To use a local model, set `local.enabled: true` in `ai.config.yaml` and run
 an OpenAI-compatible endpoint (for example Ollama) at `http://localhost:11434/v1`. Never commit `.env`.
 
@@ -246,7 +247,8 @@ App token trigger `ci.yml`, unlike PRs opened with `GITHUB_TOKEN`.
 
 ### End-to-end approval of a generated view
 
-1. **Actions → generate → Run workflow** (contract, target, privacy). The App opens `docs-gen/…` as a PR;
+1. **Actions → generate → Run workflow** (contract, target, privacy, provider). The workflow pushes
+   `docs-gen/<contract>-<target>-<run-id>` (`-<attempt>` added on a re-run) and the App opens it as a PR;
    `validate-and-build` runs on it; the page is `draft`.
 2. Check out the branch, review the page against its cited canonical sources, then from `prototype/`:
    ```bash
@@ -287,6 +289,6 @@ Contributor and agent conventions: [`../AGENTS.md`](../AGENTS.md).
 ## Known issues
 
 - **Question regeneration plans are not directly executable.** For a stale question page, `impact.json` lists only `--target <source id>`, not the original question, so running it literally creates a different page. Regenerate a question page with its original question: `python3 scripts/generate_question.py --question "<original question>" --persist` (for `q-002`: "How does DOCCAD detect drift?").
-- **`detect_changes.py --range`** needs git history; until the repository has remote commits, use `--all` for a full-workspace scan.
+- **`detect_changes.py --range`** operates on git revision ranges (e.g. `HEAD~1...HEAD`); for a full-workspace scan without git range inspection, use `--all`.
 - **The test suite exercises the production filter.** An interrupted test run can leave unapproved views stashed in `.work/stashed_unapproved/`; `npm run build:demo` restores them.
 - **Not verified in CI:** browser smoke tests and screenshots, mobile layout, Mermaid rendering in a live browser (interactive `/browser` available in Antigravity 2.0 app), and live provider calls with real API keys (owner-executed under spend caps, P2-08: Gemini PASS, others NOT RUN).

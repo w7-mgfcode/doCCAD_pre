@@ -1,5 +1,5 @@
 # Human-triggered generation workflow (AD-4, AD-9, M1.5, E8)
-# Generates views with the deterministic fixture provider, validates them and pushes a docs-gen/* branch.
+# Generates views with either the deterministic fixture provider (generate job) or live AI providers in the generation environment (generate-live job), validates them and pushes a docs-gen/* branch.
 #
 # E8: when the DOCCAD GitHub App is configured (repository variable DOCCAD_APP_CLIENT_ID and secret
 # DOCCAD_APP_PRIVATE_KEY), the branch is pushed and the pull request is opened *as the App*. The PR author is
@@ -44,7 +44,7 @@ on:
           - local
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: generate-${{ inputs.contract }}-${{ github.run_id }}
@@ -55,6 +55,8 @@ jobs:
     if: inputs.provider == 'fixture' || inputs.provider == ''
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: prototype
@@ -98,51 +100,7 @@ jobs:
           INPUT_TARGET: ${{ inputs.target }}
           INPUT_PRIVACY: ${{ inputs.privacy }}
           INPUT_PROVIDER: ${{ inputs.provider }}
-        run: |
-          python3 - <<'EOF'
-          import os, re, subprocess, sys
-
-          contract = os.environ.get("INPUT_CONTRACT", "").strip()
-          target = os.environ.get("INPUT_TARGET", "").strip()
-          privacy = os.environ.get("INPUT_PRIVACY", "public").strip()
-          provider = os.environ.get("INPUT_PROVIDER", "fixture").strip()
-
-          valid_contracts = {"GenerateRecruiterPage", "GenerateInterviewPrep", "GenerateQuestionPage"}
-          if contract not in valid_contracts:
-              print(f"ERROR: Invalid contract '{contract}'", file=sys.stderr)
-              sys.exit(1)
-
-          if privacy not in {"public", "private"}:
-              print(f"ERROR: Invalid privacy '{privacy}'", file=sys.stderr)
-              sys.exit(1)
-
-          if privacy == "private" and provider != "local":
-              print(f"ERROR: Privacy 'private' is only permitted with 'local' provider (got '{provider}')", file=sys.stderr)
-              sys.exit(1)
-
-          if not target:
-              print("ERROR: Target input cannot be empty", file=sys.stderr)
-              sys.exit(1)
-
-          print(f"Executing contract {contract} for target '{target}' (privacy: {privacy}, provider: {provider})...")
-          if contract == "GenerateQuestionPage":
-              cmd = [
-                  "python3", "scripts/generate_question.py",
-                  "--question", target,
-                  "--privacy", privacy,
-                  "--provider", provider,
-                  "--persist"
-              ]
-          else:
-              cmd = [
-                  "python3", "scripts/generate_page.py",
-                  "--contract", contract,
-                  "--target", target,
-                  "--privacy", privacy,
-                  "--provider", provider
-              ]
-          subprocess.check_call(cmd)
-          EOF
+        run: python3 scripts/dispatch_generation.py
 
       - name: Validate generated output
         run: DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate
@@ -150,6 +108,8 @@ jobs:
       - name: Commit and push docs-gen branch
         id: push
         env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
           INPUT_CONTRACT: ${{ inputs.contract }}
           INPUT_TARGET: ${{ inputs.target }}
           INPUT_PROVIDER: ${{ inputs.provider }}
@@ -157,14 +117,14 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
         run: |
           python3 - <<'EOF'
-          import os, re, subprocess, sys
+          import os, subprocess, sys
+          from scripts.dispatch_generation import compute_branch_name, run_identity
 
           contract = os.environ.get("INPUT_CONTRACT", "").strip()
           target = os.environ.get("INPUT_TARGET", "").strip()
+          run_id = run_identity()
 
-          target_slug = re.sub(r'[^a-z0-9]+', '-', target.lower()).strip('-')[:30] or "gen"
-          contract_slug = re.sub(r'[^a-z0-9]+', '-', contract.lower()).strip('-')
-          branch = f"docs-gen/{contract_slug}-{target_slug}"
+          branch = compute_branch_name(contract, target, run_id)
 
           app_slug = os.environ.get("APP_SLUG", "").strip()
           if app_slug:
@@ -246,6 +206,8 @@ jobs:
     environment: generation
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: prototype
@@ -296,56 +258,7 @@ jobs:
           AI_MODEL_GEMINI: ${{ vars.AI_MODEL_GEMINI }}
           AI_MODEL_OPENAI: ${{ vars.AI_MODEL_OPENAI }}
           AI_MODEL_LOCAL: ${{ vars.AI_MODEL_LOCAL }}
-        run: |
-          python3 - <<'EOF'
-          import os, re, subprocess, sys
-
-          contract = os.environ.get("INPUT_CONTRACT", "").strip()
-          target = os.environ.get("INPUT_TARGET", "").strip()
-          privacy = os.environ.get("INPUT_PRIVACY", "public").strip()
-          provider = os.environ.get("INPUT_PROVIDER", "fixture").strip()
-
-          valid_contracts = {"GenerateRecruiterPage", "GenerateInterviewPrep", "GenerateQuestionPage"}
-          if contract not in valid_contracts:
-              print(f"ERROR: Invalid contract '{contract}'", file=sys.stderr)
-              sys.exit(1)
-
-          if privacy not in {"public", "private"}:
-              print(f"ERROR: Invalid privacy '{privacy}'", file=sys.stderr)
-              sys.exit(1)
-
-          if privacy == "private" and provider != "local":
-              print(f"ERROR: Privacy 'private' is only permitted with 'local' provider (got '{provider}')", file=sys.stderr)
-              sys.exit(1)
-
-          if not target:
-              print("ERROR: Target input cannot be empty", file=sys.stderr)
-              sys.exit(1)
-
-          valid_providers = {"fixture", "anthropic", "gemini", "openai", "local"}
-          if provider not in valid_providers:
-              print(f"ERROR: Invalid provider '{provider}'", file=sys.stderr)
-              sys.exit(1)
-
-          print(f"Executing contract {contract} for target '{target}' (privacy: {privacy}, provider: {provider})...")
-          if contract == "GenerateQuestionPage":
-              cmd = [
-                  "python3", "scripts/generate_question.py",
-                  "--question", target,
-                  "--privacy", privacy,
-                  "--provider", provider,
-                  "--persist"
-              ]
-          else:
-              cmd = [
-                  "python3", "scripts/generate_page.py",
-                  "--contract", contract,
-                  "--target", target,
-                  "--privacy", privacy,
-                  "--provider", provider
-              ]
-          subprocess.check_call(cmd)
-          EOF
+        run: python3 scripts/dispatch_generation.py
 
       - name: Validate generated output
         run: DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate
@@ -353,6 +266,8 @@ jobs:
       - name: Commit and push docs-gen branch
         id: push
         env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
           INPUT_CONTRACT: ${{ inputs.contract }}
           INPUT_TARGET: ${{ inputs.target }}
           INPUT_PROVIDER: ${{ inputs.provider }}
@@ -360,14 +275,14 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
         run: |
           python3 - <<'EOF'
-          import os, re, subprocess, sys
+          import os, subprocess, sys
+          from scripts.dispatch_generation import compute_branch_name, run_identity
 
           contract = os.environ.get("INPUT_CONTRACT", "").strip()
           target = os.environ.get("INPUT_TARGET", "").strip()
+          run_id = run_identity()
 
-          target_slug = re.sub(r'[^a-z0-9]+', '-', target.lower()).strip('-')[:30] or "gen"
-          contract_slug = re.sub(r'[^a-z0-9]+', '-', contract.lower()).strip('-')
-          branch = f"docs-gen/{contract_slug}-{target_slug}"
+          branch = compute_branch_name(contract, target, run_id)
 
           app_slug = os.environ.get("APP_SLUG", "").strip()
           if app_slug:

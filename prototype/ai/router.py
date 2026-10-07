@@ -35,6 +35,15 @@ from .fixture_provider import FixtureProvider
 from .schema_adapt import get_provider_schema
 
 _ENV_REF = re.compile(r"^\$\{([A-Z0-9_]+)\}$")
+_LOG_UNSAFE = re.compile(r"[\x00-\x1f\x7f-\x9f]+")
+
+
+def log_safe(value: Any, limit: int = 200) -> str:
+    """One line of untrusted text (dispatch target, question, returned model, request ID) for logs and
+    the step summary. Control characters, newlines included, become a space, so the text cannot start
+    a `::workflow-command::` line in the Actions log; the result is capped at `limit` characters."""
+    text = _LOG_UNSAFE.sub(" ", str(value)).strip()
+    return text if len(text) <= limit else text[: limit - 1] + "…"
 
 _ADAPTERS = {
     "anthropic": AnthropicProvider,
@@ -110,7 +119,8 @@ def _resolve_env_ref(value: Any) -> Any:
 
 
 class Router:
-    def __init__(self, config_path: str | Path = "ai.config.yaml", budget: Dict[str, Any] | None = None):
+    def __init__(self, config_path: str | Path = "ai.config.yaml", budget: Dict[str, Any] | None = None,
+                 adapter_kwargs: Dict[str, Dict[str, Any]] | None = None):
         raw = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
         self.cfg: Dict[str, Any] = raw["ai"]
         validate_routing_config(self.cfg)
@@ -122,6 +132,12 @@ class Router:
         self.max_calls_per_run: int | None = self.budget_cfg.get("max_calls_per_run")
         self.calls_count: int = 0
         self.tokens_used: int = 0
+        self.input_tokens: int = 0
+        self.output_tokens: int = 0
+        self.request_ids: List[str] = []
+        self.last_provider: str = ""
+        self.last_model: str = ""
+        self.adapter_kwargs: Dict[str, Dict[str, Any]] = adapter_kwargs or {}
 
     def check_budget_before_call(self, estimated_tokens: int = 0) -> None:
         """Check call and token limits before making a provider call."""
@@ -206,19 +222,89 @@ class Router:
             kwargs["params"] = pcfg["params"]
         if pcfg.get("token_param"):
             kwargs["token_param"] = pcfg["token_param"]
+        if self.adapter_kwargs and name in self.adapter_kwargs:
+            kwargs.update(self.adapter_kwargs[name])
         return _ADAPTERS[name](**kwargs)  # type: ignore[return-value]
 
     def chain_for(self, task_meta: Dict[str, Any], provider: str | None = None) -> List[Provider]:
         names = self.select_chain_names(task_meta, provider=provider)
-        providers = []
-        for n in names:
-            try:
-                providers.append(self.instantiate(n))
-            except (MissingKeyError, MissingModelError):
-                raise
-            except Exception:
-                pass
-        return providers
+        return [self.instantiate(n) for n in names]
+
+    def format_usage_line(self) -> str:
+        provider = log_safe(self.last_provider or self.cfg.get("default_provider", "fixture"))
+        model = log_safe(self.last_model or "unavailable")
+        req_ids_str = log_safe(",".join(self.request_ids), 400) if self.request_ids else "unavailable"
+        return (
+            f"Run usage: provider={provider} model={model} calls={self.calls_count} "
+            f"input_tokens={self.input_tokens} output_tokens={self.output_tokens} "
+            f"request_ids={req_ids_str}"
+        )
+
+    def format_run_report(
+        self,
+        contract: str,
+        target: str,
+        privacy: str,
+        generation_mode: str,
+        evidence_ids: List[str],
+        gate_results: str,
+        output_path: str,
+        approval_status: str,
+    ) -> str:
+        provider = log_safe(self.last_provider or self.cfg.get("default_provider", "fixture"))
+        model = log_safe(self.last_model or "unavailable")
+        req_ids_str = log_safe(",".join(self.request_ids), 400) if self.request_ids else "unavailable"
+        evidence_str = log_safe(", ".join(evidence_ids), 1000) if evidence_ids else "none"
+        # The target is free text for GenerateQuestionPage: render it as a code span so it cannot
+        # become a Markdown link or image in the step summary.
+        target_md = "`" + log_safe(target).replace("`", "'") + "`"
+
+        lines = [
+            "### DOCCAD Generation Run Report",
+            "",
+            f"- **Contract:** {contract}",
+            f"- **Target:** {target_md}",
+            f"- **Privacy:** {privacy}",
+            f"- **Provider:** {provider}",
+            f"- **Returned Model:** {model}",
+            f"- **Generation Mode:** {generation_mode}",
+            f"- **Calls:** {self.calls_count}",
+            f"- **Input Tokens:** {self.input_tokens}",
+            f"- **Output Tokens:** {self.output_tokens}",
+            f"- **Request IDs:** {req_ids_str}",
+            f"- **Evidence IDs:** {evidence_str}",
+            f"- **Gate Results:** {gate_results}",
+            f"- **Output Path:** {output_path}",
+            f"- **Approval Status:** {approval_status}",
+            "",
+        ]
+        return "\n".join(lines)
+
+    def write_step_summary(
+        self,
+        contract: str,
+        target: str,
+        privacy: str,
+        generation_mode: str,
+        evidence_ids: List[str],
+        gate_results: str,
+        output_path: str,
+        approval_status: str,
+    ) -> None:
+        summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary_path:
+            report_md = self.format_run_report(
+                contract=contract,
+                target=target,
+                privacy=privacy,
+                generation_mode=generation_mode,
+                evidence_ids=evidence_ids,
+                gate_results=gate_results,
+                output_path=output_path,
+                approval_status=approval_status,
+            )
+            with open(summary_path, "a", encoding="utf-8") as f:
+                f.write(report_md)
 
     # -- execution with fallback ------------------------------------------
     def run_with_fallback(self, task_meta: Dict[str, Any],
@@ -251,12 +337,17 @@ class Router:
                 self.calls_count += 1
                 result = p.complete(task_meta, messages, call_opts)
                 usage = result.get("usage") or {}
-                # Adapters normalise usage to input_tokens / output_tokens.
-                call_tokens = (
-                    (usage.get("input_tokens") or 0) + (usage.get("output_tokens") or 0)
-                    or est_tokens
-                )
+                in_tok = int(usage.get("input_tokens") or 0)
+                out_tok = int(usage.get("output_tokens") or 0)
+                call_tokens = (in_tok + out_tok) or est_tokens
                 self.tokens_used += int(call_tokens)
+                self.input_tokens += in_tok
+                self.output_tokens += out_tok
+                req_id = result.get("request_id")
+                if req_id:
+                    self.request_ids.append(str(req_id))
+                self.last_provider = str(result.get("provider") or name)
+                self.last_model = str(result.get("model") or "")
                 return result
             except Exception as e:
                 if isinstance(e, BudgetExceededError):
