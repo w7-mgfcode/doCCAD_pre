@@ -19,12 +19,13 @@ Design intent: [`planning/CONCEPT.md`](planning/CONCEPT.md). Requirements mappin
 
 ## Status
 
-Verified on 2026-10-06 (Node 24.19, Python 3.14, `main` after PR #9):
+Verified on 2026-10-07 (Node 24.19, Python 3.14, branch `phase-2-closeout` after the review fixes):
 
 | Area | Works today | Not yet |
 | --- | --- | --- |
 | Static site | Builds in `en` and `hu`; landing page, navbar, footer, and search index localized; all 29 canonical and 11 generated pages | Untranslated canonical docs fall back to English source (D11 verified) |
-| Checks | `validate`, `detect`, 155 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
+| Checks | `validate`, `detect`, 190 unit tests (0 expected failures), `typecheck`, `build` all pass | — |
+| Run reporting | Every generation run prints one `Run usage:` line (provider, returned model, calls, tokens, request IDs or `unavailable`), also when it fails; in Actions the same facts go to the step summary. Generated pages and interview datasets carry an explicit `visibility`, and the production filter treats an absent one as private | Step summary and run-ID branch names not yet observed on GitHub (owner action H3-5) |
 | Question pipeline | `generate_question.py`: retrieval, supported and unsupported questions, private-routing refusal, `--persist`, UI→CLI round-trip, forced draft, pre-write grounding gate | — |
 | Page pipeline | `generate_page.py` live pipeline verified with date normalization, grounding gate, link allowlist, and strict schema adherence (`TestLivePagePipeline`, `TestGroundingGate`) | — |
 | Regeneration | Targeted deduplicated regeneration through `generate_page.py` and `generate_question.py`; `seed_generated_views.py` | — |
@@ -246,7 +247,8 @@ App token trigger `ci.yml`, unlike PRs opened with `GITHUB_TOKEN`.
 
 ### End-to-end approval of a generated view
 
-1. **Actions → generate → Run workflow** (contract, target, privacy). The App opens `docs-gen/…` as a PR;
+1. **Actions → generate → Run workflow** (contract, target, privacy, provider). The workflow pushes
+   `docs-gen/<contract>-<target>-<run-id>` (`-<attempt>` added on a re-run) and the App opens it as a PR;
    `validate-and-build` runs on it; the page is `draft`.
 2. Check out the branch, review the page against its cited canonical sources, then from `prototype/`:
    ```bash

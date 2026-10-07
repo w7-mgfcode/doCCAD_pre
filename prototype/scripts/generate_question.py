@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, check_path_containment, _normalize, check_mdx_security  # noqa: E402
 from check_grounding import check_grounding_document  # noqa: E402
-from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
+from ai.router import Router, PrivacyRoutingError, log_safe, scan_for_secrets  # noqa: E402
 from review_governance import reset_to_draft  # noqa: E402
 
 CONTRACTS = ROOT / "contracts"
@@ -227,7 +227,7 @@ def main() -> int:
 
     print("==================================================")
     print("DOCCAD Question Generation Pipeline")
-    print(f"Question: {question}")
+    print(f"Question: {log_safe(question, 500)}")
     print(f"Audience: {audience} | Privacy: {privacy} | Target: {target_id or 'None'}")
     print("==================================================")
 
@@ -267,129 +267,142 @@ def main() -> int:
     chain = router.select_chain_names(task_meta, provider=args.provider)
     chain_source = f"Provider chain (--provider): {' -> '.join(chain)}" if args.provider is not None else f"Provider chain (from ai.config.yaml): {' -> '.join(chain)}"
     print(chain_source)
+    # Every run that reaches the provider prints one usage line and writes one run report,
+    # also when it fails (P2-14, G11).
+    report = {"gate_results": "FAIL", "output_path": "none", "approval_status": "n/a",
+              "generation_mode": "demo" if chain == ["fixture"] else "production",
+              "target": target_id or "(free-text question)"}
+    evidence_ids = [(parse_frontmatter(f) or {}).get("id", f.stem) for f in included_files if f.suffix in (".md", ".mdx")]
     try:
-        run_kw = {"provider": args.provider} if args.provider is not None else {}
-        call_res = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}], **run_kw)
-    except PrivacyRoutingError as e:
-        print(f"\n[FATAL] Privacy Routing Policy Enforced: {e}", file=sys.stderr)
-        return 1
-    except Exception as e:
-        print(f"\n[ERROR] Generation failed: {e}", file=sys.stderr)
-        return 1
+        try:
+            run_kw = {"provider": args.provider} if args.provider is not None else {}
+            call_res = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}], **run_kw)
+        except PrivacyRoutingError as e:
+            print(f"\n[FATAL] Privacy Routing Policy Enforced: {e}", file=sys.stderr)
+            report["gate_results"] = "FAIL (privacy routing)"
+            return 1
+        except Exception as e:
+            print(f"\n[ERROR] Generation failed: {e}", file=sys.stderr)
+            report["gate_results"] = "FAIL (provider call)"
+            return 1
 
-    fm, body = split_output(call_res["text"])
+        fm, body = split_output(call_res["text"])
 
-    # Update placeholders with real sha256 hashes
-    source_docs = []
-    for f in included_files:
-        if f.suffix in (".md", ".mdx"):
-            pf = parse_frontmatter(f) or {}
-            source_docs.append({
-                "id": pf.get("id", f.stem),
-                "path": f.relative_to(ROOT).as_posix(),
-                "content_hash": sha256_of(f),
-            })
+        # Update placeholders with real sha256 hashes
+        source_docs = []
+        for f in included_files:
+            if f.suffix in (".md", ".mdx"):
+                pf = parse_frontmatter(f) or {}
+                source_docs.append({
+                    "id": pf.get("id", f.stem),
+                    "path": f.relative_to(ROOT).as_posix(),
+                    "content_hash": sha256_of(f),
+                })
 
-    provider_name = call_res.get("provider", "fixture")
-    gen_mode = "demo" if provider_name == "fixture" else "production"
-    model_name = call_res.get("model", "deterministic-demo-fixture" if provider_name == "fixture" else "")
+        provider_name = call_res.get("provider", "fixture")
+        gen_mode = "demo" if provider_name == "fixture" else "production"
+        model_name = call_res.get("model", "deterministic-demo-fixture" if provider_name == "fixture" else "")
 
-    fm["type"] = "generated"
-    fm["generated"] = True
-    fm["visibility"] = "private" if privacy == "private" else "public"
-    fm["generation"] = {
-        "contract": contract["contract"],
-        "contract_version": contract.get("version", 4),
-        "prompt_version": contract.get("prompt_version", "question-page.v4"),
-        "source_documents": source_docs,
-        "repo_evidence": [
-            f.relative_to(ROOT).as_posix()
-            for f in included_files
-            if f.suffix not in (".md", ".mdx")
-        ],
-        "provider": provider_name,
-        "model": model_name,
-        "generation_mode": gen_mode,
-        "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "approval_status": "draft",
-    }
-    fm.get("generation", {}).pop("approval_record", None)
+        fm["type"] = "generated"
+        fm["generated"] = True
+        fm["visibility"] = "private" if privacy == "private" else "public"
+        fm["generation"] = {
+            "contract": contract["contract"],
+            "contract_version": contract.get("version", 4),
+            "prompt_version": contract.get("prompt_version", "question-page.v4"),
+            "source_documents": source_docs,
+            "repo_evidence": [
+                f.relative_to(ROOT).as_posix()
+                for f in included_files
+                if f.suffix not in (".md", ".mdx")
+            ],
+            "provider": provider_name,
+            "model": model_name,
+            "generation_mode": gen_mode,
+            "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "approval_status": "draft",
+        }
+        fm.get("generation", {}).pop("approval_record", None)
 
-    # Validate output schema
-    validate = make_validator()
-    fm = _normalize(fm)
-    val_errors = validate(fm, "document")
-    if val_errors:
-        print(f"[ERROR] Generated frontmatter validation failed: {val_errors}", file=sys.stderr)
-        return 1
+        # Validate output schema
+        validate = make_validator()
+        fm = _normalize(fm)
+        val_errors = validate(fm, "document")
+        if val_errors:
+            print(f"[ERROR] Generated frontmatter validation failed: {val_errors}", file=sys.stderr)
+            report["gate_results"] = "FAIL (schema)"
+            return 1
 
-    # Pre-write MDX restriction gate and link allowlist
-    sec_errors = check_mdx_security(body)
-    if sec_errors:
-        print(f"[ERROR] Generated MDX security check failed: {sec_errors}", file=sys.stderr)
-        return 1
+        # Pre-write MDX restriction gate and link allowlist
+        sec_errors = check_mdx_security(body)
+        if sec_errors:
+            print(f"[ERROR] Generated MDX security check failed: {sec_errors}", file=sys.stderr)
+            report["gate_results"] = "FAIL (mdx)"
+            return 1
 
-    # Pre-write Grounding Gate
-    grounding_errors = check_grounding_document(fm, body, root_dir=ROOT)
-    if grounding_errors:
-        print(f"[ERROR] Grounding validation failed: {grounding_errors}", file=sys.stderr)
-        return 1
+        # Pre-write Grounding Gate
+        grounding_errors = check_grounding_document(fm, body, root_dir=ROOT)
+        if grounding_errors:
+            print(f"[ERROR] Grounding validation failed: {grounding_errors}", file=sys.stderr)
+            report["gate_results"] = "FAIL (grounding)"
+            return 1
 
-    doc_id = fm.get("id", f"q-{abs(hash(question)) % 1000:03d}")
-    front_str = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
-    full_output = f"---\n{front_str}\n---\n\n{body}\n"
+        doc_id = fm.get("id", f"q-{abs(hash(question)) % 1000:03d}")
+        front_str = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
+        full_output = f"---\n{front_str}\n---\n\n{body}\n"
 
-    # Destination
-    if args.persist:
-        out_dir = DOCS / "generated" / "questions"
-    else:
-        out_dir = WORK_DIR
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"{doc_id}.mdx"
-    out_path.write_text(full_output, encoding="utf-8")
-    reset_to_draft(doc_id, out_path.relative_to(ROOT).as_posix())
+        # Destination
+        if args.persist:
+            out_dir = DOCS / "generated" / "questions"
+        else:
+            out_dir = WORK_DIR
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"{doc_id}.mdx"
+        out_path.write_text(full_output, encoding="utf-8")
+        reset_to_draft(doc_id, out_path.relative_to(ROOT).as_posix())
 
-    status = "insufficient_evidence" if "insufficient" in body.lower() else "success"
-    print(f"\nWrote candidate artifact ({status}): {out_path.relative_to(ROOT)}")
+        status = "insufficient_evidence" if "insufficient" in body.lower() else "success"
+        print(f"\nWrote candidate artifact ({status}): {out_path.relative_to(ROOT)}")
 
-    completed_time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    run_record = {
-        "run_id": f"run-{int(datetime.datetime.now().timestamp())}",
-        "contract": contract["contract"],
-        "contract_version": contract.get("version", 4),
-        "prompt_version": contract.get("prompt_version", "question-page.v4"),
-        "provider": provider_name,
-        "model": model_name,
-        "mode": gen_mode,
-        "target_id": target_id,
-        "evidence_files": source_docs,
-        "rejected_files": rejected_files,
-        "started_at": start_time,
-        "completed_at": completed_time,
-        "status": status,
-        "candidate_path": out_path.relative_to(ROOT).as_posix(),
-        "output_text": full_output,
-    }
+        completed_time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        run_record = {
+            "run_id": f"run-{int(datetime.datetime.now().timestamp())}",
+            "contract": contract["contract"],
+            "contract_version": contract.get("version", 4),
+            "prompt_version": contract.get("prompt_version", "question-page.v4"),
+            "provider": provider_name,
+            "model": model_name,
+            "mode": gen_mode,
+            "target_id": target_id,
+            "evidence_files": source_docs,
+            "rejected_files": rejected_files,
+            "started_at": start_time,
+            "completed_at": completed_time,
+            "status": status,
+            "candidate_path": out_path.relative_to(ROOT).as_posix(),
+            "output_text": full_output,
+        }
 
-    if args.export_run:
-        Path(args.export_run).write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
-        print(f"Exported GenerationRun record to: {args.export_run}")
+        if args.export_run:
+            Path(args.export_run).write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+            print(f"Exported GenerationRun record to: {args.export_run}")
 
-    print(router.format_usage_line())
-    evidence_ids = [
-        d.get("id", "") for d in fm.get("generation", {}).get("source_documents", [])
-    ]
-    router.write_step_summary(
-        contract=contract["contract"],
-        target=target_id or doc_id,
-        privacy=privacy,
-        generation_mode=gen_mode,
-        evidence_ids=evidence_ids,
-        gate_results="PASS (schema, mdx, grounding)",
-        output_path=out_path.relative_to(ROOT).as_posix(),
-        approval_status="draft",
-    )
-    return 0
+        report.update(gate_results="PASS (schema, mdx, grounding)", generation_mode=gen_mode,
+                      target=target_id or doc_id, output_path=out_path.relative_to(ROOT).as_posix(),
+                      approval_status="draft")
+        return 0
+    finally:
+        print(router.format_usage_line())
+        router.write_step_summary(
+            contract=contract["contract"],
+            target=report["target"],
+            privacy=privacy,
+            generation_mode=report["generation_mode"],
+            evidence_ids=evidence_ids,
+            gate_results=report["gate_results"],
+            output_path=report["output_path"],
+            approval_status=report["approval_status"],
+        )
 
 
 if __name__ == "__main__":

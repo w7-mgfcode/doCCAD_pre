@@ -1,6 +1,6 @@
 # DOCCAD Prototype Implementation Progress Log
 
-Status: Phase 2 Closeout complete — Observable, fail-closed, hardened generation (P2-13..P2-20); Checkpoints 2C and 2D complete; 179 unit tests (0 expected failures)  
+Status: Phase 2 Closeout complete — Observable, fail-closed, hardened generation (P2-13..P2-20); Checkpoints 2C and 2D complete; review fixes 2026-10-07; 190 unit tests (0 expected failures)  
 Timestamp: 2026-10-07 (previous: 2026-10-06, 2026-10-01, 2026-09-29, 2026-09-21)  
 Lead: Product Engineer, Documentation Architect, UX Designer
 
@@ -167,6 +167,7 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | P2-18 | `python3 -m unittest tests.test_doccad.TestDispatchGeneration -v` | 0 | `Ran 12 tests in 0.001s ... OK`; unique `docs-gen/*` branch name with `GITHUB_RUN_ID` per dispatch; length bounded <= 100; missing run ID raises `ValueError` | 2026-10-07 |
 | P2-19 | `python3 -m unittest tests.test_doccad.TestWorkflowSecurityInvariants -v && python3 -c "import yaml,sys;[yaml.safe_load(open(f)) for f in sys.argv[1:]]" ../.github/workflows/*.yml` | 0 | `Ran 5 tests ... OK`; `test_no_top_level_permissions_grant_write` failed prior to workflow fixes and now passes; all workflows parse cleanly; write granted only at job level | 2026-10-07 |
 | P2-20 | `npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run build && npm run detect && grep -n "Live runs currently fail\|not yet exercised" README.md` | 0 | Full phase gate passed: 179 unit tests OK, 0 stale generated views, dual-locale build en+hu OK, grep prints nothing, detect_changes.py --range verified on scratch copy | 2026-10-07 |
+| Review fixes (2C/2D) | `python3 -m unittest discover tests` and the three changed classes (scratch copy); the same classes against the run's original scripts (`4c8e689`) and `main`'s `build_filter.py` | 0 | `Ran 190 tests ... OK`; on the original code 10 new cases fail and the 2 hold-reason cases fail against `main`'s filter; production round trip 15 held / 15 restored | 2026-10-07 |
 
 ---
 
@@ -204,14 +205,18 @@ The unattended run never edits `AGENTS.md`, root `README.md`, `.claude/`, or `.a
      `scripts/: validate, detect drift, generate page/question, dispatch generation, seed generated views, review governance, build filter, grounding gate, GitHub approval check`
    - In Setup / Safety rules (`AGENTS.md:123`):
      Update citation for `--provider`: `scripts/generate_page.py:165` and `scripts/generate_question.py:198`.
-   - Update test suite count reference from 155 to 179.
+   - Update test suite count reference from 155 to 190.
+   - Update the workflow citation `generate.yml:34-45,246` to `generate.yml:34-45,206` (`environment: generation` moved).
+   - Done 2026-10-07 by the owner session (PR #13): the `--provider` citation above.
 
 2. **Root `README.md`**:
    - Update Phase 2 status from in-progress / live smoke to complete, observable, fail-closed, and hardened (P2-13..P2-20, Checkpoints 2C & 2D).
-   - Update test suite count to 179 tests (0 expected failures).
+   - Update test suite count to 190 tests (0 expected failures).
 
 3. **`.claude/rules/prototype-code.md`**:
    - Update "Known debt" section (`:47-51`): remove note about `chain_for` swallowing errors, since P2-16 resolved this by re-raising adapter constructor errors.
+
+4. **`providers_from_config`** (`ai/router.py:371`) was kept: it has no callers in the repository; removing it is a separate clean-up.
 
 ---
 
@@ -236,7 +241,7 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
 ### 0.2 Proposed defaults — Phase 2 closeout run (recorded 2026-10-07)
 
 - **P2-15 proposed default (Trap a):** an interview JSON dataset takes the visibility of the companion generated MDX page that loads it, where the mapping is deterministic (same id) and absent still means private.
-- **P2-15 expected-set check baseline:** on the clean scratch copy prior to filter changes, exactly 15 files are stashed (4 interview json, 4 interview mdx, 6 questions, 1 recruiter). Verified by `TestVisibilityFailsClosed.test_expected_excluded_set_literal`.
+- **P2-15 expected-set check baseline:** exactly 15 files are stashed (4 interview json, 4 interview mdx, 6 questions, 1 recruiter). Asserted by `TestVisibilityFailsClosed.test_expected_excluded_set_literal`; that test was written after the change, so it does not prove the pre-change count. The same 15 were reproduced on a scratch copy of `main` (pre-P2-15 filter) on 2026-10-07.
 
 ### 0.1 Claimed Quality & Security Gates (P0-13 Truth Alignment Table)
 
@@ -407,4 +412,5 @@ Required automated boundaries against `tests/test_doccad.py`:
   - Unique `docs-gen/*` branch name with `GITHUB_RUN_ID` per dispatch (`compute_branch_name`).
   - Top-level workflow permissions made read-only across all workflows, granting `write` only at job level (`TestWorkflowSecurityInvariants`, 5 tests).
   - Truth sync of `README.md`, `LIMITATIONS.md`, `VALIDATION.md`, `PROGRESS.md` with observed results; `detect_changes.py --range` verified on scratch copy.
-- **Status**: Phase 2 Closeout complete on local branch `phase-2-closeout` (179 tests pass). Ready for owner PR review.
+- **Review fixes (2026-10-07, owner session)**: dataset visibility is the stricter of its own stamp and its companion page, read from the stashed copy rather than a hold stub, and `generate_page.py` stamps it; failed runs print the usage line and a FAIL run report; two non-discriminating tests made discriminating; `GITHUB_RUN_ATTEMPT` added to the branch name on re-runs; untrusted text kept on one line in logs and the step summary (`log_safe`); docs synced (190 tests).
+- **Status**: Phase 2 Closeout complete on branch `phase-2-closeout` (190 tests pass). Ready for owner PR review.

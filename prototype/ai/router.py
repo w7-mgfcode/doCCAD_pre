@@ -35,6 +35,15 @@ from .fixture_provider import FixtureProvider
 from .schema_adapt import get_provider_schema
 
 _ENV_REF = re.compile(r"^\$\{([A-Z0-9_]+)\}$")
+_LOG_UNSAFE = re.compile(r"[\x00-\x1f\x7f-\x9f]+")
+
+
+def log_safe(value: Any, limit: int = 200) -> str:
+    """One line of untrusted text (dispatch target, question, returned model, request ID) for logs and
+    the step summary. Control characters, newlines included, become a space, so the text cannot start
+    a `::workflow-command::` line in the Actions log; the result is capped at `limit` characters."""
+    text = _LOG_UNSAFE.sub(" ", str(value)).strip()
+    return text if len(text) <= limit else text[: limit - 1] + "…"
 
 _ADAPTERS = {
     "anthropic": AnthropicProvider,
@@ -222,9 +231,9 @@ class Router:
         return [self.instantiate(n) for n in names]
 
     def format_usage_line(self) -> str:
-        provider = self.last_provider or self.cfg.get("default_provider", "fixture")
-        model = self.last_model or "unavailable"
-        req_ids_str = ",".join(self.request_ids) if self.request_ids else "unavailable"
+        provider = log_safe(self.last_provider or self.cfg.get("default_provider", "fixture"))
+        model = log_safe(self.last_model or "unavailable")
+        req_ids_str = log_safe(",".join(self.request_ids), 400) if self.request_ids else "unavailable"
         return (
             f"Run usage: provider={provider} model={model} calls={self.calls_count} "
             f"input_tokens={self.input_tokens} output_tokens={self.output_tokens} "
@@ -242,16 +251,19 @@ class Router:
         output_path: str,
         approval_status: str,
     ) -> str:
-        provider = self.last_provider or self.cfg.get("default_provider", "fixture")
-        model = self.last_model or "unavailable"
-        req_ids_str = ",".join(self.request_ids) if self.request_ids else "unavailable"
-        evidence_str = ", ".join(evidence_ids) if evidence_ids else "none"
+        provider = log_safe(self.last_provider or self.cfg.get("default_provider", "fixture"))
+        model = log_safe(self.last_model or "unavailable")
+        req_ids_str = log_safe(",".join(self.request_ids), 400) if self.request_ids else "unavailable"
+        evidence_str = log_safe(", ".join(evidence_ids), 1000) if evidence_ids else "none"
+        # The target is free text for GenerateQuestionPage: render it as a code span so it cannot
+        # become a Markdown link or image in the step summary.
+        target_md = "`" + log_safe(target).replace("`", "'") + "`"
 
         lines = [
             "### DOCCAD Generation Run Report",
             "",
             f"- **Contract:** {contract}",
-            f"- **Target:** {target}",
+            f"- **Target:** {target_md}",
             f"- **Privacy:** {privacy}",
             f"- **Provider:** {provider}",
             f"- **Returned Model:** {model}",

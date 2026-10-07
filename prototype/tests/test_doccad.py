@@ -543,6 +543,13 @@ class TestPrivateContentExclusion(unittest.TestCase):
                 source_dir.rmdir()
 
 
+class _AcceptingVerifier(ApprovalVerifier):
+    """Approval verifier stub that accepts every claim, so only the visibility rule can hold a page."""
+
+    def verify(self, doc_path, frontmatter, require_api_gate=True):
+        return None
+
+
 class TestVisibilityFailsClosed(unittest.TestCase):
     """P2-15: Absent visibility fails closed to private (T12, NV-REQ-008, NV-REQ-028)."""
 
@@ -715,11 +722,103 @@ class TestVisibilityFailsClosed(unittest.TestCase):
             self.assertTrue(stashed_target.is_file(), "Live draft shaped page must be stashed out of production")
             stub_content = live_draft.read_text(encoding="utf-8")
             self.assertIn("Production Publication Hold", stub_content)
+            # A draft is held by AD-9 anyway; only the visibility rule produces this reason.
+            self.assertIn('hold_reason: "Private Content Hold"', stub_content)
             self.assertNotIn("Live candidate recruiter view", stub_content)
         finally:
             restore_stashed()
             if live_draft.is_file():
                 live_draft.unlink()
+
+    def test_approved_page_without_visibility_held_even_when_approval_verifies(self):
+        """Case 5b: with approval verified, only the visibility rule can hold a page that has no visibility."""
+        page = GENERATED / "recruiter" / "test-approved-no-vis.mdx"
+        page.write_text(
+            "---\nid: test-approved-no-vis\ntitle: Approved without visibility\ntype: generated\n"
+            "audience:\n  - recruiter\nowners:\n  - architecture\ngenerated: true\n"
+            "generation:\n  contract: GenerateRecruiterPage\n  contract_version: 2\n"
+            "  prompt_version: recruiter.v2\n  source_documents: []\n  provider: gemini\n"
+            "  model: m\n  generation_mode: production\n  approval_status: approved\n"
+            "  generated_at: '2026-10-06T12:00:00Z'\n---\n\nApproved body without visibility.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production(verifier=_AcceptingVerifier())
+            self.assertTrue((STASH / "recruiter" / "test-approved-no-vis.mdx").is_file())
+            self.assertIn('hold_reason: "Private Content Hold"', page.read_text(encoding="utf-8"))
+        finally:
+            restore_stashed()
+            if page.is_file():
+                page.unlink()
+
+    def _write_dataset_pair(self, name, page_visibility, dataset_visibility=None):
+        page = GENERATED / "interview" / f"{name}.mdx"
+        page.write_text(
+            f"---\nid: {name}\ntitle: Pair\ntype: generated\nvisibility: {page_visibility}\n"
+            "audience:\n  - developer\nowners:\n  - dev\ngenerated: true\n"
+            "generation:\n  contract: GenerateInterviewPrep\n  contract_version: 1\n"
+            "  prompt_version: interview.v1\n  source_documents: []\n  provider: local\n"
+            "  model: m\n  generation_mode: production\n  approval_status: approved\n"
+            "  generated_at: '2026-10-06T12:00:00Z'\n---\n\nPair page.\n",
+            encoding="utf-8",
+        )
+        data = {"id": name, "generation": {"approval_status": "approved"}}
+        if dataset_visibility:
+            data["visibility"] = dataset_visibility
+        dataset = GENERATED / "interview" / f"{name}.interview.json"
+        dataset.write_text(json.dumps(data), encoding="utf-8")
+        return page, dataset
+
+    def test_dataset_follows_stashed_companion_not_hold_stub(self):
+        """Case 7 (review M1a): the companion MDX is stashed first and replaced by a stub saying
+        "visibility: public"; the dataset must still take the real page's "private"."""
+        page, dataset = self._write_dataset_pair("test-vis-pair", "private")
+        orig_rglob = Path.rglob
+
+        def mdx_first(self_path, pattern):
+            return sorted(orig_rglob(self_path, pattern), key=lambda p: (p.suffix != ".mdx", str(p)))
+
+        try:
+            with mock.patch.object(Path, "rglob", mdx_first):
+                filter_for_production(verifier=_AcceptingVerifier())
+            self.assertTrue((STASH / "interview" / "test-vis-pair.interview.json").is_file(),
+                            "Dataset of a private page must not inherit the hold stub's public")
+        finally:
+            restore_stashed()
+            for f in (page, dataset):
+                if f.is_file():
+                    f.unlink()
+
+    def test_dataset_public_stamp_loses_to_private_companion(self):
+        """Case 8 (review M1): when the dataset and its page both carry visibility, the stricter wins."""
+        page, dataset = self._write_dataset_pair("test-vis-stamp", "private", dataset_visibility="public")
+        try:
+            filter_for_production(verifier=_AcceptingVerifier())
+            self.assertTrue((STASH / "interview" / "test-vis-stamp.interview.json").is_file())
+        finally:
+            restore_stashed()
+            for f in (page, dataset):
+                if f.is_file():
+                    f.unlink()
+
+    def test_generate_page_stamps_dataset_visibility_over_model_value(self):
+        """Case 9 (review M1b): a private InterviewPrep run writes visibility: private into the dataset,
+        even when the model emitted "public"."""
+        import scripts.generate_page as gp
+        model_json = json.dumps({"id": "architecture-system-overview", "visibility": "public", "elevator_pitch": "x"})
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch("scripts.generate_page.make_validator", return_value=lambda data, kind: []), \
+             mock.patch("scripts.generate_page.check_grounding_interview", return_value=[]), \
+             mock.patch.object(Path, "write_text") as mock_write, \
+             redirect_stdout(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.return_value = {"text": model_json, "provider": "local", "model": "m"}
+            args = ["generate_page.py", "--contract", "GenerateInterviewPrep", "--target", "architecture-system-overview",
+                    "--privacy", "private"]
+            with mock.patch.object(sys, "argv", args):
+                self.assertEqual(gp.main(), 0)
+        written = [c[0][0] for c in mock_write.call_args_list if '"elevator_pitch"' in str(c[0][0])]
+        self.assertEqual(len(written), 1)
+        self.assertEqual(json.loads(written[0])["visibility"], "private")
 
     def test_expected_excluded_set_literal(self):
         """Case 6: Expected-set check asserting literal list on the real tree; interview datasets follow their pages."""
@@ -3780,7 +3879,7 @@ class TestRunUsageReport(unittest.TestCase):
                 content = Path(summary_path).read_text(encoding="utf-8")
                 self.assertIn("### DOCCAD Generation Run Report", content)
                 self.assertIn("- **Contract:** GenerateRecruiterPage", content)
-                self.assertIn("- **Target:** test-target", content)
+                self.assertIn("- **Target:** `test-target`", content)
                 self.assertIn("- **Provider:** anthropic", content)
                 self.assertIn("- **Returned Model:** claude-3-7-sonnet", content)
                 self.assertIn("- **Request IDs:** req-summary-123", content)
@@ -3795,6 +3894,89 @@ class TestRunUsageReport(unittest.TestCase):
         finally:
             if os.path.exists(summary_path):
                 os.remove(summary_path)
+
+    def test_step_summary_of_real_fixture_run_contains_no_prompt_text(self):
+        """Case 3b (review M3): drive a real fixture generation and check that evidence text which was in
+        the prompt never reaches the step summary."""
+        from ai.router import Router
+        captured: list = []
+        orig_run = Router.run_with_fallback
+
+        def spy(self_router, task_meta, messages, *a, **k):
+            captured.extend(str(m.get("content", "")) for m in messages)
+            return orig_run(self_router, task_meta, messages, *a, **k)
+
+        with tempfile.NamedTemporaryFile("w+", delete=False) as tf:
+            summary_path = tf.name
+        try:
+            with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": summary_path}), \
+                 mock.patch.object(Router, "run_with_fallback", spy), \
+                 mock.patch.object(Path, "write_text"), \
+                 redirect_stdout(io.StringIO()):
+                args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview"]
+                with mock.patch.object(sys, "argv", args):
+                    self.assertEqual(generate_page_module.main(), 0)
+            prompt = "\n".join(captured)
+            source = (PROTOTYPE_ROOT / "docs" / "source" / "architecture" / "system-overview.md").read_text(encoding="utf-8")
+            sentinels = [ln.strip() for ln in source.split("\n") if len(ln.strip()) >= 40 and ln.strip() in prompt]
+            self.assertTrue(sentinels, "the prompt must carry evidence text for this check to mean anything")
+            summary = Path(summary_path).read_text(encoding="utf-8")
+            self.assertIn("### DOCCAD Generation Run Report", summary)
+            for s in sentinels:
+                self.assertNotIn(s, summary)
+            self.assertNotIn("EVIDENCE-DATA", summary)
+        finally:
+            os.remove(summary_path)
+
+    def test_usage_report_on_failed_page_run(self):
+        """Case 3c (review M2): a run that fails after the repair retry still prints one usage line and
+        writes a FAIL run report; a successful run reports exactly once."""
+        with mock.patch("scripts.generate_page.Router") as MockRouter, redirect_stdout(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.return_value = {"text": "no frontmatter", "provider": "gemini", "model": "m"}
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview",
+                    "--provider", "gemini"]
+            with mock.patch.object(sys, "argv", args), self.assertRaises(PageContractViolation):
+                generate_page_module.main()
+        MockRouter.return_value.format_usage_line.assert_called_once()
+        summary_kw = MockRouter.return_value.write_step_summary.call_args.kwargs
+        self.assertTrue(summary_kw["gate_results"].startswith("FAIL"), summary_kw)
+        self.assertEqual(summary_kw["approval_status"], "n/a")
+
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch.object(Path, "write_text"), redirect_stdout(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.return_value = {
+                "text": "---\nid: x\ntitle: X\ntype: generated\ngenerated: true\naudience:\n  - recruiter\nowners:\n  - arch\n---\nBody with [link](/docs/architecture/system-overview).",
+                "provider": "fixture", "model": "deterministic-demo-fixture"}
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview"]
+            with mock.patch.object(sys, "argv", args):
+                self.assertEqual(generate_page_module.main(), 0)
+        MockRouter.return_value.format_usage_line.assert_called_once()
+        self.assertTrue(MockRouter.return_value.write_step_summary.call_args.kwargs["gate_results"].startswith("PASS"))
+
+    def test_usage_report_on_failed_question_run(self):
+        """Case 3d (review M2): a question run whose provider call fails reports FAIL (provider call)."""
+        with mock.patch("scripts.generate_question.Router") as MockRouter, \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            MockRouter.return_value.run_with_fallback.side_effect = RuntimeError("provider down")
+            args = ["generate_question.py", "--question", "How does DOCCAD detect drift?"]
+            with mock.patch.object(sys, "argv", args):
+                self.assertEqual(generate_question_module.main(), 1)
+        MockRouter.return_value.format_usage_line.assert_called_once()
+        self.assertEqual(MockRouter.return_value.write_step_summary.call_args.kwargs["gate_results"], "FAIL (provider call)")
+
+    def test_log_safe_keeps_untrusted_text_on_one_line(self):
+        """Review L1: a returned model string cannot start a ::workflow-command:: line in the Actions log."""
+        from ai.router import Router, log_safe
+        self.assertEqual(log_safe("a\n::add-mask::b\r\x1b[31m"), "a ::add-mask::b [31m")
+        self.assertEqual(len(log_safe("x" * 500)), 200)
+        router = Router(PROTOTYPE_ROOT / "ai.config.yaml")
+        router.last_model = "m\n::stop-commands::tok"
+        router.request_ids = ["r1\n::add-mask::x"]
+        line = router.format_usage_line()
+        self.assertNotIn("\n", line)
+        report = router.format_run_report("C", "t`]\n![x](http://e)", "public", "demo", [], "PASS", "none", "draft")
+        self.assertNotIn("\n::", report)
+        self.assertIn("- **Target:** `t']", report)
 
     def test_provider_flag_changes_chain_label(self):
         """Case 4: --provider changes the chain label."""
@@ -3835,6 +4017,39 @@ class TestRunUsageReport(unittest.TestCase):
 
 class TestDispatchGeneration(unittest.TestCase):
     """P2-17 (G17) and P2-18 (G15): Single tested dispatcher for generate.yml with unique branch naming."""
+
+    def test_run_identity_appends_attempt_on_rerun(self):
+        """Review L2: "Re-run all jobs" keeps GITHUB_RUN_ID, so the attempt must make the branch unique."""
+        ri = dispatch_generation_module.run_identity
+        self.assertEqual(ri({"GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "1"}), "123")
+        self.assertEqual(ri({"GITHUB_RUN_ID": "123"}), "123")
+        self.assertEqual(ri({"GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "2"}), "123-2")
+        self.assertEqual(ri({}), "")
+        cbn = dispatch_generation_module.compute_branch_name
+        first = cbn("GenerateRecruiterPage", "architecture-system-overview", ri({"GITHUB_RUN_ID": "9", "GITHUB_RUN_ATTEMPT": "1"}))
+        rerun = cbn("GenerateRecruiterPage", "architecture-system-overview", ri({"GITHUB_RUN_ID": "9", "GITHUB_RUN_ATTEMPT": "2"}))
+        self.assertNotEqual(first, rerun)
+
+    def test_workflow_push_steps_use_run_identity(self):
+        """Both push steps pass GITHUB_RUN_ATTEMPT through env: and name the branch via run_identity()."""
+        wf = (PROTOTYPE_ROOT.parent / ".github" / "workflows" / "generate.yml").read_text(encoding="utf-8")
+        self.assertEqual(wf.count("GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}"), 2)
+        self.assertEqual(wf.count("run_id = run_identity()"), 2)
+        self.assertNotIn('os.environ.get("GITHUB_RUN_ID"', wf)
+
+    def test_dispatch_echo_keeps_target_on_one_line(self):
+        """Review L1: a dispatched target with a newline cannot inject a workflow command into the log."""
+        out = io.StringIO()
+        with redirect_stdout(out):
+            dispatch_generation_module.dispatch(
+                contract="GenerateQuestionPage",
+                target="q\n::stop-commands::tok",
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: 0,
+            )
+        self.assertNotIn("\n::", out.getvalue())
+        self.assertIn("q ::stop-commands::tok", out.getvalue())
 
     def test_invalid_contract_exits_1_no_subprocess(self):
         runner_calls = []

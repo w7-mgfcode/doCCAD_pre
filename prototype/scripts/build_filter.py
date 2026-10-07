@@ -116,14 +116,21 @@ def filter_for_production(verifier: Optional[ApprovalVerifier] = None, require_a
                 pass
 
         visibility = fm.get("visibility") or fm.get("privacy")
-        if page.suffix == ".json" and not visibility:
-            # Option (a): dataset inherits visibility from the companion generated MDX page with the same id
+        if page.suffix == ".json":
+            # Option (a): a dataset takes the visibility of the companion MDX page that loads it. When both
+            # carry one, the stricter wins (public only if both say public). The stashed copy is the real
+            # page: the live file may already be a hold stub, which always says "public".
             companion_mdx = page.parent / f"{doc_id}.mdx"
             companion_in_stash = STASH / companion_mdx.relative_to(GENERATED)
-            comp_path = companion_mdx if companion_mdx.is_file() else (companion_in_stash if companion_in_stash.is_file() else None)
-            if comp_path:
-                comp_fm = parse_frontmatter(comp_path) or {}
-                visibility = comp_fm.get("visibility") or comp_fm.get("privacy")
+            comp_path = companion_in_stash if companion_in_stash.is_file() else (companion_mdx if companion_mdx.is_file() else None)
+            comp_fm = (parse_frontmatter(comp_path) or {}) if comp_path else {}
+            if comp_fm.get("type") == "stub":
+                comp_fm = {}
+            comp_visibility = comp_fm.get("visibility") or comp_fm.get("privacy")
+            if not visibility:
+                visibility = comp_visibility
+            elif comp_path and comp_visibility != "public":
+                visibility = comp_visibility or "private"
 
         # Absent visibility or privacy fails closed to private (T12, NV-REQ-028)
         is_private = (visibility != "public")

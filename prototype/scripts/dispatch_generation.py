@@ -14,7 +14,11 @@ import os
 import re
 import subprocess
 import sys
-from typing import Callable, Sequence
+from pathlib import Path
+from typing import Callable, Mapping, Sequence
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from ai.router import log_safe  # noqa: E402
 
 VALID_CONTRACTS = {
     "GenerateRecruiterPage",
@@ -59,6 +63,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run ID used for branch name computation (defaults to GITHUB_RUN_ID env var)",
     )
     return parser
+
+
+def run_identity(environ: Mapping[str, str] | None = None) -> str:
+    """The run part of the branch name: GITHUB_RUN_ID, plus "-<attempt>" when GITHUB_RUN_ATTEMPT > 1.
+
+    "Re-run all jobs" keeps the run ID, so without the attempt the re-run would push to the branch the
+    first attempt already created and be rejected. Returns "" outside GitHub Actions.
+    """
+    env = os.environ if environ is None else environ
+    run_id = (env.get("GITHUB_RUN_ID") or "").strip()
+    attempt = (env.get("GITHUB_RUN_ATTEMPT") or "").strip()
+    if run_id and attempt and attempt != "1":
+        return f"{run_id}-{attempt}"
+    return run_id
 
 
 def compute_branch_name(contract: str, target: str, run_id: str | int | None) -> str:
@@ -163,7 +181,7 @@ def dispatch(
 
     cmd = build_command(contract, target, privacy, provider)
     print(
-        f"Executing contract {contract} for target '{target}' (privacy: {privacy}, provider: {provider})..."
+        f"Executing contract {contract} for target '{log_safe(target)}' (privacy: {privacy}, provider: {provider})..."
     )
     result = runner(cmd)
     if isinstance(result, int):
@@ -185,7 +203,7 @@ def main(
     provider = (args.provider or os.environ.get("INPUT_PROVIDER", "fixture")).strip()
 
     if args.branch_only:
-        run_id = (args.run_id or os.environ.get("GITHUB_RUN_ID", "")).strip()
+        run_id = (args.run_id or run_identity()).strip()
         branch = compute_branch_name(contract, target, run_id)
         print(branch)
         return 0

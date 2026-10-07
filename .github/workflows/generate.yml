@@ -109,6 +109,7 @@ jobs:
         id: push
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
           INPUT_CONTRACT: ${{ inputs.contract }}
           INPUT_TARGET: ${{ inputs.target }}
           INPUT_PROVIDER: ${{ inputs.provider }}
@@ -117,11 +118,11 @@ jobs:
         run: |
           python3 - <<'EOF'
           import os, subprocess, sys
-          from scripts.dispatch_generation import compute_branch_name
+          from scripts.dispatch_generation import compute_branch_name, run_identity
 
           contract = os.environ.get("INPUT_CONTRACT", "").strip()
           target = os.environ.get("INPUT_TARGET", "").strip()
-          run_id = os.environ.get("GITHUB_RUN_ID", "").strip()
+          run_id = run_identity()
 
           branch = compute_branch_name(contract, target, run_id)
 
@@ -266,6 +267,7 @@ jobs:
         id: push
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
           INPUT_CONTRACT: ${{ inputs.contract }}
           INPUT_TARGET: ${{ inputs.target }}
           INPUT_PROVIDER: ${{ inputs.provider }}
@@ -274,11 +276,11 @@ jobs:
         run: |
           python3 - <<'EOF'
           import os, subprocess, sys
-          from scripts.dispatch_generation import compute_branch_name
+          from scripts.dispatch_generation import compute_branch_name, run_identity
 
           contract = os.environ.get("INPUT_CONTRACT", "").strip()
           target = os.environ.get("INPUT_TARGET", "").strip()
-          run_id = os.environ.get("GITHUB_RUN_ID", "").strip()
+          run_id = run_identity()
 
           branch = compute_branch_name(contract, target, run_id)
 

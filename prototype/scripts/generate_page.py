@@ -23,8 +23,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from validate_docs import ROOT, DOCS, parse_frontmatter, sha256_of, make_validator, _normalize, check_mdx_security  # noqa: E402
 from check_grounding import check_grounding_document, check_grounding_interview  # noqa: E402
-from ai.router import Router, PrivacyRoutingError, scan_for_secrets  # noqa: E402
+from ai.router import Router, PrivacyRoutingError, log_safe, scan_for_secrets  # noqa: E402
 from review_governance import reset_to_draft  # noqa: E402
+from dispatch_generation import compute_branch_name, run_identity  # noqa: E402
 
 CONTRACTS = ROOT / "contracts"
 PROMPTS = ROOT / "prompts"
@@ -50,7 +51,7 @@ def find_canonical_page(doc_id: str) -> Path:
             fm = parse_frontmatter(p) or {}
             if fm.get("id") == doc_id:
                 return p
-    raise ContractViolation(f"No canonical page with id '{doc_id}' under docs/source/")
+    raise ContractViolation(f"No canonical page with id '{log_safe(doc_id)}' under docs/source/")
 
 
 def _allowed(rel_path: str, globs: List[str]) -> bool:
@@ -207,7 +208,11 @@ def main() -> int:
     chain_source = f"Provider chain (--provider): {' -> '.join(chain)}" if args.provider is not None else f"Provider chain (from ai.config.yaml): {' -> '.join(chain)}"
     print(chain_source)
 
-    branch = f"docs-gen/{contract['contract'].lower()}-{args.target}"
+    # Same name generate.yml pushes; outside Actions the run part is a placeholder.
+    run_id = run_identity()
+    branch = compute_branch_name(contract["contract"], args.target, run_id or "RUN-ID")
+    if not run_id:
+        branch += " (RUN-ID = the generate.yml run ID)"
 
     if args.dry_run:
         print("\n--- DRY RUN: assembled prompt (no call made, nothing written) ---")
@@ -217,150 +222,148 @@ def main() -> int:
               f"and push branch: {branch}")
         return 0
 
-    # Execute generation with exactly one repair retry
-    messages = [{"role": "user", "content": prompt}]
-    validate = make_validator()
-    max_retries = 1
-    attempts = 0
+    # Every run that reaches the provider prints one usage line and writes one run report,
+    # also when it fails (P2-14, G11): a failed repair retry has still spent tokens.
+    report = {"gate_results": "FAIL", "output_path": "none", "approval_status": "n/a",
+              "generation_mode": "demo" if chain == ["fixture"] else "production"}
+    evidence_ids = [(parse_frontmatter(p) or {}).get("id", p.stem) for p in evidence if p.suffix in (".md", ".mdx")]
+    try:
+        # Execute generation with exactly one repair retry
+        messages = [{"role": "user", "content": prompt}]
+        validate = make_validator()
+        max_retries = 1
+        attempts = 0
 
-    while True:
-        attempts += 1
-        run_opts: Dict[str, Any] = {"max_tokens": contract.get("max_tokens", 4096), "contract": contract}
-        run_kw = {"provider": args.provider} if args.provider is not None else {}
-        result = router.run_with_fallback(task_meta, messages, run_opts, **run_kw)
+        while True:
+            attempts += 1
+            run_opts: Dict[str, Any] = {"max_tokens": contract.get("max_tokens", 4096), "contract": contract}
+            run_kw = {"provider": args.provider} if args.provider is not None else {}
+            result = router.run_with_fallback(task_meta, messages, run_opts, **run_kw)
 
-        if contract["output"]["format"] == "json":
-            # Structured JSON output (e.g. InterviewPrep)
-            parse_errors = []
-            data = None
-            try:
-                data = json.loads(result["text"])
-            except Exception as e:
-                parse_errors.append(f"JSON parse error: {e}")
+            if contract["output"]["format"] == "json":
+                # Structured JSON output (e.g. InterviewPrep)
+                parse_errors = []
+                data = None
+                try:
+                    data = json.loads(result["text"])
+                except Exception as e:
+                    parse_errors.append(f"JSON parse error: {e}")
 
-            if not parse_errors and isinstance(data, dict):
-                provider_name = result.get("provider", "fixture")
-                gen_mode = "demo" if provider_name == "fixture" else "production"
-                data["generation"] = {
-                    "contract": contract["contract"],
-                    "contract_version": contract["version"],
-                    "prompt_version": contract["prompt_version"],
-                    "source_documents": [
-                        {"id": (parse_frontmatter(p) or {}).get("id", p.stem),
-                         "path": p.relative_to(ROOT).as_posix(),
-                         "content_hash": sha256_of(p)}
-                        for p in evidence if p.suffix in (".md", ".mdx")
-                    ],
-                    "provider": provider_name,
-                    "model": result.get("model", ""),
-                    "generation_mode": gen_mode,
-                    "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "approval_status": "draft",
-                }
-                val_errors = validate(data, "interview")
-                # Pre-write Grounding Gate
-                val_errors.extend(check_grounding_interview(data, root_dir=ROOT))
+                if not parse_errors and isinstance(data, dict):
+                    provider_name = result.get("provider", "fixture")
+                    gen_mode = "demo" if provider_name == "fixture" else "production"
+                    # The pipeline owns the dataset's visibility, as it does for MDX pages: a model-chosen
+                    # "public" from a private run must not reach the production filter.
+                    data["visibility"] = "private" if privacy == "private" else "public"
+                    data["generation"] = {
+                        "contract": contract["contract"],
+                        "contract_version": contract["version"],
+                        "prompt_version": contract["prompt_version"],
+                        "source_documents": [
+                            {"id": (parse_frontmatter(p) or {}).get("id", p.stem),
+                             "path": p.relative_to(ROOT).as_posix(),
+                             "content_hash": sha256_of(p)}
+                            for p in evidence if p.suffix in (".md", ".mdx")
+                        ],
+                        "provider": provider_name,
+                        "model": result.get("model", ""),
+                        "generation_mode": gen_mode,
+                        "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "approval_status": "draft",
+                    }
+                    val_errors = validate(data, "interview")
+                    # Pre-write Grounding Gate
+                    val_errors.extend(check_grounding_interview(data, root_dir=ROOT))
+                else:
+                    val_errors = parse_errors
+
+                if val_errors:
+                    if attempts <= max_retries:
+                        report_rejection(attempts, val_errors)
+                        messages.append({"role": "assistant", "content": result["text"]})
+                        messages.append({
+                            "role": "user",
+                            "content": "The previous output had validation/grounding errors:\n"
+                                       + "\n".join(val_errors)
+                                       + "\nPlease correct the JSON output according to the schema and grounding rules."
+                        })
+                        continue
+                    report["gate_results"] = "FAIL (schema/grounding after repair retry)"
+                    raise ContractViolation(f"Interview validation/grounding failed after repair retry: {val_errors}")
+
+                out_dir = DOCS / "generated" / contract["output"]["dir"]
+                out_dir.mkdir(parents=True, exist_ok=True)
+                out_path = out_dir / f"{args.target}.interview.json"
+                out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+                reset_to_draft(args.target, out_path.relative_to(ROOT).as_posix())
+                print(f"Wrote {out_path.relative_to(ROOT)}")
+                report.update(gate_results="PASS (schema, grounding)", generation_mode=gen_mode,
+                              output_path=out_path.relative_to(ROOT).as_posix(), approval_status="draft")
+                return 0
+
             else:
-                val_errors = parse_errors
+                parse_errors = []
+                fm, body = None, None
+                try:
+                    fm, body = split_model_output(result["text"])
+                except Exception as e:
+                    parse_errors.append(str(e))
 
-            if val_errors:
-                if attempts <= max_retries:
-                    report_rejection(attempts, val_errors)
-                    messages.append({"role": "assistant", "content": result["text"]})
-                    messages.append({
-                        "role": "user",
-                        "content": "The previous output had validation/grounding errors:\n"
-                                   + "\n".join(val_errors)
-                                   + "\nPlease correct the JSON output according to the schema and grounding rules."
-                    })
-                    continue
-                raise ContractViolation(f"Interview validation/grounding failed after repair retry: {val_errors}")
+                if not parse_errors and isinstance(fm, dict):
+                    provider_name = result.get("provider", "fixture")
+                    gen_mode = "demo" if provider_name == "fixture" else "production"
+                    fm = stamp_provenance(fm, contract, evidence, provider_name, result.get("model", ""),
+                                          mode=gen_mode)
+                    # The pipeline owns page identity. A model-chosen slug can land outside the
+                    # contract's route (live Gemini smoke test, 2026-10-06: /views/views/...).
+                    fm["id"] = f"{contract['output']['dir']}-{args.target}"
+                    fm["slug"] = f"/{contract['output']['dir']}/{args.target}"
+                    fm["visibility"] = "private" if privacy == "private" else "public"
+                    errors = validate(fm, "document")
+                    # Pre-write MDX restriction gate and link allowlist
+                    errors.extend(check_mdx_security(body))
+                    # Pre-write Grounding Gate
+                    errors.extend(check_grounding_document(fm, body, root_dir=ROOT))
+                else:
+                    errors = parse_errors
 
-            out_dir = DOCS / "generated" / contract["output"]["dir"]
-            out_dir.mkdir(parents=True, exist_ok=True)
-            out_path = out_dir / f"{args.target}.interview.json"
-            out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-            reset_to_draft(args.target, out_path.relative_to(ROOT).as_posix())
-            print(f"Wrote {out_path.relative_to(ROOT)}")
-            print(router.format_usage_line())
-            evidence_ids = [
-                (parse_frontmatter(p) or {}).get("id", p.stem)
-                for p in evidence if p.suffix in (".md", ".mdx")
-            ]
-            router.write_step_summary(
-                contract=contract["contract"],
-                target=args.target,
-                privacy=privacy,
-                generation_mode=gen_mode,
-                evidence_ids=evidence_ids,
-                gate_results="PASS (schema, grounding)",
-                output_path=out_path.relative_to(ROOT).as_posix(),
-                approval_status="draft",
-            )
-            return 0
+                if errors:
+                    if attempts <= max_retries:
+                        report_rejection(attempts, errors)
+                        messages.append({"role": "assistant", "content": result["text"]})
+                        messages.append({
+                            "role": "user",
+                            "content": "The previous output had validation errors:\n"
+                                       + "\n".join(errors)
+                                       + "\nPlease correct the output to ensure valid frontmatter, secure MDX, and strict grounding."
+                        })
+                        continue
+                    report["gate_results"] = "FAIL (schema/mdx/grounding after repair retry)"
+                    raise ContractViolation("Output invalid after generation (repair retry failed):\n" + "\n".join(errors))
 
-        else:
-            parse_errors = []
-            fm, body = None, None
-            try:
-                fm, body = split_model_output(result["text"])
-            except Exception as e:
-                parse_errors.append(str(e))
-
-            if not parse_errors and isinstance(fm, dict):
-                provider_name = result.get("provider", "fixture")
-                gen_mode = "demo" if provider_name == "fixture" else "production"
-                fm = stamp_provenance(fm, contract, evidence, provider_name, result.get("model", ""),
-                                      mode=gen_mode)
-                # The pipeline owns page identity. A model-chosen slug can land outside the
-                # contract's route (live Gemini smoke test, 2026-10-06: /views/views/...).
-                fm["id"] = f"{contract['output']['dir']}-{args.target}"
-                fm["slug"] = f"/{contract['output']['dir']}/{args.target}"
-                fm["visibility"] = "private" if privacy == "private" else "public"
-                errors = validate(fm, "document")
-                # Pre-write MDX restriction gate and link allowlist
-                errors.extend(check_mdx_security(body))
-                # Pre-write Grounding Gate
-                errors.extend(check_grounding_document(fm, body, root_dir=ROOT))
-            else:
-                errors = parse_errors
-
-            if errors:
-                if attempts <= max_retries:
-                    report_rejection(attempts, errors)
-                    messages.append({"role": "assistant", "content": result["text"]})
-                    messages.append({
-                        "role": "user",
-                        "content": "The previous output had validation errors:\n"
-                                   + "\n".join(errors)
-                                   + "\nPlease correct the output to ensure valid frontmatter, secure MDX, and strict grounding."
-                    })
-                    continue
-                raise ContractViolation("Output invalid after generation (repair retry failed):\n" + "\n".join(errors))
-
-            out_dir = DOCS / "generated" / contract["output"]["dir"]
-            out_dir.mkdir(parents=True, exist_ok=True)
-            out_path = out_dir / f"{args.target}.mdx"
-            front = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
-            out_path.write_text(f"---\n{front}\n---\n\n{body}\n", encoding="utf-8")
-            reset_to_draft(fm.get("id", args.target), out_path.relative_to(ROOT).as_posix())
-            print(f"Wrote {out_path.relative_to(ROOT)}")
-            print(f"PR branch (persistence: {contract['persistence']}): {branch}")
-            print(router.format_usage_line())
-            evidence_ids = [
-                d.get("id", "") for d in fm.get("generation", {}).get("source_documents", [])
-            ]
-            router.write_step_summary(
-                contract=contract["contract"],
-                target=args.target,
-                privacy=privacy,
-                generation_mode=gen_mode,
-                evidence_ids=evidence_ids,
-                gate_results="PASS (schema, mdx, grounding)",
-                output_path=out_path.relative_to(ROOT).as_posix(),
-                approval_status="draft",
-            )
-            return 0
+                out_dir = DOCS / "generated" / contract["output"]["dir"]
+                out_dir.mkdir(parents=True, exist_ok=True)
+                out_path = out_dir / f"{args.target}.mdx"
+                front = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
+                out_path.write_text(f"---\n{front}\n---\n\n{body}\n", encoding="utf-8")
+                reset_to_draft(fm.get("id", args.target), out_path.relative_to(ROOT).as_posix())
+                print(f"Wrote {out_path.relative_to(ROOT)}")
+                print(f"PR branch (persistence: {contract['persistence']}): {branch}")
+                report.update(gate_results="PASS (schema, mdx, grounding)", generation_mode=gen_mode,
+                              output_path=out_path.relative_to(ROOT).as_posix(), approval_status="draft")
+                return 0
+    finally:
+        print(router.format_usage_line())
+        router.write_step_summary(
+            contract=contract["contract"],
+            target=args.target,
+            privacy=privacy,
+            generation_mode=report["generation_mode"],
+            evidence_ids=evidence_ids,
+            gate_results=report["gate_results"],
+            output_path=report["output_path"],
+            approval_status=report["approval_status"],
+        )
 
 
 if __name__ == "__main__":
