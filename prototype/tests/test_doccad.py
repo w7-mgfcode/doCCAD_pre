@@ -102,6 +102,7 @@ import scripts.generate_question as generate_question_module
 import scripts.build_filter as build_filter_module
 import scripts.detect_changes as detect_changes_module
 import scripts.review_governance as review_governance_module
+import scripts.dispatch_generation as dispatch_generation_module
 from github_approval import (
     ApprovalVerifier,
     MockGitHubApiClient,
@@ -2144,6 +2145,7 @@ class TestWorkflowScriptInvocations(unittest.TestCase):
             "build_filter.py": build_filter_module.build_parser,
             "detect_changes.py": detect_changes_module.build_parser,
             "review_governance.py": review_governance_module.build_parser,
+            "dispatch_generation.py": dispatch_generation_module.build_parser,
         }
 
     def test_generate_question_cli_argparse_rules(self):
@@ -2302,6 +2304,25 @@ class TestWorkflowSecurityInvariants(unittest.TestCase):
     def test_top_level_permissions_declared(self):
         for name, wf in self.workflows.items():
             self.assertIn("permissions", wf, f"{name}: declare top-level least-privilege permissions")
+
+    def test_no_top_level_permissions_grant_write(self):
+        """P2-19 (G16): Least privilege: top-level permissions must stay read-only (never grant write)."""
+        for name, wf in self.workflows.items():
+            perms = wf.get("permissions")
+            self.assertIsNotNone(perms, f"{name}: missing top-level permissions")
+            if isinstance(perms, dict):
+                for scope, perm_val in perms.items():
+                    self.assertNotEqual(
+                        perm_val,
+                        "write",
+                        f"{name}: top-level permission '{scope}' grants 'write'; must be read-only (grant write at job level)",
+                    )
+            elif isinstance(perms, str):
+                self.assertNotEqual(
+                    perms,
+                    "write-all",
+                    f"{name}: top-level permissions grant 'write-all'",
+                )
 
 
 class TestGenerateWorkflowProviderInput(unittest.TestCase):
@@ -3809,6 +3830,178 @@ class TestRunUsageReport(unittest.TestCase):
         self.assertEqual(res_default.returncode, 0)
         self.assertIn("Provider chain (from ai.config.yaml): fixture", res_default.stdout)
         self.assertNotIn("Provider chain (--provider):", res_default.stdout)
+
+
+
+class TestDispatchGeneration(unittest.TestCase):
+    """P2-17 (G17) and P2-18 (G15): Single tested dispatcher for generate.yml with unique branch naming."""
+
+    def test_invalid_contract_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="InvalidContract",
+                    target="system-overview",
+                    privacy="public",
+                    provider="fixture",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_invalid_privacy_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="system-overview",
+                    privacy="secret",
+                    provider="fixture",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_invalid_provider_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="system-overview",
+                    privacy="public",
+                    provider="unsupported_provider",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_empty_target_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="",
+                    privacy="public",
+                    provider="fixture",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_private_with_cloud_provider_exits_1_no_subprocess(self):
+        runner_calls = []
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                dispatch_generation_module.dispatch(
+                    contract="GenerateRecruiterPage",
+                    target="system-overview",
+                    privacy="private",
+                    provider="gemini",
+                    runner=lambda cmd: runner_calls.append(cmd),
+                )
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(len(runner_calls), 0)
+
+    def test_valid_input_produces_exact_argv(self):
+        runner_calls = []
+        with redirect_stdout(io.StringIO()):
+            ret = dispatch_generation_module.dispatch(
+                contract="GenerateRecruiterPage",
+                target="architecture-system-overview",
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: runner_calls.append(cmd),
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(len(runner_calls), 1)
+        expected_cmd = [
+            "python3",
+            "scripts/generate_page.py",
+            "--contract", "GenerateRecruiterPage",
+            "--target", "architecture-system-overview",
+            "--privacy", "public",
+            "--provider", "fixture",
+        ]
+        self.assertEqual(runner_calls[0], expected_cmd)
+
+    def test_question_contract_produces_exact_argv(self):
+        runner_calls = []
+        with redirect_stdout(io.StringIO()):
+            ret = dispatch_generation_module.dispatch(
+                contract="GenerateQuestionPage",
+                target="How does DOCCAD detect drift?",
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: runner_calls.append(cmd),
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(len(runner_calls), 1)
+        expected_cmd = [
+            "python3",
+            "scripts/generate_question.py",
+            "--question", "How does DOCCAD detect drift?",
+            "--privacy", "public",
+            "--provider", "fixture",
+            "--persist",
+        ]
+        self.assertEqual(runner_calls[0], expected_cmd)
+
+    def test_metacharacter_target_stays_single_element(self):
+        runner_calls = []
+        metachar_target = 'system-overview; rm -rf / && echo "pwned" | cat $VAR `date`'
+        with redirect_stdout(io.StringIO()):
+            ret = dispatch_generation_module.dispatch(
+                contract="GenerateRecruiterPage",
+                target=metachar_target,
+                privacy="public",
+                provider="fixture",
+                runner=lambda cmd: runner_calls.append(cmd),
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(len(runner_calls), 1)
+        cmd = runner_calls[0]
+        self.assertEqual(cmd[4], "--target")
+        self.assertEqual(cmd[5], metachar_target)
+        self.assertEqual(len(cmd), 10)
+
+    def test_branch_name_two_run_ids_give_distinct_names(self):
+        branch1 = dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "architecture-system-overview", "1001")
+        branch2 = dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "architecture-system-overview", "1002")
+        self.assertNotEqual(branch1, branch2)
+        self.assertTrue(branch1.endswith("-1001"))
+        self.assertTrue(branch2.endswith("-1002"))
+
+    def test_branch_name_starts_with_docs_gen_and_bounded_length(self):
+        long_target = "a" * 150
+        branch = dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", long_target, "37541030510")
+        self.assertTrue(branch.startswith("docs-gen/"))
+        self.assertLessEqual(len(branch), 100)
+
+    def test_branch_name_missing_run_id_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "system-overview", None)
+        with self.assertRaises(ValueError):
+            dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "system-overview", "")
+        with self.assertRaises(ValueError):
+            dispatch_generation_module.compute_branch_name("GenerateRecruiterPage", "system-overview", "   ")
+
+    def test_cli_branch_only_flag(self):
+        out = io.StringIO()
+        with redirect_stdout(out):
+            ret = dispatch_generation_module.main(
+                argv=[
+                    "--contract", "GenerateRecruiterPage",
+                    "--target", "architecture-system-overview",
+                    "--run-id", "9999",
+                    "--branch-only",
+                ]
+            )
+        self.assertEqual(ret, 0)
+        self.assertEqual(out.getvalue().strip(), "docs-gen/generaterecruiterpage-architecture-system-overview-9999")
 
 
 if __name__ == "__main__":
