@@ -23,14 +23,15 @@ instead of repeating it.
 - **History.** Initialized 2026-09-29; `git log` starts at that day's initial import and explains
   nothing older. (`docs/primary-inputs/README.md` still calls the repo uninitialized — it predates git.)
 - **Remote.** `origin` = public `https://github.com/w7-mgfcode/doCCAD_pre`; default branch `main`.
-- **Branch flow.** Work happens on `next-version` (or a topic branch) and reaches `main` only through a
-  pull request. Ruleset `main-protection` requires a PR, a code-owner review (`.github/CODEOWNERS`) and
+- **Branch flow.** Work happens on a topic branch (`docs/*`, or one per run such as `phase-2-closeout`)
+  and reaches `main` only through a pull request; `next-version` was the Phase 1 run branch and is fully
+  merged. Ruleset `main-protection` requires a PR, a code-owner review (`.github/CODEOWNERS`) and
   the `validate-and-build` check, and blocks force-push and deletion. The sole owner cannot approve
   their own PR, so admins merge through a PR-only bypass.
 - **Automation** (`.github/workflows/`). `ci.yml` (`validate-and-build`, on PRs and pushes to `main`);
   `publish.yml` (push to `main` → production filter → GitHub Pages at
   `https://w7-mgfcode.github.io/doCCAD_pre/`); `generate.yml` (manual; `provider` input defaults to `fixture`, and any other provider runs in a separate job
-  bound to the `generation` environment, `.github/workflows/generate.yml:34-45,246`; pushes a `docs-gen/*`
+  bound to the `generation` environment, `.github/workflows/generate.yml:34-45,206`; pushes a `docs-gen/*`
   branch, and opens the PR as the DOCCAD GitHub App only when the App token step produced a token and the push
   step reported changes — otherwise the owner opens it, E8);
   `drift.yml` (weekly). Dependabot (`.github/dependabot.yml`, not a workflow) opens weekly grouped
@@ -49,7 +50,7 @@ instead of repeating it.
 | `prototype/docs/source/` | Canonical pages (`type: canonical`), served at `/docs` |
 | `prototype/docs/generated/` | AI-derived views (`type: generated`), served at `/views` |
 | `prototype/ai/`, `prototype/ai.config.yaml` | Provider router and adapters; `fixture` is the default provider |
-| `prototype/scripts/` | validate, detect drift, generate page/question, seed generated views, review governance, build filter, grounding gate (`check_grounding.py`, also run by `validate_docs.py`), GitHub approval check (`github_approval.py`) |
+| `prototype/scripts/` | validate, detect drift, generate page/question, dispatch generation (`dispatch_generation.py`, the single entry point `generate.yml` runs), seed generated views, review governance, build filter, grounding gate (`check_grounding.py`, also run by `validate_docs.py`), GitHub approval check (`github_approval.py`) |
 | `prototype/contracts/`, `prototype/schemas/`, `prototype/prompts/` | Generation contracts, JSON schemas, prompt templates |
 | `prototype/src/` | Site components and pages (workbench, inspector, explorer) |
 | `prototype/tests/` | `unittest` suite; `tests/golden/` holds the grounding-gate golden set |

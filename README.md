@@ -155,6 +155,7 @@ The requirement-by-requirement record (REQ-001…016) is in [`prototype/LIMITATI
   - [x] Implemented and stub-tested: provider adapters, retry and fallback, structured output, budgets, grounding gate, injection fixtures, `generate.yml` provider input (PR #7)
   - [x] First live provider call: Gemini owner smoke test passed; its two findings fixed (PR #9)
   - [x] First live generation in CI: Gemini through `generate.yml` and the `generation` environment (2026-10-06, PR #11)
+  - [x] Closeout: run usage report, absent visibility fails closed, adapter errors propagate, one tested dispatch script, unique `docs-gen/*` branch per run, read-only workflow permissions; 190 tests (P2-13…P2-20, PR #14, [handoff pack](docs/phase-2-closeout/README.md))
   - [ ] Remaining providers (decision E5)
 - [ ] **Phase 3: beyond the prototype.** Scoped in [`docs/next-phase/`](docs/next-phase/README.md)
 
@@ -167,7 +168,7 @@ doCCAD_pre/
 │   ├── docs/generated/        AI-derived views     → /views
 │   ├── ai/  ai.config.yaml    provider router (fixture default)
 │   ├── contracts/ schemas/ prompts/
-│   ├── scripts/               validate · detect · generate · grounding · review · build filter
+│   ├── scripts/               validate · detect · generate · dispatch · grounding · review · build filter
 │   ├── src/                   site components and pages
 │   ├── tests/                 unittest suite + grounding golden set
 │   └── planning/              concept, acceptance, progress
@@ -175,7 +176,8 @@ doCCAD_pre/
     ├── primary-inputs/        research + design archive (sections 00–12)
     ├── prototype-planning/    how the prototype prompt was derived
     ├── next-phase/            plan, acceptance and research for phases 0–3
-    └── phase-2/               handoff pack and record of the Phase 2 run
+    ├── phase-2/               handoff pack and record of the Phase 2 run
+    └── phase-2-closeout/      handoff pack for the Phase 2 closeout (P2-13…P2-20)
 ```
 
 The archive is **preserve-first**. The raw archive and the historical prompts are never edited; newer

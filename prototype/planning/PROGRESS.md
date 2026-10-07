@@ -208,10 +208,13 @@ The unattended run never edits `AGENTS.md`, root `README.md`, `.claude/`, or `.a
    - Update test suite count reference from 155 to 190.
    - Update the workflow citation `generate.yml:34-45,246` to `generate.yml:34-45,206` (`environment: generation` moved).
    - Done 2026-10-07 by the owner session (PR #13): the `--provider` citation above.
+   - Done 2026-10-07 by the owner session (branch `docs/post-closeout-sync`): the `dispatch_generation.py` entry and the
+     `generate.yml:34-45,206` citation. `AGENTS.md` carries no test count, so the 155 → 190 item does not apply there.
 
 2. **Root `README.md`**:
    - Update Phase 2 status from in-progress / live smoke to complete, observable, fail-closed, and hardened (P2-13..P2-20, Checkpoints 2C & 2D).
    - Update test suite count to 190 tests (0 expected failures).
+   - Done 2026-10-07 (branch `docs/post-closeout-sync`): closeout row under Phase 2 with 190 tests, `phase-2-closeout/` in the repository map. Phase 2 stays unchecked: its remaining-providers item waits on E5.
 
 3. **`.claude/rules/prototype-code.md`**:
    - Update "Known debt" section (`:47-51`): remove note about `chain_for` swallowing errors, since P2-16 resolved this by re-raising adapter constructor errors.
