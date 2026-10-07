@@ -112,6 +112,7 @@ class LocalProvider:
         key = os.environ.get(self.env_key, "").strip()
 
         is_native = self.endpoint.endswith("/api") or self.endpoint.endswith("/api/chat")
+        resp_headers: Dict[str, str] = {}
         if is_native:
             headers, payload = build_local_native_request(
                 model=model,
@@ -121,7 +122,7 @@ class LocalProvider:
                 params=self.params,
             )
             url = self.base_url or (self.endpoint if self.endpoint.endswith("/chat") else f"{self.endpoint}/chat")
-            body, _ = http_post_json(
+            body, resp_headers = http_post_json(
                 url=url,
                 payload=payload,
                 headers=headers,
@@ -140,7 +141,7 @@ class LocalProvider:
             )
             url = self.base_url or f"{self.endpoint}/chat/completions"
             try:
-                body, _ = http_post_json(
+                body, resp_headers = http_post_json(
                     url=url,
                     payload=payload,
                     headers=headers,
@@ -159,7 +160,7 @@ class LocalProvider:
                         key=key,
                         params=self.params,
                     )
-                    body, _ = http_post_json(
+                    body, resp_headers = http_post_json(
                         url=native_url,
                         payload=n_payload,
                         headers=n_headers,
@@ -191,10 +192,17 @@ class LocalProvider:
 
         usage = body.get("usage", {})
         returned_model = body.get("model") or model
+        req_id = (
+            resp_headers.get("request-id")
+            or resp_headers.get("x-request-id")
+            or resp_headers.get("x-goog-request-id")
+            or None
+        )
         return {
             "text": text,
             "usage": {"input_tokens": usage.get("prompt_tokens", usage.get("prompt_eval_count", 0)),
                       "output_tokens": usage.get("completion_tokens", usage.get("eval_count", 0))},
             "provider": self.name,
             "model": returned_model,
+            "request_id": req_id,
         }

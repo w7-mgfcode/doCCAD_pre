@@ -246,7 +246,8 @@ def main() -> int:
     for f in included_files:
         if f.suffix in (".md", ".mdx"):
             efm = parse_frontmatter(f) or {}
-            if efm.get("visibility") == "private" or efm.get("privacy") == "private":
+            ev_vis = efm.get("visibility") or efm.get("privacy")
+            if ev_vis != "public":
                 privacy = "private"
                 break
 
@@ -264,7 +265,8 @@ def main() -> int:
 
     router = Router(ROOT / "ai.config.yaml")
     chain = router.select_chain_names(task_meta, provider=args.provider)
-    print(f"Router chain: {' -> '.join(chain)}")
+    chain_source = f"Provider chain (--provider): {' -> '.join(chain)}" if args.provider is not None else f"Provider chain (from ai.config.yaml): {' -> '.join(chain)}"
+    print(chain_source)
     try:
         run_kw = {"provider": args.provider} if args.provider is not None else {}
         call_res = router.run_with_fallback(task_meta, [{"role": "user", "content": prompt}], **run_kw)
@@ -294,6 +296,7 @@ def main() -> int:
 
     fm["type"] = "generated"
     fm["generated"] = True
+    fm["visibility"] = "private" if privacy == "private" else "public"
     fm["generation"] = {
         "contract": contract["contract"],
         "contract_version": contract.get("version", 4),
@@ -372,6 +375,20 @@ def main() -> int:
         Path(args.export_run).write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
         print(f"Exported GenerationRun record to: {args.export_run}")
 
+    print(router.format_usage_line())
+    evidence_ids = [
+        d.get("id", "") for d in fm.get("generation", {}).get("source_documents", [])
+    ]
+    router.write_step_summary(
+        contract=contract["contract"],
+        target=target_id or doc_id,
+        privacy=privacy,
+        generation_mode=gen_mode,
+        evidence_ids=evidence_ids,
+        gate_results="PASS (schema, mdx, grounding)",
+        output_path=out_path.relative_to(ROOT).as_posix(),
+        approval_status="draft",
+    )
     return 0
 
 

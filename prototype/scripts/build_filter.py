@@ -85,7 +85,8 @@ def filter_for_production(verifier: Optional[ApprovalVerifier] = None, require_a
             continue
         fm = parse_frontmatter(page) or {}
         visibility = fm.get("visibility") or fm.get("privacy")
-        if visibility == "private":
+        # Absent visibility or privacy fails closed to private (T12, NV-REQ-028)
+        if visibility != "public":
             rel = page.relative_to(SOURCE)
             dest = STASH_PRIVATE / "source" / rel
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -115,7 +116,17 @@ def filter_for_production(verifier: Optional[ApprovalVerifier] = None, require_a
                 pass
 
         visibility = fm.get("visibility") or fm.get("privacy")
-        is_private = (visibility == "private")
+        if page.suffix == ".json" and not visibility:
+            # Option (a): dataset inherits visibility from the companion generated MDX page with the same id
+            companion_mdx = page.parent / f"{doc_id}.mdx"
+            companion_in_stash = STASH / companion_mdx.relative_to(GENERATED)
+            comp_path = companion_mdx if companion_mdx.is_file() else (companion_in_stash if companion_in_stash.is_file() else None)
+            if comp_path:
+                comp_fm = parse_frontmatter(comp_path) or {}
+                visibility = comp_fm.get("visibility") or comp_fm.get("privacy")
+
+        # Absent visibility or privacy fails closed to private (T12, NV-REQ-028)
+        is_private = (visibility != "public")
 
         approval = gen_block.get("approval_status", "draft")
         review_rec = reviews.get(doc_id, {})

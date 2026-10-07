@@ -10,7 +10,44 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 
 ---
 
-## Run rules — Phase 2 run (Binding for this run)
+## Run rules — Phase 2 closeout run (Binding for this run)
+
+- **Branch & Remote**: Work exclusively on branch `phase-2-closeout` branched from `main`. No `git push`, no PR creation, no remote operations, no deployment. Local commits permitted only at phase checkpoints (2C and 2D). Single agent on working tree.
+- **Offline Execution**: Fully offline. Never run `npm ci`, `npm install`, `npm update`, `pip install`, or any `npx` command that downloads packages. Never contact any network address other than `127.0.0.1`. Installed dependency check: `npm ls --depth=0` and `python3 -c "import yaml, jsonschema, referencing"` must exit 0.
+- **Working Directory & Scratch Copies**: Run all commands from `prototype/` unless specified. Run commands that rewrite state or write to `docs/` (generation, production build round-trip) on a scratch copy of `.github/` and `prototype/` (with `node_modules` symlinked). Run whole-repo checks (`detect_changes.py --range`) on a full-repo scratch copy with `.git/`. If interrupted while views are stashed, run `npm run build:demo`.
+- **Evidence or it did not happen**: Tick an item ONLY after its acceptance command ran in this run and output was verified. Append to Evidence log: item ID, exact command, exit code, key output line, date. Never claim checks exist without code and passing tests. GitHub-side actions cannot be observed from here; mark NOT RUN and document required owner observations.
+- **Verification of Edits**: Verify every file edit with `git diff --stat` or by re-reading content before proceeding.
+- **Bounded Attempts**: If a fix fails twice, halt work on that item, record details in *Tried and failed*, and proceed to the next independent item. Inspect once before changing; do not loop on the same command.
+- **Test Invariants**:
+  - Every new test class named in the plan must exist in `prototype/tests/test_doccad.py` and must include at least one failing case (rejected by new code or failing without the change).
+  - All provider tests use stdlib `http.server` bound to `127.0.0.1` on port 0 with injected sleeps.
+  - Test-wide loopback network guard (`TestNoExternalNetwork`) remains active and green.
+- **Strict Architectural Invariants**:
+  - Two-plane separation: canonical (`docs/source/`) vs generated (`docs/generated/`). Canonical never imports or cites generated. Generated produced only by scripts, never hand-edited, stamped with generation block and source hashes.
+  - Default provider remains `fixture`. Zero keys/network required for tests and demo. Default routing chains in `ai.config.yaml` unchanged.
+  - `privacy: private` routes strictly to `local` and raises `PrivacyRoutingError` immediately on local failure; never fall back to cloud.
+  - Model IDs appear only as `${AI_MODEL_*}` environment references in `ai.config.yaml` or GitHub variables in workflows; never in code, tests, prompts, workflows or docs (use `<model-id>` in templates).
+  - Cloud provider base URLs are not configurable in `ai.config.yaml` (constructor argument for tests only).
+  - Repository JSON Schemas remain the validation gate; re-validate every provider response locally.
+  - Published static site makes zero runtime model calls.
+  - Python dependencies: stdlib + PyYAML + approved `jsonschema` & `referencing`. No npm package added or upgraded.
+  - Simulated approval (`approved-for-demo`) is never presented as human approval and never enables production publication.
+  - Contract/schema/prompt changes require version bumps, re-seeding/regeneration, and `npm run detect` reporting 0 stale.
+  - Workflow security invariants enforced: full 40-hex SHA action pins; no `pull_request_target`; untrusted expressions pass via `env:` never in `run:`; never rename `validate-and-build`; never replace DOCCAD App token with a PAT.
+  - No provider SDK, runtime datastore, vector DB, agent framework, microservice, or multi-agent generation.
+- **Secrets & Usage Reporting**: Never read, print, request, store or transmit real API keys, tokens, secrets, GitHub variables, or `.env` values. Never create `.env`. Use fake key strings in tests and assert no leaks. Usage reports contain provider, returned model, status codes, request IDs, and token counts only; never prompts, evidence, responses, headers, or environment values.
+- **Integrity of Gates**: Never weaken a failing gate to make checks pass. Do not delete, skip or disable tests, add expectedFailure, loosen schemas, widen allowlists, or relax production filter. In P2-15, handle interview datasets via route (a) or (b) without hiding them.
+- **Canonical Docs & Guarded Paths**: Canonical pages are human-owned; modifications strictly restricted, minimal, factual, and logged. Never edit `docs/primary-inputs/`, `docs/next-phase/`, `docs/phase-2/`, `docs/phase-2-closeout/`, `docs/prototype-planning/`, `AGENTS.md`, or root `README.md`. Propose wording changes in `PROGRESS.md`.
+- **Stop Conditions (Section 4)**: Halt affected item, record under Blocked, and continue with independent work if an action requires:
+  - Git push, PR, GitHub settings, environments, secrets, variables, rulesets, or GitHub App.
+  - Real API key, model ID value, or network access beyond `127.0.0.1`.
+  - Missing, out-of-sync, or unapproved dependencies.
+  - Owner decisions (E5, E6, E9, E11, E12, E13, NV-SUP-2, GitHub App, G9 wording).
+  - Edits under guarded paths or unsatisfiable permission prompts.
+
+---
+
+## Run rules — Phase 2 run (Superseded)
 
 - **Branch & Isolation**: Work exclusively on branch `phase-2-live-ai`. No `git push`, no PR creation, no remote operations, no deployment. Local commits permitted only at phase checkpoints (2A and 2B). Single agent operating on working tree.
 - **Working Directory**: Run all commands from `prototype/` unless specified. Use scratch copies for generation acceptance tests writing into `docs/`. Interrupted stashed files restored via `npm run build:demo`.
@@ -122,6 +159,10 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | P2-08 (owner live) | `AI_MODEL_GEMINI=gemini-3.1-flash-lite python3 scripts/generate_page.py --contract GenerateInterviewPrep\|GenerateRecruiterPage --target architecture-system-overview --provider gemini` (owner-run, scratch copy) | 0 | Both contracts written; interview needed 1 repair retry; tokens in/out 3617/1235 + 5014/1242 and 3652/1033; strict validate and en+hu build exit 0; findings fixed in PR #9 (`TestLiveSmokeFindings`) | 2026-10-06 |
 | Post-PR #9 gate | `DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run detect && npm run test && npm run typecheck && npm run build` (scratch copy of `main`) | 0 | `Validated 40 pages, 4 interview datasets, 25 provenance hashes`; `stale generated: 0`; `Ran 155 tests ... OK`; typecheck and build exit 0 | 2026-10-06 |
 | P2-12 (live CI) | `gh workflow run generate.yml --ref main -f contract=GenerateRecruiterPage -f target=architecture-system-overview -f privacy=public -f provider=gemini` (run 37541030510; `generation` environment, protected-branches policy, `GEMINI_API_KEY` secret, `AI_MODEL_GEMINI` variable) | 0 | `generate-live` success; `Provider chain (from ai.config.yaml): gemini`; `Validated 41 pages, 4 interview datasets, 29 provenance hashes`; pushed `docs-gen/generaterecruiterpage-architecture-system-overview` (`32a9cb7`, `approval_status: draft`); no PR (no App, E8); token usage not logged in CI | 2026-10-06 |
+| P2-13 | `npm ls --depth=0 && python3 -c "import yaml, jsonschema, referencing" && npm run typecheck && DOCCAD_REQUIRE_JSONSCHEMA=1 npm run validate && npm run test && npm run build && npm run detect` | 0 | `Validated 40 pages, 4 interview datasets, 25 provenance hashes.` / `Ran 155 tests in 13.148s ... OK` / `stale generated: 0` / Dual-locale build OK | 2026-10-07 |
+| P2-14 | `python3 -m unittest tests.test_doccad.TestRunUsageReport -v && python3 scripts/generate_page.py --contract GenerateRecruiterPage --target architecture-system-overview --provider anthropic --dry-run` | 0 | `Ran 4 tests ... OK` / `Provider chain (--provider): anthropic` / Usage report line and GITHUB_STEP_SUMMARY verified | 2026-10-07 |
+| P2-15 | `python3 -m unittest tests.test_doccad.TestVisibilityFailsClosed tests.test_doccad.TestPrivateContentExclusion tests.test_doccad.TestBuildFilterExclusion tests.test_doccad.TestProductionFilterValidity -v && npm run build:production && npm run build:demo (scratch)` | 0 | `Ran 11 tests ... OK` / scratch `build:production` and `build:demo` round-trip exit 0 / expected excluded set 15 files verified | 2026-10-07 |
+| P2-16 | `python3 -m unittest tests.test_doccad.TestExplicitProviderSelection tests.test_doccad.TestRouterFallbackSemantics tests.test_doccad.TestPrivateRoutingPolicy -v` | 0 | `Ran 7 tests ... OK` (adapter constructor ValueError propagation verified; failed prior to fix) / fallback & private routing tests stay green | 2026-10-07 |
 
 ---
 
@@ -159,6 +200,11 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
 | Branch | Work on `next-version` (created 2026-10-01 with the baseline commits) |
 | Licensing (recorded 2026-10-01) | Code MIT (`LICENSE`); documentation, diagrams and research CC BY 4.0 (`LICENSE-docs`); `docs/primary-inputs/10_EXTERNAL_ARTIFACTS/` excluded (third-party) |
 | Remote (recorded 2026-10-01) | `origin` = https://github.com/w7-mgfcode/doCCAD_pre.git, public; `main` and `next-version` pushed by the owner's session. Pushing is still an owner action — the run itself never pushes |
+
+### 0.2 Proposed defaults — Phase 2 closeout run (recorded 2026-10-07)
+
+- **P2-15 proposed default (Trap a):** an interview JSON dataset takes the visibility of the companion generated MDX page that loads it, where the mapping is deterministic (same id) and absent still means private.
+- **P2-15 expected-set check baseline:** on the clean scratch copy prior to filter changes, exactly 15 files are stashed (4 interview json, 4 interview mdx, 6 questions, 1 recruiter). Verified by `TestVisibilityFailsClosed.test_expected_excluded_set_literal`.
 
 ### 0.1 Claimed Quality & Security Gates (P0-13 Truth Alignment Table)
 
@@ -249,6 +295,16 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
   - [x] P2-12: Provider input in `.github/workflows/generate.yml`, protected generation environment, scoped secrets (`TestGenerateWorkflowProviderInput`).
   - [x] P2-08: Live smoke preparation (commands in `VALIDATION.md`). Gemini owner-run PASS 2026-10-06; Anthropic, OpenAI, local NOT RUN.
   - [x] P2-10: Phase 2 exit gate and documentation sync (`VALIDATION.md`, `LIMITATIONS.md`, `README.md`, `PROGRESS.md`).
+
+- [ ] **Phase 2 Closeout: Observable, Fail-Closed, Hardened Generation (P2-13..P2-20)**
+  - [x] P2-13: Start check, offline dependency check, baseline verification (40 pages, 4 datasets, 25 hashes, 155 tests pass, 0 stale, dual-locale build OK).
+  - [x] P2-14: Run usage report on stdout and GitHub step summary (`TestRunUsageReport`).
+  - [x] P2-15: Absent visibility fails closed across filter, validator, and generation (`TestVisibilityFailsClosed`).
+  - [x] P2-16: `Router.chain_for` propagates adapter errors (`TestExplicitProviderSelection`).
+  - [ ] P2-17: Single tested dispatch script for `generate.yml` (`TestDispatchGeneration`).
+  - [ ] P2-18: Unique `docs-gen/*` branch with run id per dispatch.
+  - [ ] P2-19: Read-only top-level permissions across workflows (`TestWorkflowSecurityInvariants`).
+  - [ ] P2-20: Truth sync and exit gate (`README.md`, `LIMITATIONS.md`, `VALIDATION.md`, `PROGRESS.md`).
 
 ---
 

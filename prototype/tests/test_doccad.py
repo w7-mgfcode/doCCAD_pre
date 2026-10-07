@@ -115,6 +115,7 @@ from scripts.build_filter import (
     filter_for_demo,
     restore_stashed,
     STASH,
+    STASH_PRIVATE,
     GENERATED,
 )
 from scripts.generate_question import (
@@ -539,6 +540,232 @@ class TestPrivateContentExclusion(unittest.TestCase):
                 private_canonical.unlink()
             if source_dir.is_dir() and not list(source_dir.iterdir()):
                 source_dir.rmdir()
+
+
+class TestVisibilityFailsClosed(unittest.TestCase):
+    """P2-15: Absent visibility fails closed to private (T12, NV-REQ-008, NV-REQ-028)."""
+
+    def setUp(self):
+        restore_stashed()
+
+    def tearDown(self):
+        restore_stashed()
+
+    def test_canonical_page_without_visibility_excluded_in_production(self):
+        """Case 1: A canonical page without visibility is excluded in production."""
+        source_dir = PROTOTYPE_ROOT / "docs" / "source" / "internal"
+        source_dir.mkdir(parents=True, exist_ok=True)
+        no_vis_canonical = source_dir / "unclassified-doc.md"
+        no_vis_canonical.write_text(
+            "---\n"
+            "id: unclassified-doc\n"
+            "title: Unclassified Doc\n"
+            "type: canonical\n"
+            "audience:\n  - developer\n"
+            "owners:\n  - core-team\n"
+            "last_validated: '2026-09-21'\n"
+            "---\n\n"
+            "Unclassified content without visibility field.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production()
+            self.assertFalse(no_vis_canonical.is_file(), "Unclassified canonical page must be excluded from docs/source/")
+            stashed_private = PROTOTYPE_ROOT / ".work" / "stashed_private" / "source" / "internal" / "unclassified-doc.md"
+            self.assertTrue(stashed_private.is_file(), "Unclassified canonical page must fail closed into stashed_private")
+        finally:
+            restore_stashed()
+            if no_vis_canonical.is_file():
+                no_vis_canonical.unlink()
+            if source_dir.is_dir() and not list(source_dir.iterdir()):
+                source_dir.rmdir()
+
+    def test_generated_page_without_visibility_excluded_in_production(self):
+        """Case 2: A generated page without it is excluded."""
+        no_vis_gen = GENERATED / "questions" / "test-unclassified-gen.mdx"
+        no_vis_gen.write_text(
+            "---\n"
+            "id: test-unclassified-gen\n"
+            "title: Unclassified Generated\n"
+            "type: generated\n"
+            "audience:\n  - developer\n"
+            "owners:\n  - dev\n"
+            "last_validated: '2026-09-21'\n"
+            "generated: true\n"
+            "generation:\n"
+            "  contract: GenerateQuestionPage\n"
+            "  contract_version: 1\n"
+            "  prompt_version: question-page.v1\n"
+            "  source_documents: []\n"
+            "  provider: fixture\n"
+            "  model: deterministic-demo-fixture\n"
+            "  generation_mode: production\n"
+            "  generated_at: '2026-09-21T07:00:00Z'\n"
+            "  approval_status: draft\n"
+            "---\n\n"
+            "Generated content missing visibility.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production()
+            stashed_file = STASH / "questions" / "test-unclassified-gen.mdx"
+            self.assertTrue(stashed_file.is_file(), "Generated page without visibility must be stashed")
+            tombstone_text = no_vis_gen.read_text(encoding="utf-8")
+            self.assertIn("Private Content Hold", tombstone_text)
+            self.assertNotIn("Generated content missing visibility", tombstone_text)
+        finally:
+            restore_stashed()
+            if no_vis_gen.is_file():
+                no_vis_gen.unlink()
+
+    def test_validate_rejects_generated_page_without_visibility(self):
+        """Case 3: Validate rejects a generated page without it."""
+        from scripts.validate_docs import make_validator
+        validate = make_validator()
+        fm = {
+            "id": "test-no-vis",
+            "title": "Test",
+            "type": "generated",
+            "audience": ["developer"],
+            "owners": ["dev"],
+            "generated": True,
+            "generation": {
+                "contract": "GenerateRecruiterPage",
+                "contract_version": 1,
+                "prompt_version": "recruiter.v1",
+                "source_documents": [{"id": "s1", "path": "p1", "content_hash": "sha256:" + "0" * 64}],
+                "provider": "fixture",
+                "model": "deterministic-demo-fixture",
+                "generation_mode": "demo",
+                "generated_at": "2026-09-21T00:00:00Z",
+                "approval_status": "draft",
+            },
+        }
+        errs = validate(fm, "document")
+        self.assertTrue(any("visibility" in e for e in errs), f"Expected missing visibility error, got {errs}")
+
+    def test_generate_page_stamps_visibility_public_and_private(self):
+        """Case 4: generate_page.py output for a public task carries visibility: public, and for a private-evidence task carries private."""
+        import scripts.generate_page as gp
+        # 1. Public task with public evidence
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch.object(Path, "write_text") as mock_write:
+            MockRouter.return_value.run_with_fallback.return_value = {
+                "text": "---\nid: test-pub\ntitle: Pub\ntype: generated\ngenerated: true\naudience:\n  - recruiter\nowners:\n  - arch\n---\nBody with [link](/docs/architecture/system-overview).",
+                "provider": "fixture",
+                "model": "deterministic-demo-fixture",
+            }
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview"]
+            with mock.patch.object(sys, "argv", args):
+                ret = gp.main()
+            self.assertEqual(ret, 0)
+            written = mock_write.call_args_list[0][0][0]
+            fm = yaml.safe_load(re.match(r"\A---\r?\n(.*?)\r?\n---", written, re.DOTALL).group(1))
+            self.assertEqual(fm.get("visibility"), "public")
+
+        # 2. Private task via --privacy private
+        with mock.patch("scripts.generate_page.Router") as MockRouter, \
+             mock.patch.object(Path, "write_text") as mock_write:
+            MockRouter.return_value.run_with_fallback.return_value = {
+                "text": "---\nid: test-priv\ntitle: Priv\ntype: generated\ngenerated: true\naudience:\n  - recruiter\nowners:\n  - arch\n---\nBody with [link](/docs/architecture/system-overview).",
+                "provider": "local",
+                "model": "local-model",
+            }
+            args = ["generate_page.py", "--contract", "GenerateRecruiterPage", "--target", "architecture-system-overview", "--privacy", "private"]
+            with mock.patch.object(sys, "argv", args):
+                ret = gp.main()
+            self.assertEqual(ret, 0)
+            written = mock_write.call_args_list[0][0][0]
+            fm = yaml.safe_load(re.match(r"\A---\r?\n(.*?)\r?\n---", written, re.DOTALL).group(1))
+            self.assertEqual(fm.get("visibility"), "private")
+
+    def test_live_draft_shape_held_in_production(self):
+        """Case 5: A page shaped like the live draft is held in production: provider: gemini, generation_mode: production, approval_status: draft, no visibility."""
+        live_draft = GENERATED / "recruiter" / "test-live-draft-shape.mdx"
+        live_draft.write_text(
+            "---\n"
+            "id: recruiter-architecture-system-overview\n"
+            "slug: /recruiter/architecture-system-overview\n"
+            "title: Recruiter Overview\n"
+            "type: generated\n"
+            "audience:\n  - recruiter\n"
+            "owners:\n  - architecture\n"
+            "generated: true\n"
+            "generation:\n"
+            "  contract: GenerateRecruiterPage\n"
+            "  contract_version: 2\n"
+            "  prompt_version: recruiter.v2\n"
+            "  source_documents:\n"
+            "    - id: architecture-system-overview\n"
+            "      path: docs/source/architecture/system-overview.md\n"
+            "      content_hash: sha256:f5e7a3ccd505c370f5058c6ca6b37d360f04ecf70ee8a64a4f6390f37e58f499\n"
+            "  provider: gemini\n"
+            "  model: gemini-3.1-flash-lite\n"
+            "  generation_mode: production\n"
+            "  approval_status: draft\n"
+            "  generated_at: '2026-10-06T12:00:00Z'\n"
+            "---\n\n"
+            "Live candidate recruiter view.\n",
+            encoding="utf-8",
+        )
+        try:
+            filter_for_production()
+            stashed_target = STASH / "recruiter" / "test-live-draft-shape.mdx"
+            self.assertTrue(stashed_target.is_file(), "Live draft shaped page must be stashed out of production")
+            stub_content = live_draft.read_text(encoding="utf-8")
+            self.assertIn("Production Publication Hold", stub_content)
+            self.assertNotIn("Live candidate recruiter view", stub_content)
+        finally:
+            restore_stashed()
+            if live_draft.is_file():
+                live_draft.unlink()
+
+    def test_expected_excluded_set_literal(self):
+        """Case 6: Expected-set check asserting literal list on the real tree; interview datasets follow their pages."""
+        expected = sorted([
+            "generated/interview/architecture-content-planes.interview.json",
+            "generated/interview/architecture-content-planes.mdx",
+            "generated/interview/architecture-system-overview.interview.json",
+            "generated/interview/architecture-system-overview.mdx",
+            "generated/interview/security-trust-boundaries.interview.json",
+            "generated/interview/security-trust-boundaries.mdx",
+            "generated/interview/validation-drift-detection.interview.json",
+            "generated/interview/validation-drift-detection.mdx",
+            "generated/questions/q-001-canonical-separation.mdx",
+            "generated/questions/q-002-drift-detection.mdx",
+            "generated/questions/q-003-security-trust-zones.mdx",
+            "generated/questions/q-004-docusaurus-selection.mdx",
+            "generated/questions/q-005-private-routing.mdx",
+            "generated/questions/q-006-kubernetes-topology.mdx",
+            "generated/recruiter/project-overview.mdx",
+        ])
+        try:
+            stashed_count = filter_for_production()
+            self.assertEqual(stashed_count, len(expected))
+            actual_stashed = []
+            if STASH.is_dir():
+                for f in STASH.rglob("*"):
+                    if f.is_file():
+                        actual_stashed.append("generated/" + f.relative_to(STASH).as_posix())
+            if STASH_PRIVATE.is_dir():
+                for f in STASH_PRIVATE.rglob("*"):
+                    if f.is_file():
+                        actual_stashed.append(f.relative_to(STASH_PRIVATE).as_posix())
+            self.assertEqual(sorted(actual_stashed), expected)
+
+            # Assert that the four interview datasets followed their companion pages
+            for dataset_name in [
+                "architecture-content-planes",
+                "architecture-system-overview",
+                "security-trust-boundaries",
+                "validation-drift-detection",
+            ]:
+                json_stashed = f"generated/interview/{dataset_name}.interview.json"
+                mdx_stashed = f"generated/interview/{dataset_name}.mdx"
+                self.assertIn(json_stashed, actual_stashed)
+                self.assertIn(mdx_stashed, actual_stashed)
+        finally:
+            restore_stashed()
 
 
 class TestHashDriftAndRegeneration(unittest.TestCase):
@@ -1457,6 +1684,7 @@ class TestApprovalRecord(unittest.TestCase):
             "id": "test-view",
             "title": "Test View",
             "type": "generated",
+            "visibility": "public",
             "generated": True,
             "audience": ["developer"],
             "owners": ["developer"],
@@ -1876,6 +2104,7 @@ class TestApprovalRecord(unittest.TestCase):
             "id: test-approved-api-fail\n"
             "title: Approved Fail\n"
             "type: generated\n"
+            "visibility: public\n"
             "generated: true\n"
             "audience: [developer]\n"
             "owners: [developer]\n"
@@ -1899,9 +2128,9 @@ class TestApprovalRecord(unittest.TestCase):
             with self.assertRaises(ApiPermissionError):
                 filter_for_production(verifier=FailingVerifier(), require_api=True)
         finally:
+            restore_stashed()
             if test_gen.is_file():
                 test_gen.unlink()
-            restore_stashed()
 
 
 class TestWorkflowScriptInvocations(unittest.TestCase):
@@ -2447,6 +2676,11 @@ class TestExplicitProviderSelection(unittest.TestCase):
             with self.assertRaises(MissingModelError):
                 self.router.chain_for({"task": "TestTask"}, provider="anthropic")
 
+    def test_chain_for_reraises_arbitrary_adapter_error(self):
+        with mock.patch.object(self.router, "instantiate", side_effect=ValueError("adapter init failed")):
+            with self.assertRaises(ValueError):
+                self.router.chain_for({"task": "TestTask"}, provider="anthropic")
+
     def test_generate_page_cli_dry_run_with_explicit_provider(self):
         res = subprocess.run(
             [
@@ -2462,7 +2696,7 @@ class TestExplicitProviderSelection(unittest.TestCase):
             text=True,
         )
         self.assertEqual(res.returncode, 0, f"stdout: {res.stdout}\nstderr: {res.stderr}")
-        self.assertIn("Provider chain (from ai.config.yaml): anthropic", res.stdout)
+        self.assertIn("Provider chain (--provider): anthropic", res.stdout)
         self.assertIn("DRY RUN: assembled prompt", res.stdout)
 
 
@@ -3404,6 +3638,177 @@ class TestLiveSmokeFindings(unittest.TestCase):
         self.assertEqual(ret, 0)
         self.assertIn("[repair] attempt 1 rejected", err)
         self.assertIn("no frontmatter block", err)
+
+
+class TestRunUsageReport(unittest.TestCase):
+    """P2-14: Observable generation: usage report and step summary (REQ-005, NV-REQ-020, NV-REQ-027)."""
+
+    def setUp(self):
+        _StubHttpHandler.response_map = {}
+        _StubHttpHandler.received_requests = []
+        self.server = http.server.HTTPServer(("127.0.0.1", 0), _StubHttpHandler)
+        self.port = self.server.server_port
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(timeout=1.0)
+
+    def test_loopback_stub_with_request_id_and_usage(self):
+        """Case 1: A loopback stub returns a body with usage and a request-id header; the printed line carries those exact numbers and that ID."""
+        from ai.router import Router
+        body = json.dumps({
+            "content": [{"type": "text", "text": "generated-text"}],
+            "model": "claude-test-model",
+            "usage": {"input_tokens": 128, "output_tokens": 256},
+        })
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json", "request-id": "req-stub-test-12345"}, body)
+        ]
+        router = Router(
+            PROTOTYPE_ROOT / "ai.config.yaml",
+            adapter_kwargs={
+                "anthropic": {
+                    "base_url": f"http://127.0.0.1:{self.port}",
+                    "model": "claude-test-model",
+                    "env_key": "TEST_ANTHROPIC_KEY",
+                }
+            },
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-test"}):
+            res = router.run_with_fallback(
+                {"task": "test-task", "privacy": "public"},
+                [{"role": "user", "content": "hello"}],
+                provider="anthropic",
+            )
+            self.assertEqual(res["model"], "claude-test-model")
+            self.assertEqual(res["request_id"], "req-stub-test-12345")
+            usage_line = router.format_usage_line()
+            self.assertEqual(
+                usage_line,
+                "Run usage: provider=anthropic model=claude-test-model calls=1 input_tokens=128 output_tokens=256 request_ids=req-stub-test-12345",
+            )
+
+    def test_response_without_request_id_header_reports_unavailable(self):
+        """Case 2: A response without a request-ID header prints request_ids=unavailable."""
+        from ai.router import Router
+        body = json.dumps({
+            "content": [{"type": "text", "text": "generated-text"}],
+            "model": "claude-test-no-req-id",
+            "usage": {"input_tokens": 50, "output_tokens": 100},
+        })
+        _StubHttpHandler.response_map["*"] = [
+            (200, {"Content-Type": "application/json"}, body)
+        ]
+        router = Router(
+            PROTOTYPE_ROOT / "ai.config.yaml",
+            adapter_kwargs={
+                "anthropic": {
+                    "base_url": f"http://127.0.0.1:{self.port}",
+                    "model": "claude-test-no-req-id",
+                    "env_key": "TEST_ANTHROPIC_KEY",
+                }
+            },
+        )
+        with mock.patch.dict(os.environ, {"TEST_ANTHROPIC_KEY": "fake-key-test"}):
+            res = router.run_with_fallback(
+                {"task": "test-task", "privacy": "public"},
+                [{"role": "user", "content": "hello"}],
+                provider="anthropic",
+            )
+            self.assertIsNone(res.get("request_id"))
+            usage_line = router.format_usage_line()
+            self.assertEqual(
+                usage_line,
+                "Run usage: provider=anthropic model=claude-test-no-req-id calls=1 input_tokens=50 output_tokens=100 request_ids=unavailable",
+            )
+
+    def test_github_step_summary_written_without_secrets_or_prompts(self):
+        """Case 3: With GITHUB_STEP_SUMMARY pointed at a temp file, the report is written. It contains no sentinel string planted in the evidence and no fake key-shaped value set in the environment. This case fails if the report includes prompt text."""
+        from ai.router import Router
+        sentinel_prompt = "SUPER_SECRET_SENTINEL_PROMPT_12345"
+        fake_key_env = "sk-fakekeyinenv999999999999999"
+
+        with tempfile.NamedTemporaryFile("w+", delete=False) as tf:
+            summary_path = tf.name
+
+        try:
+            with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": summary_path, "TEST_SECRET_ENV": fake_key_env}):
+                router = Router(PROTOTYPE_ROOT / "ai.config.yaml")
+                router.calls_count = 1
+                router.tokens_used = 200
+                router.input_tokens = 120
+                router.output_tokens = 80
+                router.request_ids = ["req-summary-123"]
+                router.last_provider = "anthropic"
+                router.last_model = "claude-3-7-sonnet"
+
+                router.write_step_summary(
+                    contract="GenerateRecruiterPage",
+                    target="test-target",
+                    privacy="public",
+                    generation_mode="production",
+                    evidence_ids=["evidence-doc-1"],
+                    gate_results="PASS (schema, mdx, grounding)",
+                    output_path="docs/generated/recruiter/test-target.mdx",
+                    approval_status="draft",
+                )
+
+                content = Path(summary_path).read_text(encoding="utf-8")
+                self.assertIn("### DOCCAD Generation Run Report", content)
+                self.assertIn("- **Contract:** GenerateRecruiterPage", content)
+                self.assertIn("- **Target:** test-target", content)
+                self.assertIn("- **Provider:** anthropic", content)
+                self.assertIn("- **Returned Model:** claude-3-7-sonnet", content)
+                self.assertIn("- **Request IDs:** req-summary-123", content)
+                self.assertIn("- **Gate Results:** PASS (schema, mdx, grounding)", content)
+
+                # Security / Leak checks:
+                self.assertNotIn(sentinel_prompt, content, "Prompt sentinel string leaked into GITHUB_STEP_SUMMARY!")
+                self.assertNotIn(fake_key_env, content, "Fake environment secret key leaked into GITHUB_STEP_SUMMARY!")
+                self.assertNotIn("messages", content.lower())
+                self.assertNotIn("content-type", content.lower())
+                self.assertNotIn("authorization", content.lower())
+        finally:
+            if os.path.exists(summary_path):
+                os.remove(summary_path)
+
+    def test_provider_flag_changes_chain_label(self):
+        """Case 4: --provider changes the chain label."""
+        res_explicit = subprocess.run(
+            [
+                sys.executable,
+                str(PROTOTYPE_ROOT / "scripts" / "generate_page.py"),
+                "--contract", "GenerateRecruiterPage",
+                "--target", "architecture-system-overview",
+                "--provider", "anthropic",
+                "--dry-run",
+            ],
+            cwd=str(PROTOTYPE_ROOT),
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(res_explicit.returncode, 0)
+        self.assertIn("Provider chain (--provider): anthropic", res_explicit.stdout)
+        self.assertNotIn("Provider chain (from ai.config.yaml):", res_explicit.stdout)
+
+        res_default = subprocess.run(
+            [
+                sys.executable,
+                str(PROTOTYPE_ROOT / "scripts" / "generate_page.py"),
+                "--contract", "GenerateRecruiterPage",
+                "--target", "architecture-system-overview",
+                "--dry-run",
+            ],
+            cwd=str(PROTOTYPE_ROOT),
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(res_default.returncode, 0)
+        self.assertIn("Provider chain (from ai.config.yaml): fixture", res_default.stdout)
+        self.assertNotIn("Provider chain (--provider):", res_default.stdout)
 
 
 if __name__ == "__main__":

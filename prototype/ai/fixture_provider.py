@@ -54,6 +54,7 @@ class FixtureProvider:
             "provider": "fixture",
             "model": self.model,
             "generation_mode": "demo",
+            "request_id": None,
         }
 
     @staticmethod

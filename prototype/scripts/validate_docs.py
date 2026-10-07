@@ -163,10 +163,13 @@ def make_validator():
             schema = doc_schema if which == "document" else interview_schema
             v = Draft202012Validator(schema, registry=registry,
                                      format_checker=FormatChecker())
-            return [
+            errs = [
                 f"{'/'.join(str(p) for p in e.absolute_path) or '<root>'}: {e.message}"
                 for e in v.iter_errors(instance)
             ]
+            if which == "document" and instance.get("type") == "generated" and not instance.get("visibility"):
+                errs.append("<root>: generated document missing explicit 'visibility' frontmatter")
+            return errs
 
         return validate
     except ImportError:
@@ -185,6 +188,8 @@ def make_validator():
                     for req in ["generated", "generation"]:
                         if req not in instance:
                             errs.append(f"missing required '{req}'")
+                    if not instance.get("visibility"):
+                        errs.append("missing required 'visibility'")
                     gen = instance.get("generation") or {}
                     if gen.get("approval_status") == "approved" and "approval_record" not in gen:
                         errs.append("approval_status is approved but missing required 'approval_record'")

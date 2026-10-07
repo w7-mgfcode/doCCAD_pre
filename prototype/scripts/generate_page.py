@@ -195,7 +195,8 @@ def main() -> int:
     for f in evidence:
         if f.suffix in (".md", ".mdx"):
             efm = parse_frontmatter(f) or {}
-            if efm.get("visibility") == "private" or efm.get("privacy") == "private":
+            ev_vis = efm.get("visibility") or efm.get("privacy")
+            if ev_vis != "public":
                 privacy = "private"
                 break
 
@@ -203,7 +204,8 @@ def main() -> int:
                  "context_tokens": len(prompt) // 4}
     router = Router(ROOT / "ai.config.yaml")
     chain = router.select_chain_names(task_meta, provider=args.provider)
-    print(f"Provider chain (from ai.config.yaml): {' -> '.join(chain)}")
+    chain_source = f"Provider chain (--provider): {' -> '.join(chain)}" if args.provider is not None else f"Provider chain (from ai.config.yaml): {' -> '.join(chain)}"
+    print(chain_source)
 
     branch = f"docs-gen/{contract['contract'].lower()}-{args.target}"
 
@@ -280,6 +282,21 @@ def main() -> int:
             out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
             reset_to_draft(args.target, out_path.relative_to(ROOT).as_posix())
             print(f"Wrote {out_path.relative_to(ROOT)}")
+            print(router.format_usage_line())
+            evidence_ids = [
+                (parse_frontmatter(p) or {}).get("id", p.stem)
+                for p in evidence if p.suffix in (".md", ".mdx")
+            ]
+            router.write_step_summary(
+                contract=contract["contract"],
+                target=args.target,
+                privacy=privacy,
+                generation_mode=gen_mode,
+                evidence_ids=evidence_ids,
+                gate_results="PASS (schema, grounding)",
+                output_path=out_path.relative_to(ROOT).as_posix(),
+                approval_status="draft",
+            )
             return 0
 
         else:
@@ -299,6 +316,7 @@ def main() -> int:
                 # contract's route (live Gemini smoke test, 2026-10-06: /views/views/...).
                 fm["id"] = f"{contract['output']['dir']}-{args.target}"
                 fm["slug"] = f"/{contract['output']['dir']}/{args.target}"
+                fm["visibility"] = "private" if privacy == "private" else "public"
                 errors = validate(fm, "document")
                 # Pre-write MDX restriction gate and link allowlist
                 errors.extend(check_mdx_security(body))
@@ -328,6 +346,20 @@ def main() -> int:
             reset_to_draft(fm.get("id", args.target), out_path.relative_to(ROOT).as_posix())
             print(f"Wrote {out_path.relative_to(ROOT)}")
             print(f"PR branch (persistence: {contract['persistence']}): {branch}")
+            print(router.format_usage_line())
+            evidence_ids = [
+                d.get("id", "") for d in fm.get("generation", {}).get("source_documents", [])
+            ]
+            router.write_step_summary(
+                contract=contract["contract"],
+                target=args.target,
+                privacy=privacy,
+                generation_mode=gen_mode,
+                evidence_ids=evidence_ids,
+                gate_results="PASS (schema, mdx, grounding)",
+                output_path=out_path.relative_to(ROOT).as_posix(),
+                approval_status="draft",
+            )
             return 0
 
 

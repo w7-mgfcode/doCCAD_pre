@@ -84,7 +84,7 @@ class GeminiProvider:
 
         url = self.base_url or f"{API_BASE}/{model}:generateContent"
 
-        body, _ = http_post_json(
+        body, resp_headers = http_post_json(
             url=url,
             payload=payload,
             headers=headers,
@@ -113,10 +113,17 @@ class GeminiProvider:
         text = "".join(p.get("text", "") for p in parts)
         usage = body.get("usageMetadata", {})
         returned_model = body.get("modelVersion") or body.get("model") or model
+        req_id = (
+            resp_headers.get("request-id")
+            or resp_headers.get("x-goog-request-id")
+            or resp_headers.get("x-request-id")
+            or None
+        )
         return {
             "text": text,
             "usage": {"input_tokens": usage.get("promptTokenCount", 0),
                       "output_tokens": usage.get("candidatesTokenCount", 0)},
             "provider": self.name,
             "model": returned_model,
+            "request_id": req_id,
         }
