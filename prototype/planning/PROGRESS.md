@@ -188,7 +188,7 @@ were run on 2026-09-30 and again on 2026-10-01; the Phase 1 automation and appro
 | Environment branch-policy negative test | GitHub dispatch from unprotected branch | Owner dispatches `generate.yml` with `provider=gemini` from throwaway branch to verify refusal (H3-8) |
 | Phase 3 (NV-REQ-023) | Pinned external evidence decision (NV-SUP-2 / KB E8) | Owner decides NV-SUP-2 (H3-11) |
 | Archive `ai-models/` | Archive reorganization decision (E9) | Owner decides E9 (H3-11) |
-| Decisions E11, E12, E13, G9 | Owner decisions: `q-002` content (E11), model name in docs (E12), evidence branch disposition (E13), E7/E8 alias wording (G9) | Owner decides (H3-10) |
+| Decisions E11, E12, G9 | Owner decisions: `q-002` content (E11), model name in docs (E12), E7/E8 alias wording (G9). E13 decided 2026-10-07 (§0) | Owner decides (H3-10) |
 | Guard protects this pack | Workspace guard hook is in git-ignored `.agents/` | Owner adds `docs/phase-2-closeout` to `PROTECTED_DIRS` in `.agents/hooks/doccad_guard.py` (H3-3) |
 | Agent-layer truth | `.claude/rules/` and `AGENTS.md` outside unattended run scope | Owner updates `.claude/rules/prototype-code.md` known debt and `AGENTS.md` citations (H3-12) |
 | Browser verification (M7) | Interactive `/browser` in Antigravity 2.0 app; Playwright not approved (E6) | Owner executes interactive browser verification |
@@ -208,10 +208,13 @@ The unattended run never edits `AGENTS.md`, root `README.md`, `.claude/`, or `.a
    - Update test suite count reference from 155 to 190.
    - Update the workflow citation `generate.yml:34-45,246` to `generate.yml:34-45,206` (`environment: generation` moved).
    - Done 2026-10-07 by the owner session (PR #13): the `--provider` citation above.
+   - Done 2026-10-07 by the owner session (branch `docs/post-closeout-sync`): the `dispatch_generation.py` entry and the
+     `generate.yml:34-45,206` citation. `AGENTS.md` carries no test count, so the 155 → 190 item does not apply there.
 
 2. **Root `README.md`**:
    - Update Phase 2 status from in-progress / live smoke to complete, observable, fail-closed, and hardened (P2-13..P2-20, Checkpoints 2C & 2D).
    - Update test suite count to 190 tests (0 expected failures).
+   - Done 2026-10-07 (branch `docs/post-closeout-sync`): closeout row under Phase 2 with 190 tests, `phase-2-closeout/` in the repository map. Phase 2 stays unchecked: its remaining-providers item waits on E5.
 
 3. **`.claude/rules/prototype-code.md`**:
    - Update "Known debt" section (`:47-51`): remove note about `chain_for` swallowing errors, since P2-16 resolved this by re-raising adapter constructor errors.
@@ -232,6 +235,7 @@ Answers to `docs/next-phase/02_RESEARCH_KB.md` §E and the checklist in
 | E3 — approval-record semantics (D6) | **Approved with amendments, 2026-10-01.** `approval_record: {pr, approved_by, approved_at, approved_hash}`; `approved_hash` = sha256 of the page body at approval, a mismatch sends the page back to `in-review`. The CLI stamp (`review_governance.py approve --pr <n>`) is a *claim*; the gate is the publish job, which verifies through the GitHub API that the PR is merged, carries an approving review from a CODEOWNER matching `approved_by`, and changed the file — failing closed if the API is unreachable. Demo builds keep `approved-for-demo`. Spec: `docs/next-phase/03_NEXT_VERSION_PLAN.md` P1-05. P1-05 is unblocked |
 | E6 — dependencies | **Approved:** `jsonschema` + `referencing` as declared requirements (P0-02). **Not approved:** `@playwright/test`, `@mermaid-js/mermaid-cli`, `@docusaurus/faster`, lychee — P1-08 and any CI browser smoke stay Blocked |
 | E8 — bot authorship of generation PRs | **Decided 2026-10-01: GitHub App** (`actions/create-github-app-token`, contents + pull-requests write, installed on this repo only). Rejected: machine-user PAT (extra account, long-lived secret), owner PAT (still self-authored), `GITHUB_TOKEN` + "Allow Actions to create PRs" (no CI trigger, widens a repo-wide permission). `generate.yml` falls back to branch-only when the App is not configured |
+| E13 — evidence branch `docs-gen/generaterecruiterpage-architecture-system-overview` | **Decided 2026-10-07: keep.** The branch (`32a9cb7`) stays on `origin` as the raw output of the first live CI generation (Gemini, run 37541030510, `VALIDATION.md` §7); it is not merged or opened as a PR. Merged run branches are deleted instead (`phase-2-closeout` deleted 2026-10-07) |
 | E5, E7, E9 | Not decided — they gate Phase 2 live calls, Phase 3 and the archive `ai-models/` folder |
 | Antigravity setup | 2.0 app (not the CLI); command auto-execution enabled for the `doCCAD_pre` project only; workspace guard hook `.agents/hooks.json` active (blocks push, remote/`gh`, destructive git, protected-path writes, `.env`/keys) |
 | Branch | Work on `next-version` (created 2026-10-01 with the baseline commits) |
